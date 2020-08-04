@@ -9,6 +9,9 @@ $(document).ready(function () {
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0, exposure_time: 5000, delay: 500 };
   var init_hw_camera_capture_params = { directory: '', command: '', delay: 500, width: 0, height: 0, filename: '', save_image: 0, image_file_name: '' };
+  var init_hw_oc_params = { image_file_name: '' };
+  var init_hw_aa_params = { image_file_name: '' };
+  var init_hw_mtf_params = { image_file_name: '' };
   var init_motion_move_params = { };
   var init_command_params = { directory: '', command_name: '' };
   var init_initial_tilt_params = { roll: 0, pitch: 0 };
@@ -46,6 +49,12 @@ $(document).ready(function () {
   var $hw_tilt_operator_properties = $('#hw_tilt_operator_properties');
   var $hw_camera_capture_operator_title = $('#hw_camera_capture_operator_title');
   var $hw_camera_capture_operator_properties = $('#hw_camera_capture_operator_properties');
+  var $hw_oc_operator_title = $('#hw_oc_operator_title');
+  var $hw_oc_operator_properties = $('#hw_oc_operator_properties');
+  var $hw_aa_operator_title = $('#hw_aa_operator_title');
+  var $hw_aa_operator_properties = $('#hw_aa_operator_properties');
+  var $hw_mtf_operator_title = $('#hw_mtf_operator_title');
+  var $hw_mtf_operator_properties = $('#hw_mtf_operator_properties');
   var $motion_move_operator_properties = $('#motion_move_operator_properties');
   var $motion_move_operator_title = $('#motion_move_operator_title');
   var $command_operator_properties = $('#command_operator_properties');
@@ -90,6 +99,12 @@ $(document).ready(function () {
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Filename: <input type=\"text\" id=\"hw_camera_capture_filename\"></div>");
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Save image: <select id=\"hw_camera_capture_save_image\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_camera_capture_image_file_name\"></div>");
+  
+  $hw_oc_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_oc_image_file_name\"></div>");
+  
+  $hw_aa_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_aa_image_file_name\"></div>");
+  
+  $hw_mtf_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_mtf_image_file_name\"></div>");
   
   $command_operator_properties.append("<div style=\"margin-top:20px\">Directory: <input type=\"text\" id=\"command_directory\"></div>");
   $command_operator_properties.append("<div style=\"margin-top:20px\">Command: <input type=\"text\" id=\"command\"></div>");
@@ -147,6 +162,9 @@ $(document).ready(function () {
 	  $y_level_operator_properties.hide();
 	  $hw_tilt_operator_properties.hide();
 	  $hw_camera_capture_operator_properties.hide();
+	  $hw_oc_operator_properties.hide();
+	  $hw_aa_operator_properties.hide();
+	  $hw_mtf_operator_properties.hide();
 	  $motion_move_operator_properties.hide();
 	  $command_operator_properties.hide();
 	  $semi_load_lens_operator_properties.hide();
@@ -271,11 +289,17 @@ $(document).ready(function () {
 		$('#hw_camera_capture_filename').val(params["filename"]);
 		$('#hw_camera_capture_save_image').val(params["save_image"]);
 		$('#hw_camera_capture_image_file_name').val(params["image_file_name"]);
-	  }else if (operatorId.includes("Motion Move")) {
+	  } else if (operatorId.includes("HW Center")) {
+		$('#hw_oc_image_file_name').val(params["image_file_name"]);
+	  } else if (operatorId.includes("HW Alignment")) {
+		$('#hw_aa_image_file_name').val(params["image_file_name"]);
+	  } else if (operatorId.includes("HW Check")) {
+		$('#hw_mtf_image_file_name').val(params["image_file_name"]);  
+	  } else if (operatorId.includes("Motion Move")) {
 		console.log("Motion Move");
 		$motion_move_operator_properties.show();
 		$motion_move_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
-	  }else if (operatorId.includes("Command")) {
+	  } else if (operatorId.includes("Command")) {
 		console.log("Command");
 		$command_operator_properties.show();
 		$command_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -304,6 +328,9 @@ $(document).ready(function () {
 	  $y_level_operator_properties.hide();
 	  $hw_tilt_operator_properties.hide();
 	  $hw_camera_capture_operator_properties.hide();
+	  $hw_oc_operator_properties.hide();
+	  $hw_aa_operator_properties.hide();
+	  $hw_mtf_operator_properties.hide();
 	  $motion_move_operator_properties.hide();
 	  $command_operator_properties.hide();
 	  $semi_load_lens_operator_properties.hide();
@@ -469,7 +496,9 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_y_level_params);
 	} else if (operatorId.includes("HW Tilt")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_tilt_params);
-	}  else if (operatorId.includes("Motion Move")) {
+	} else if (operatorId.includes("HW Center")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_oc_params);
+	} else if (operatorId.includes("Motion Move")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_motion_move_params);
 	}  else if (operatorId.includes("Command")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_command_params);
@@ -525,6 +554,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
 	} else if (operatorId.includes("HW Tilt")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_tilt_params);
+	} else if (operatorId.includes("HW Center")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_hw_oc_params);
 	} else if (operatorId.includes("Motion Move")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_motion_move_params);
 	} else if (operatorId.includes("Command")) {
@@ -749,6 +780,18 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_camera_capture_operator_title').val());
 	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), width: Number($('#hw_camera_capture_width').val()), height: Number($('#hw_camera_capture_height').val()), filename: $('#hw_camera_capture_filename').val(), save_image: Number($('#hw_camera_capture_save_image').val()), image_file_name: $('#hw_camera_capture_image_file_name').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Center")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_oc_operator_title').val());
+	  var params = {image_file_name: $('#hw_oc_image_file_name').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Alignment")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_aa_operator_title').val());
+	  var params = {image_file_name: $('#hw_aa_image_file_name').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Check")){
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_mtf_operator_title').val());
+	  var params = {image_file_name: $('#hw_mtf_image_file_name').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Motion Move")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#motion_move_operator_title').val());
 	  var params = {};
@@ -870,6 +913,9 @@ $(document).ready(function () {
   $('#create_grr').click(function () { addEndWidget("GRR"); });
   $('#create_HW_Tilt').click(function(){ addOperationWidget("HW Tilt"); });
   $('#create_HW_Camera_capture').click(function(){ addOperationWidget("HW Camera Capture"); });
+  $('#create_HW_oc').click(function(){ addOperationWidget("HW Center"); });
+  $('#create_HW_aa').click(function(){ addOperationWidget("HW Alignment"); });
+  $('#create_HW_mtf').click(function(){ addOperationWidget("HW Check"); });
   $('#create_motion_move').click(function(){ addOperationWidget("Motion Move"); });
   $('#create_command').click(function(){ addOperationWidget("Command"); });
   
@@ -979,6 +1025,18 @@ $(document).ready(function () {
     } else if (selectedOperatorId.includes("HW Camera Capture")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_camera_capture_operator_title').val());
 	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), width: Number($('#hw_camera_capture_width').val()), height: Number($('#hw_camera_capture_height').val()), filename: $('#hw_camera_capture_filename').val(), save_image: Number($('#hw_camera_capture_save_image').val()), image_file_name: $('#hw_camera_capture_image_file_name').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Center")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_oc_operator_title').val());
+	  var params = { image_file_name: $('#hw_oc_image_file_name').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Alignment")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_aa_operator_title').val());
+	  var params = { image_file_name: $('#hw_aa_image_file_name').val()};
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else if (selectedOperatorId.includes("HW Check")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_mtf_operator_title').val());
+	  var params = { image_file_name: $('#hw_mtf_image_file_name').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("Command")) {
       $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $command_operator_title.val());

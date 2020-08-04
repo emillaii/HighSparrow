@@ -2188,7 +2188,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params, bool write_log)
     QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
     QPainter qPainter(&qImage);
     qPainter.setBrush(Qt::NoBrush);
-    qPainter.setFont(QFont("Times",75, QFont::Light));
+    qPainter.setFont(QFont("Times", parameters.drawTextSize(), QFont::Light));
 
     for (size_t i = 0; i < vec.size(); i++) {
         if (vec.at(i).layer > max_layer) {
@@ -2567,6 +2567,108 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
     ocImageProvider_1->setImage(outputImage);
     emit callQmlRefeshImg(1);
     return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
+{
+    QString imageFilename = params["image_file_name"].toString();
+
+    QElapsedTimer timer;timer.start();
+    bool grabRet = false;
+    cv::Mat input_img = cv::imread(imageFilename.toStdString());
+
+    if (!blackScreenCheck(input_img)) {  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""}; }
+    double fov = calculateDFOV(input_img);
+    qInfo("fov: %f max_I: %d min_area: %d max_area: %d", fov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
+    if (fov == -1) {
+        qCritical("Cannot calculate FOV from the grabbed image.");
+        LogicNg(current_aa_ng_time);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
+    //std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns;
+
+    if (patterns2.size() < patterns1.size()) {
+        patterns2.swap(patterns1);
+    }
+
+    if (patterns2.size() >= patterns1.size()) {
+        for (uint i = 0; i < patterns2.size(); i++) {
+            patterns.push_back(patterns2[i]);
+        }
+        for (uint i = 0; i < patterns1.size(); i++) {
+            bool isDuplicated = false;
+            for (uint j = 0; j < patterns2.size(); j++) {
+                double positionDiff = sqrt(pow(patterns1[i].center.x()-patterns2[j].center.x(), 2) + pow(patterns1[i].center.y()-patterns2[j].center.y(),2));
+                if (positionDiff < 20) { //threshold diff
+                    isDuplicated = true;
+                }
+            }
+            if (!isDuplicated) {
+                patterns.push_back(patterns1[i]);
+            }
+        }
+    }
+    double rect_width = 0;
+    double imageCenterX = input_img.cols/2;
+    double imageCenterY = input_img.rows/2;
+    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+    std::vector<MTF_Pattern_Position> vec;
+    for (uint i = 0; i < patterns.size(); i++) {
+       //Crop ROI
+       {
+           cv::Rect roi; cv::Mat copped_roi;
+           double width = sqrt(patterns[i].area)/2;
+           rect_width = width;
+           roi.width = width*4; roi.height = width*4;
+           roi.x = patterns[i].center.x() - width*2;
+           roi.y = patterns[i].center.y() - width*2;
+           if (roi.x < 0) roi.x = 0;
+           if (roi.x + roi.width > input_img.cols) { roi.width = input_img.cols - roi.x; }
+           if (roi.y < 0) roi.y = 0;
+           if (roi.y + roi.height > input_img.rows) { roi.height = input_img.rows - roi.y; }
+           input_img(roi).copyTo(copped_roi);
+           double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+           double f = radius/r1;
+           double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+           bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*(parameters.mtfFrequency() + 1));
+           if (!ret) {
+               qWarning("Cannot calculate MTF in the detected pattern");
+               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+           }
+           double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
+           vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                            f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr);
+        }
+    }
+
+    vector<int> layers = sfr::classifyLayers(vec);
+    int max_layer = 0;
+    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
+    QPainter qPainter(&qImage);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setFont(QFont("Times", parameters.drawTextSize(), QFont::Light));
+
+    for (size_t i = 0; i < vec.size(); i++) {
+        if (vec.at(i).layer > max_layer) {
+            max_layer = vec.at(i).layer - 1;
+        }
+        QVariantMap data;
+        data.insert("x", vec[i].x);
+        data.insert("y", vec[i].y);
+        data.insert("sfr", vec[i].avg_sfr);
+        qPainter.setPen(QPen(Qt::blue, 4.0));
+        qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x + rect_width, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - rect_width, vec[i].y + rect_width*3,  QString::number(vec[i].b_sfr, 'g', 4));
+        qPainter.drawText(vec[i].x - rect_width*4, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
+    }
+    qPainter.end();
+    sfrImageReady(std::move(qImage));
+
+    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performInitSensor()

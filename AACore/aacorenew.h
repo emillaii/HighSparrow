@@ -69,6 +69,9 @@ public:
 
     //Huawei use camera capture method
     ErrorCodeStruct performIRCameraCapture(QJsonValue params);
+    ErrorCodeStruct performOC_HW(QJsonValue params);
+    ErrorCodeStruct performAA_HW(QJsonValue params);
+    ErrorCodeStruct performMTF_HW(QJsonValue params);
 
     //Huawei use special request for some short cut semi auto button
     ErrorCodeStruct performLoadLens();

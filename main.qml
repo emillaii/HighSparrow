@@ -273,6 +273,15 @@ ApplicationWindow {
                     } else if (aaCoreTestItemName.indexOf("HW Camera Capture") !== -1) {
                         console.log("Perform HW Camera Capture")
                         aaNewCore.performHandling(AACoreNew.HW_CAMERA_CAPTURE, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("HW Center") !== -1) {
+                        console.log("Perform HW OC")
+                        aaNewCore.performHandling(AACoreNew.HW_OC, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("HW Alignment") !== -1) {
+                        console.log("Perform HW AA")
+                        aaNewCore.performHandling(AACoreNew.HW_AA, aaCoreTestParams)
+                    } else if (aaCoreTestItemName.indexOf("HW Check") !== -1) {
+                        console.log("Perform HW MTF")
+                        aaNewCore.performHandling(AACoreNew.HW_MTF, aaCoreTestParams)
                     }
 
                     aaCoreTestParams = ""

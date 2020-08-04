@@ -54,7 +54,10 @@ public:
         AA_LOAD_SENSOR = 14,
         AA_UNLOAD_SENSOR = 15,
         AA_UNLOAD_PRODUT = 16,
-        HW_CAMERA_CAPTURE = 17
+        HW_CAMERA_CAPTURE = 17,
+        HW_OC = 18,
+        HW_AA = 19,
+        HW_MTF = 20
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head, SingleheadLSutModule *lsut, Dothinkey *dk,

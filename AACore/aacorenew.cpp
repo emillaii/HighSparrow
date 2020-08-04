@@ -434,6 +434,15 @@ void AACoreNew::performHandlingOperation(int cmd)
     else if (cmd == HandleTest::HW_CAMERA_CAPTURE) {
         performIRCameraCapture(params);
     }
+    else if (cmd == HandleTest::HW_OC) {
+        performOC_HW(params);
+    }
+    else if (cmd == HandleTest::HW_AA) {
+        performAA_HW(params);
+    }
+    else if (cmd == HandleTest::HW_MTF) {
+        performMTF_HW(params);
+    }
     else if (cmd == HandleTest::Motion_Move) {
         performMotionMove(params);
     }
@@ -787,6 +796,24 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("Perform HW Camera Capture");
             performIRCameraCapture(params);
             qInfo("End of perform HW Camera Capture");
+        }
+        else if (testItemName.contains(AA_PIECE_HW_OC))
+        {
+            qInfo("Perform HW OC");
+            performOC_HW(params);
+            qInfo("End of perform HW OC");
+        }
+        else if (testItemName.contains(AA_PIECE_HW_AA))
+        {
+            qInfo("Perform HW AA");
+            performAA_HW(params);
+            qInfo("End of perform HW AA");
+        }
+        else if (testItemName.contains(AA_PIECE_HW_MTF))
+        {
+            qInfo("Perform HW MTF");
+            performMTF_HW(params);
+            qInfo("End of perform HW MTF");
         }
         else if (testItemName.contains(AA_PIECE_COMMAND))
         {
@@ -2569,12 +2596,22 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 
+ErrorCodeStruct AACoreNew::performOC_HW(QJsonValue params)
+{
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
+ErrorCodeStruct AACoreNew::performAA_HW(QJsonValue params)
+{
+    return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
 {
+    qInfo("Perform HW MTF check");
     QString imageFilename = params["image_file_name"].toString();
 
     QElapsedTimer timer;timer.start();
-    bool grabRet = false;
     cv::Mat input_img = cv::imread(imageFilename.toStdString());
 
     if (!blackScreenCheck(input_img)) {  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""}; }
@@ -2585,9 +2622,10 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
         LogicNg(current_aa_ng_time);
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
     }
-    //std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+
     std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), -1);
+
     std::vector<AA_Helper::patternAttr> patterns;
 
     if (patterns2.size() < patterns1.size()) {
@@ -2611,50 +2649,55 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
             }
         }
     }
+
     double rect_width = 0;
     double imageCenterX = input_img.cols/2;
     double imageCenterY = input_img.rows/2;
     double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
     std::vector<MTF_Pattern_Position> vec;
+    timer.start();
     for (uint i = 0; i < patterns.size(); i++) {
-       //Crop ROI
-       {
-           cv::Rect roi; cv::Mat copped_roi;
-           double width = sqrt(patterns[i].area)/2;
-           rect_width = width;
-           roi.width = width*4; roi.height = width*4;
-           roi.x = patterns[i].center.x() - width*2;
-           roi.y = patterns[i].center.y() - width*2;
-           if (roi.x < 0) roi.x = 0;
-           if (roi.x + roi.width > input_img.cols) { roi.width = input_img.cols - roi.x; }
-           if (roi.y < 0) roi.y = 0;
-           if (roi.y + roi.height > input_img.rows) { roi.height = input_img.rows - roi.y; }
-           input_img(roi).copyTo(copped_roi);
-           double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
-           double f = radius/r1;
-           double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-           bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*(parameters.mtfFrequency() + 1));
-           if (!ret) {
-               qWarning("Cannot calculate MTF in the detected pattern");
-               return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-           }
-           double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
-           vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
-                            f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr);
-        }
+        //Crop ROI
+        {
+            cv::Rect roi; cv::Mat copped_roi;
+            double width = sqrt(patterns[i].area)/2;
+            rect_width = width;
+            roi.width = width*4; roi.height = width*4;
+            roi.x = patterns[i].center.x() - width*2;
+            roi.y = patterns[i].center.y() - width*2;
+            if (roi.x < 0) roi.x = 0;
+            if (roi.x + roi.width > input_img.cols) { roi.width = input_img.cols - roi.x; }
+            if (roi.y < 0) roi.y = 0;
+            if (roi.y + roi.height > input_img.rows) { roi.height = input_img.rows - roi.y; }
+            input_img(roi).copyTo(copped_roi);
+            QString imageName = QString::number(i).append(".bmp");
+            cv::imwrite(imageName.toStdString().c_str(), copped_roi);
+            double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+            double f = radius/r1;
+            double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+            bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*(parameters.mtfFrequency()+1));
+            if (!ret) {
+                qWarning("Cannot calculate MTF in the detected pattern");
+                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+            }
+            double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
+            vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                             f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr);
+         }
     }
-
+    qInfo("time elapsed: %d", timer.elapsed());
     vector<int> layers = sfr::classifyLayers(vec);
-    int max_layer = 0;
     QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
     QPainter qPainter(&qImage);
     qPainter.setBrush(Qt::NoBrush);
     qPainter.setFont(QFont("Times", parameters.drawTextSize(), QFont::Light));
-
+    int max_layer = 0;
     for (size_t i = 0; i < vec.size(); i++) {
         if (vec.at(i).layer > max_layer) {
             max_layer = vec.at(i).layer - 1;
         }
+        qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+              vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
         QVariantMap data;
         data.insert("x", vec[i].x);
         data.insert("y", vec[i].y);

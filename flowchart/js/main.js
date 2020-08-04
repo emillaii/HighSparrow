@@ -290,10 +290,19 @@ $(document).ready(function () {
 		$('#hw_camera_capture_save_image').val(params["save_image"]);
 		$('#hw_camera_capture_image_file_name').val(params["image_file_name"]);
 	  } else if (operatorId.includes("HW Center")) {
+		console.log("Show HW Center");
+		$hw_oc_operator_properties.show();
+		$hw_oc_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#hw_oc_image_file_name').val(params["image_file_name"]);
 	  } else if (operatorId.includes("HW Alignment")) {
+		console.log("Show HW Alignment");
+		$hw_aa_operator_properties.show();
+		$hw_aa_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#hw_aa_image_file_name').val(params["image_file_name"]);
 	  } else if (operatorId.includes("HW Check")) {
+		console.log("Show HW Check");
+		$hw_mtf_operator_properties.show();
+		$hw_mtf_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#hw_mtf_image_file_name').val(params["image_file_name"]);  
 	  } else if (operatorId.includes("Motion Move")) {
 		console.log("Motion Move");

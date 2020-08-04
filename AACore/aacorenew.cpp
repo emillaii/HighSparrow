@@ -2099,9 +2099,9 @@ void AACoreNew::performAAOffline()
     timer.start();
     int resize_factor = parameters.aaScanOversampling()+1;
     int sfrCount = 0;
-    double step_size = 0.01, start = 0;
+    double step_size = 0.02, start = 0;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
-    double estimated_fov_slope = 15;
+    double estimated_fov_slope = 9;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
     int inputImageCount = 9;
@@ -2111,7 +2111,8 @@ void AACoreNew::performAAOffline()
             qInfo("All peak passed, stop zscan");
             break;
         }
-        QString filename = "C:\\Users\\emil\\Desktop\\AA fail\\7.28\\110\\aoa7\\zscan_" + QString::number(i+1) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\AAProject\\AOA\\2020-08-04\\intensity 100_2\\zscan_"  + QString::number(i+1) + ".bmp";
+        //QString filename = "C:\\Users\\emil\\Desktop\\AA fail\\7.28\\110\\aoa7\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\sunny_field\\aascan\\2\\2\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\sunny_issue\\1_10um\\1_10um\\" + QString::number(i+1) + ".bmp";
@@ -2356,7 +2357,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             result.insert("detectedAbnormality_CC", detectedAbnormality);
             result.insert("deletedIndex_CC", deletedIndex);
             result.insert("fitCurveErrorDevCC", error_dev);
-            qInfo("fitCurveErrorDevCC:avg:%f,dev:%f",error_avg,error_dev);
+            //qInfo("fitCurveErrorDevCC:avg:%f,dev:%f",error_avg,error_dev);
         } else if ( i >= 1 && i <= 4) {
             points_1.emplace_back(ex, ey, peak_z + start_pos);
             points_11.emplace_back(ex, ey, peak_z + start_pos);
@@ -2383,22 +2384,22 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             if(i==5)
             {
                 result.insert("fitCurveErrorDevUL", error_dev); map.insert("fitCurveErrorDevUL", error_dev);
-                qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
             }
             else if(i==6)
             {
                 result.insert("fitCurveErrorDevUR", error_dev); map.insert("fitCurveErrorDevUR", error_dev);
-                qInfo("fitCurveErrorDev05UR:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev05UR:avg%f,dev:%f",error_avg,error_dev);
             }
             else if(i==7)
             {
                 result.insert("fitCurveErrorDevLR", error_dev); map.insert("fitCurveErrorDevLR", error_dev);
-                qInfo("fitCurveErrorDev05LR:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev05LR:avg%f,dev:%f",error_avg,error_dev);
             }
             else if(i==8)
             {
                 result.insert("fitCurveErrorDevLL", error_dev); map.insert("fitCurveErrorDevLL", error_dev);
-                qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
             }
         } else if ( i >= 9 && i <= 12) {
             points_3.emplace_back(ex, ey, peak_z + start_pos);
@@ -2406,22 +2407,22 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             if(i==9)
             {
                 result.insert("fitCurveErrorDevUL", error_dev); map.insert("fitCurveErrorDevUL", error_dev);
-                qInfo("fitCurveErrorDev08UL:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev08UL:avg%f,dev:%f",error_avg,error_dev);
             }
             else if(i==10)
             {
                 result.insert("fitCurveErrorDevUR", error_dev); map.insert("fitCurveErrorDevUR", error_dev);
-                qInfo("fitCurveErrorDev08UR:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev08UR:avg%f,dev:%f",error_avg,error_dev);
             }
             else if(i==11)
             {
                 result.insert("fitCurveErrorDevLR", error_dev); map.insert("fitCurveErrorDevLR", error_dev);
-                qInfo("fitCurveErrorDev08LR:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev08LR:avg%f,dev:%f",error_avg,error_dev);
             }
             else if(i==12)
             {
                 result.insert("fitCurveErrorDevLL", error_dev); map.insert("fitCurveErrorDevLL", error_dev);
-                qInfo("fitCurveErrorDev08LL:avg%f,dev:%f",error_avg,error_dev);
+                //qInfo("fitCurveErrorDev08LL:avg%f,dev:%f",error_avg,error_dev);
             }
         }
     }

@@ -107,19 +107,32 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
                 vec.at(i).avg_sfr = avg_sfr;
             }
         }
-        vector<int> layers = sfr::classifyLayers(vec);
 
-        if (layers.size() >= 1) {
-            //qInfo("[calculateSfr] Layer 0: px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f",
-            //      vec[0].x, vec[0].y, vec[0].avg_sfr, vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].area);
+//        double centerX = vec[0].x; double centerY = vec[0].y;
+
+//        for (size_t i = 0; i < vec.size(); i++) {
+//            qInfo("A Layer: %d px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", vec[i].layer,
+//                  vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
+//        }
+
+//        vector<int> layers = sfr::classifyLayers(vec);
+
+//        for (size_t i = 0; i < vec.size(); i++) {
+//            qInfo("B Layer: %d px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", vec[i].layer,
+//                  vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
+//        }
+//        int layers = 4;
+//        if (layers >= 1) {
+//            //qInfo("[calculateSfr] Layer 0: px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f",
+//            //      vec[0].x, vec[0].y, vec[0].avg_sfr, vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].area);
             Sfr_entry entry = Sfr_entry(vec[0].x, vec[0].y, z, vec[0].avg_sfr, vec[0].area,
-                                       vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].layer, 0);
+                                        vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].layer, 0);
             sv_result.push_back(entry);
-        }
-        if (layers.size() >= 2) {
+//        }
+//        if (layers >= 2) {
             for (size_t i = 1; i < vec.size(); i++) {
-                //qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
-                //      vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
+                qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+                      vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
                 int location = 1;
                 if ( (vec[i].x < imageCenterX) && (vec[i].y < imageCenterY))
                 {
@@ -138,7 +151,7 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
                                            vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].layer, location);
                 sv_result.push_back(entry);
             }
-        }
+//        }
     }
 
     if (sv_result.size() == 0) {

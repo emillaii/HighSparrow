@@ -2314,7 +2314,7 @@ void VisionModule::aaDebugImage(QString input_filename, int threshold, int min_a
             avl::FillRegionHoles( regionArray1[i], avl::RegionConnectivity::EightDirections, 0, atl::NIL, regionArray2[i] );
         }
 
-        avl::ClassifyRegions( regionArray2, avl::RegionFeature::Rectangularity, 0.9f, atl::NIL, regionArray3, atl::NIL, atl::NIL, atl::NIL, atl::NIL );
+        avl::ClassifyRegions( regionArray2, avl::RegionFeature::Rectangularity, 0.8f, atl::NIL, regionArray3, atl::NIL, atl::NIL, atl::NIL, atl::NIL );
 
 
         point2DArray1.Resize(regionArray3.Size());

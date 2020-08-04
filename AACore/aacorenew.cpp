@@ -624,7 +624,7 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
         performPRToBond(0);
     }
     else if (cmd == HandleTest::MTF) {
-        //performMTFNew(params);
+        //performMTFOffline(params);
         aoaMTF(true);
     }
     else if (cmd == HandleTest::OC) {
@@ -2775,125 +2775,189 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 
 bool AACoreNew::aoaMTF(bool saveImage)
 {
-    QVariantMap map;
-    QElapsedTimer timer; timer.start();
-    //cv::Mat input_img = cv::imread("C:\\Users\\emil\\Documents\\WeChat Files\\milklai1987\\FileStorage\\File\\2020-07\\2020-07-30\\_15-34-22-055.bmp");
-    //cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\zscandata\\image.bmp");
-    bool grabRet;
-    cv::Mat input_img = dk->DothinkeyGrabImageCV(0, grabRet);
-    if (!grabRet) {
-        return false;
-    }
-    QString rawimageName;
-    rawimageName.append(getGrabberLogDir())
-            .append(sensorID)
-            .append("_")
-            .append(getCurrentTimeString())
-            .append(".bmp");
-    if (saveImage)
-        cv::imwrite(rawimageName.toStdString().c_str(), input_img);
-    std::vector<MTF_Pattern_Position> vec;
-    double imageCenterX = input_img.cols/2;
-    double imageCenterY = input_img.rows/2;
-    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
-    double rect_width = 0;
-    for (uint i = 0; i < patterns.size(); i++) {
-        //Crop ROI
-        {
-            cv::Rect roi; cv::Mat copped_roi;
-            double width = sqrt(patterns[i].area)/2;
-            rect_width = width;
-            roi.width = width*4; roi.height = width*4;
-            roi.x = patterns[i].center.x() - width*2;
-            roi.y = patterns[i].center.y() - width*2;
-            input_img(roi).copyTo(copped_roi);
-            if (saveImage) {
-                QString imageName = QString::number(i).append(".bmp");
-                cv::imwrite(imageName.toStdString().c_str(), copped_roi);
-            }
-            double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
-            double f = radius/r1;
-            double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-            bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 7);
-            if (!ret) {
-                qWarning("Cannot calculate MTF in the detected pattern");
-                return false;
-            }
-            double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
-            vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
-                             f, t_sfr*100, r_sfr*100, b_sfr*100, l_sfr*100, patterns[i].area, avg_sfr);
-         }
-    }
-    qInfo("time elapsed: %d", timer.elapsed());
-    vector<int> layers = sfr::classifyLayers(vec);
-    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
-    QPainter qPainter(&qImage);
-    qPainter.setBrush(Qt::NoBrush);
-    qPainter.setFont(QFont("Times",75, QFont::Light));
-    int max_layer = 0;
-    for (size_t i = 0; i < vec.size(); i++) {
-        if (vec.at(i).layer > max_layer) {
-            max_layer = vec.at(i).layer - 1;
-        }
-        QVariantMap data;
-        data.insert("x", vec[i].x);
-        data.insert("y", vec[i].y);
-        data.insert("sfr", vec[i].avg_sfr);
-        qPainter.setPen(QPen(Qt::blue, 4.0));
-        qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
-        qPainter.drawText(vec[i].x + rect_width*3, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
-        qPainter.drawText(vec[i].x - rect_width, vec[i].y + rect_width*3,  QString::number(vec[i].b_sfr, 'g', 4));
-        qPainter.drawText(vec[i].x - rect_width*4, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
-    }
-    qPainter.end();
-    if (saveImage) {
-        QString imageName = "";
-        imageName.append(getMTFLogDir())
-                 .append(getCurrentTimeString())
-                 .append(".bmp");
+   QVariantMap map;
+//   cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\AA fail\\_12-37-35-821.bmp");
+//   cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\AAProject\\AOA\\2020-08-03\\1.bmp");
+   bool grabRet;
+   cv::Mat input_img = dk->DothinkeyGrabImageCV(0, grabRet);
+   if (!grabRet) {
+       return false;
+   }
+   QString rawimageName;
+   rawimageName.append(getGrabberLogDir())
+           .append(sensorID)
+           .append("_")
+           .append(getCurrentTimeString())
+           .append(".bmp");
+   if (saveImage)
+       cv::imwrite(rawimageName.toStdString().c_str(), input_img);
 
-        qImage.save(imageName);
-    }
-    sfrImageReady(std::move(qImage));
+   QElapsedTimer timer; timer.start();
+   std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+   if (patterns.size() == 0) {
+       qWarning("Cannot find mark pattern");
+       return false;
+   }
+   cv::Rect roi; roi.width = 24; roi.height = 24;
+   double rect_width = 40;
+   std::vector<MTF_Pattern_Position> vec;
+   double imageCenterX = input_img.cols/2;
+   double imageCenterY = input_img.rows/2;
+   double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
 
-    map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
-    map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
-    map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
-    map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
-    map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
-    map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
-    map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
-    map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
-    map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
-    map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
-    map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
-    map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
-    map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
-    map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
-    map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
-    map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
-    map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
-    map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
-    map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
-    map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
-    map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
-    map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
-    map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
-    map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
-    map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+   QList<QProcess *> processList;
+   QList<QString> filenameList;
+   for (uint i = 0; i < patterns.size(); i++) {
+       //qInfo("Pattern width : %f height: %f", patterns[i].width, patterns[i].height);
+       cv::Mat copped_roi;
+       cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
+       QString filename;
+       //Crop ROI
+       {
+           cv::Rect roi;
+           double width = sqrt(patterns[i].area)/2;
+           roi.width = width*4; roi.height = width*4;
+           roi.x = patterns[i].center.x() - width*2;
+           roi.y = patterns[i].center.y() - width*2;
+           input_img(roi).copyTo(copped_roi);
+           filename = "ROI_";
+           filename.append(QString::number(i)).append(".bmp");
+           cv::imwrite(filename.toStdString(), copped_roi);
+           QStringList args;
+           args.append(filename);
+           args.append(filename);
+           QProcess *child = new QProcess();
+           child->setWorkingDirectory(QDir::currentPath());
+           child->start(QDir::currentPath() + "/sfr.bat", args);
+           processList.push_back(child);
+           //child->waitForFinished();
+       }
+       double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
+       double f = radius/r1;
+       filenameList.push_back(QString("temp/").append(filename).append("/raw_sfr_values.txt"));
+       vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),
+                        0, 0, 0, 0, 0, patterns[i].area, 0);
+   }
 
-    if (true) {
-        double cc = 0, ul = 0, ur = 0, lr = 0, ll = 0;
-        if (vec.size() > 0) cc = vec[0].avg_sfr;
-        if (vec.size() > max_layer*4 + 1) ul = vec[max_layer*4 + 1].avg_sfr;
-        if (vec.size() > max_layer*4 + 4) ur = vec[max_layer*4 + 4].avg_sfr;
-        if (vec.size() > max_layer*4 + 2) lr = vec[max_layer*4 + 2].avg_sfr;
-        if (vec.size() > max_layer*4 + 3) ll = vec[max_layer*4 + 3].avg_sfr;
-        this->mtf_log.incrementData(cc, ul, ur, lr, ll);
-    }
-    emit pushDataToUnit(this->runningUnit, "MTF", map);
-    return true;
+   for (int i = 0; i < processList.size(); i++){
+       processList.at(i)->waitForFinished();
+   }
+
+   for (int i = 0; i < filenameList.size(); i++) {
+       QString filename = filenameList.at(i);
+       qInfo(filename.toStdString().c_str());
+       {
+           QFile file;
+           file.setFileName(filename);
+           double sfr_l = 0;
+           double sfr_r = 0;
+           double sfr_t = 0;
+           double sfr_b = 0;
+           double avg_sfr = 0;
+
+           if (file.open(QIODevice::ReadOnly))
+           {
+              QTextStream in(&file);
+              int i = 0;
+              while (!in.atEnd())
+              {
+                 QString line = in.readLine();
+                 QStringList list = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                 QString value = list[24];
+                 //qInfo(list[20].toStdString().c_str());
+                 if ( i == 0 ) sfr_t = list[8].toDouble()*100;
+                 if ( i == 1 ) sfr_r = list[8].toDouble()*100;
+                 if ( i == 2 ) sfr_b = list[8].toDouble()*100;
+                 if ( i == 3 ) sfr_l = list[8].toDouble()*100;
+                 i++;
+              }
+              file.close();
+           }
+           avg_sfr = (sfr_t + sfr_r + sfr_b + sfr_l) /4;
+           vec.at(i).l_sfr = sfr_l;
+           vec.at(i).r_sfr = sfr_r;
+           vec.at(i).b_sfr = sfr_b;
+           vec.at(i).t_sfr = sfr_t;
+           vec.at(i).avg_sfr = avg_sfr;
+       }
+   }
+
+   qInfo("Finish mtf calculation for whole image. Time Elapsed: %d", timer.elapsed());
+   vector<int> layers = sfr::classifyLayers(vec);
+
+   double display_factor = input_img.cols/CONSTANT_REFERENCE;
+   QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
+   QPainter qPainter(&qImage);
+   qPainter.setBrush(Qt::NoBrush);
+   qPainter.setFont(QFont("Times",75, QFont::Light));
+   int max_layer = 0;
+   for (unsigned int i = 0; i < vec.size(); i++)
+   {
+       if (vec.at(i).layer > max_layer) {
+           max_layer = vec.at(i).layer - 1;
+       }
+       QVariantMap data;
+       data.insert("x", vec[i].x);
+       data.insert("y", vec[i].y);
+       data.insert("sfr", vec[i].avg_sfr);
+       map.insert(QString::number(i), data);
+   }
+   for (size_t i = 0; i < vec.size(); i++) {
+       qPainter.setPen(QPen(Qt::blue, 4.0));
+       qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x + 150, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x - 50, vec[i].y+ 120,  QString::number(vec[i].b_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x - 250, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
+   }
+   qPainter.end();
+
+   if (saveImage) {
+       QString imageName = "";
+       imageName.append(getMTFLogDir())
+                .append(getCurrentTimeString())
+                .append(".bmp");
+
+       qImage.save(imageName);
+   }
+   sfrImageReady(std::move(qImage));
+
+   map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
+   map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
+   map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
+   map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
+   map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
+   map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
+   map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
+   map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
+   map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
+   map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
+   map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
+   map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
+   map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
+   map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
+   map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
+   map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
+   map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
+   map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
+   map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
+   map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
+   map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
+   map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
+   map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
+   map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
+   map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+
+   if (true) {
+       double cc = 0, ul = 0, ur = 0, lr = 0, ll = 0;
+       if (vec.size() > 0) cc = vec[0].avg_sfr;
+       if (vec.size() > max_layer*4 + 1) ul = vec[max_layer*4 + 1].avg_sfr;
+       if (vec.size() > max_layer*4 + 4) ur = vec[max_layer*4 + 4].avg_sfr;
+       if (vec.size() > max_layer*4 + 2) lr = vec[max_layer*4 + 2].avg_sfr;
+       if (vec.size() > max_layer*4 + 3) ll = vec[max_layer*4 + 3].avg_sfr;
+       this->mtf_log.incrementData(cc, ul, ur, lr, ll);
+   }
+   emit pushDataToUnit(this->runningUnit, "MTF", map);
+   return true;
 }
 
 ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
@@ -2911,7 +2975,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     sfr_tol[2] = params["05F_TOL"].toDouble(-1);
     sfr_tol[3] = params["08F_TOL"].toDouble(-1);
 
-    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\field\\mtf_crash.bmp");
+    cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\AAProject\\AOA\\2020-08-03\\1.bmp");
     std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;

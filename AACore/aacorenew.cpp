@@ -2615,13 +2615,13 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
     cv::Mat input_img = cv::imread(imageFilename.toStdString());
 
     if (!blackScreenCheck(input_img)) {  return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""}; }
-    double fov = calculateDFOV(input_img);
-    qInfo("fov: %f max_I: %d min_area: %d max_area: %d", fov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
-    if (fov == -1) {
-        qCritical("Cannot calculate FOV from the grabbed image.");
-        LogicNg(current_aa_ng_time);
-        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
-    }
+//    double fov = calculateDFOV(input_img);
+//    qInfo("fov: %f max_I: %d min_area: %d max_area: %d", fov, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea() );
+//    if (fov == -1) {
+//        qCritical("Cannot calculate FOV from the grabbed image.");
+//        LogicNg(current_aa_ng_time);
+//        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+//    }
 
     std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), -1);

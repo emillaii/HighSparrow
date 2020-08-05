@@ -2354,76 +2354,15 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         if (i==0) {
             deletedIndex = temp_index;
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
-            result.insert("detectedAbnormality_CC", detectedAbnormality);
-            result.insert("deletedIndex_CC", deletedIndex);
-            result.insert("fitCurveErrorDevCC", error_dev);
-            //qInfo("fitCurveErrorDevCC:avg:%f,dev:%f",error_avg,error_dev);
         } else if ( i >= 1 && i <= 4) {
             points_1.emplace_back(ex, ey, peak_z + start_pos);
             points_11.emplace_back(ex, ey, peak_z + start_pos);
-            if (i == 1){   //Detect L1 UL curve abnormality
-                result.insert("detectedAbnormality_L1_UL", detectedAbnormality);
-                result.insert("deletedIndex_L1_UL", deletedIndex);
-                result.insert("fitCurveErrorDev_L1_UL", error_dev);
-            } else if (i == 2){   //Detect L1 UR curve abnormality
-                result.insert("detectedAbnormality_L1_UR", detectedAbnormality);
-                result.insert("deletedIndex_L1_UR", deletedIndex);
-                result.insert("fitCurveErrorDev_L1_UR", error_dev);
-            } else if (i == 3){   //Detect L1 LR curve abnormality
-                result.insert("detectedAbnormality_L1_LR", detectedAbnormality);
-                result.insert("deletedIndex_L1_LR", deletedIndex);
-                result.insert("fitCurveErrorDev_L1_LR", error_dev);
-            } else if (i == 4){   //Detect L1 LL curve abnormality
-                result.insert("detectedAbnormality_L1_LL", detectedAbnormality);
-                result.insert("deletedIndex_L1_LL", deletedIndex);
-                result.insert("fitCurveErrorDev_L1_LL", error_dev);
-            }
         } else if ( i >= 5 && i <= 8) {
             points_2.emplace_back(ex, ey, peak_z + start_pos);
             points_22.emplace_back(ex, ey, peak_z + start_pos);
-            if(i==5)
-            {
-                result.insert("fitCurveErrorDevUL", error_dev); map.insert("fitCurveErrorDevUL", error_dev);
-                //qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
-            }
-            else if(i==6)
-            {
-                result.insert("fitCurveErrorDevUR", error_dev); map.insert("fitCurveErrorDevUR", error_dev);
-                //qInfo("fitCurveErrorDev05UR:avg%f,dev:%f",error_avg,error_dev);
-            }
-            else if(i==7)
-            {
-                result.insert("fitCurveErrorDevLR", error_dev); map.insert("fitCurveErrorDevLR", error_dev);
-                //qInfo("fitCurveErrorDev05LR:avg%f,dev:%f",error_avg,error_dev);
-            }
-            else if(i==8)
-            {
-                result.insert("fitCurveErrorDevLL", error_dev); map.insert("fitCurveErrorDevLL", error_dev);
-                //qInfo("fitCurveErrorDev05UL:avg%f,dev:%f",error_avg,error_dev);
-            }
         } else if ( i >= 9 && i <= 12) {
             points_3.emplace_back(ex, ey, peak_z + start_pos);
             points_33.emplace_back(ex, ey, peak_z + start_pos);
-            if(i==9)
-            {
-                result.insert("fitCurveErrorDevUL", error_dev); map.insert("fitCurveErrorDevUL", error_dev);
-                //qInfo("fitCurveErrorDev08UL:avg%f,dev:%f",error_avg,error_dev);
-            }
-            else if(i==10)
-            {
-                result.insert("fitCurveErrorDevUR", error_dev); map.insert("fitCurveErrorDevUR", error_dev);
-                //qInfo("fitCurveErrorDev08UR:avg%f,dev:%f",error_avg,error_dev);
-            }
-            else if(i==11)
-            {
-                result.insert("fitCurveErrorDevLR", error_dev); map.insert("fitCurveErrorDevLR", error_dev);
-                //qInfo("fitCurveErrorDev08LR:avg%f,dev:%f",error_avg,error_dev);
-            }
-            else if(i==12)
-            {
-                result.insert("fitCurveErrorDevLL", error_dev); map.insert("fitCurveErrorDevLL", error_dev);
-                //qInfo("fitCurveErrorDev08LL:avg%f,dev:%f",error_avg,error_dev);
-            }
         }
     }
     sort(points_11.begin(), points_11.end(), zPeakComp);

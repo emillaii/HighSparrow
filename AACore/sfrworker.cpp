@@ -131,21 +131,27 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
 //        }
 //        if (layers >= 2) {
             for (size_t i = 1; i < vec.size(); i++) {
-                qInfo("Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
-                      vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
                 int location = 1;
                 if ( (vec[i].x < imageCenterX) && (vec[i].y < imageCenterY))
                 {
                     location = 1; //UL
+                    qInfo("UL Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+                          vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
                 } else if ((vec[i].x > imageCenterX) && (vec[i].y < imageCenterY))
                 {
                     location = 2; //UR
+                    qInfo("UR Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+                          vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
                 } else if ((vec[i].x > imageCenterX) && (vec[i].y > imageCenterY))
                 {
                     location = 3; //LR
+                    qInfo("LR Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+                          vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
                 } else if ((vec[i].x < imageCenterX) && (vec[i].y > imageCenterY))
                 {
                     location = 4; //LL
+                    qInfo("LL Layer %d :  px: %f py: %f sfr: %f 1: %f 2: %f 3: %f 4: %f area: %f", ((i-1)/4) + 1,
+                          vec[i].x, vec[i].y, vec[i].avg_sfr, vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].area);
                 }
                 Sfr_entry entry = Sfr_entry(vec[i].x, vec[i].y, z, vec[i].avg_sfr, vec[i].area,
                                            vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].layer, location);

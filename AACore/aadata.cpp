@@ -36,19 +36,19 @@ void AAData::addData(int index, double x, double y, double rawY){
         m_wULRealList.push_back(x); m_wULRealList.push_back(rawY);
     }
     if (index == 2) {
-        m_URPointsList.append(QPointF(x, y));
-        m_wURList.push_back(x); m_wURList.push_back(y);
-        m_wURRealList.push_back(x); m_wURRealList.push_back(rawY);
-    }
-    if (index == 3) {
         m_LLPointsList.append(QPointF(x, y));
         m_wLLList.push_back(x); m_wLLList.push_back(y);
         m_wLLRealList.push_back(x); m_wLLRealList.push_back(rawY);
     }
-    if (index == 4) {
+    if (index == 3) {
         m_LRPointsList.append(QPointF(x, y));
         m_wLRList.push_back(x); m_wLRList.push_back(y);
         m_wLRRealList.push_back(x); m_wLRRealList.push_back(rawY);
+    }
+    if (index == 4) {
+        m_URPointsList.append(QPointF(x, y));
+        m_wURList.push_back(x); m_wURList.push_back(y);
+        m_wURRealList.push_back(x); m_wURRealList.push_back(rawY);
     }
 }
 

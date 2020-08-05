@@ -43,22 +43,49 @@ void DispenseModule::Init(QString file_path,QString name,Calibration *calibratio
 
 void DispenseModule::updatePath()
 {
+    getDispenseCircleProperties();
     QVector<QPoint> map_path = vision->Read_Dispense_Path();
     mechPoints.clear();
-    foreach(QPoint pt, map_path)
+
+    if (pattern_type == 0)  // Normal pattern
     {
+        foreach(QPoint pt, map_path)
+        {
+            QPointF mechPoint;
+            if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
+            {
+                mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
+            }
+        }
+        dispenser->parameters.setSpeedCount(mechPoints.size());
+        qInfo("read point :%d",mechPoints.size());
+    }
+    else if (pattern_type == 1) // Circle, 2 points in mech point vector
+    {
+        // Add opposite point from start point
+        QPointF oppositePoint;
+        oppositePoint.setX(2 * center.x() - map_path.front().x());
+        oppositePoint.setY(2 * center.y() - map_path.front().y());
         QPointF mechPoint;
-        if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
+        if(calibration->getDeltaDistanceFromCenter(oppositePoint, mechPoint))
         {
             mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
         }
+
+        // Add other points in circle
+        foreach(QPoint pt, map_path)
+        {
+            QPointF mechPoint;
+            if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
+            {
+                mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
+            }
+        }
     }
-    dispenser->parameters.setSpeedCount(mechPoints.size());
-    qInfo("read point :%d",mechPoints.size());
     emit callQmlRefeshImg(12);
 }
 
-bool DispenseModule::getDispenseCircleProperties(double &center_x_in_mm, double &center_y_in_mm)
+bool DispenseModule::getDispenseCircleProperties()
 {
     QFile file;
     QString val;
@@ -73,20 +100,25 @@ bool DispenseModule::getDispenseCircleProperties(double &center_x_in_mm, double 
     file.close();
     QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject sett2 = d.object();
+    QJsonValue patternType = sett2.value(QString("type"));
     QJsonValue radius = sett2.value(QString("radius"));
     QJsonValue center_x = sett2.value(QString("center_x"));
     QJsonValue center_y = sett2.value(QString("center_y"));
     //radius_in_mm = radius.toDouble(0);
-    center_x_in_mm = center_x.toDouble(0);
-    center_y_in_mm = center_y.toDouble(0);
+    pattern_type = patternType.toInt(0);
+    center.setX(center_x.toDouble());
+    center.setY(center_y.toDouble());
 
+    if (pattern_type == 1)  //Circle
     {
         QPointF pt;
-        pt.setX(center_x_in_mm);
-        pt.setY(center_y_in_mm);
+        pt.setX(center_x.toDouble());
+        pt.setY(center_y.toDouble());
         QPointF mechPoint;
         calibration->getDeltaDistanceFromCenter(pt, mechPoint);
         qInfo("mechPoint x: %f mechPoint y: %f", mechPoint.x(), mechPoint.y());
+        mechCenter.setX(-mechPoint.x());
+        mechCenter.setY(-mechPoint.y());
     }
 
     return true;
@@ -178,7 +210,7 @@ void DispenseModule::calulateOffset(int digit)
 
 QVector<mPoint3D> DispenseModule::getDispensePath()
 {
-    if(mechPoints.size() < 2)
+    if(mechPoints.empty())
         updatePath();
     QVector<mPoint3D> dispense_path = QVector<mPoint3D>();
     double temp_theta = (pr_theta - parameters.initTheta())*PI/180;
@@ -195,12 +227,12 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
 bool DispenseModule::performDispense()
 {
     QVector<mPoint3D> temp_path = getDispensePath();
+    QVector<DispensePathPoint> dispense_path;
     if(temp_path.size()<2)
     {
        qInfo("point too small :%d",temp_path.size());
        return false;
     }
-    QVector<DispensePathPoint> dispense_path;
     for (int i = 0; i < temp_path.size(); ++i)
     {
        QVector<double> pos;
@@ -213,11 +245,20 @@ bool DispenseModule::performDispense()
        else type = PATH_POINT_OPEN_VALVE;
        dispense_path.append(DispensePathPoint(3,pos,type));
     }
+
     qInfo("Dispense start");
     lastDispenseDateTime = QDateTime::currentDateTime();
     parameters.setLastDispenseTime(lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss"));
-    if( dispenser->Dispense(dispense_path))
-        return dispenser->WaitForFinish();
+    if (pattern_type == 0)
+    {
+        if( dispenser->Dispense(dispense_path))
+            return dispenser->WaitForFinish();
+    }
+    else if (pattern_type == 1)
+    {
+        if( dispenser->DispenseCircle(dispense_path, mechCenter))
+            return dispenser->WaitForFinish();
+    }
     qInfo("Dispense fail");
     return false;
 }

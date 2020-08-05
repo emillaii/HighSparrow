@@ -22,7 +22,7 @@ public:
     Q_INVOKABLE void moveToDispenseDot(bool record_z = true);
     Q_INVOKABLE void calulateOffset(int digit = 4);
     Q_INVOKABLE bool performDispense();
-    Q_INVOKABLE bool getDispenseCircleProperties(double &center_x_in_mm, double &center_y_in_mm);
+    Q_INVOKABLE bool getDispenseCircleProperties();
     Dispenser* dispenser = Q_NULLPTR;
 private:
     QVector<mPoint3D> getDispensePath();
@@ -44,6 +44,11 @@ private:
     QString file_path = "";
     QString name = "";
     bool cancalculation = false;
+
+    QPointF center;
+    QPointF mechCenter;
+    int pattern_type = 0;
+
 signals:
     void callQmlRefeshImg(int);
 };

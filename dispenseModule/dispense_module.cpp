@@ -256,7 +256,14 @@ bool DispenseModule::performDispense()
     }
     else if (pattern_type == 1)
     {
-        if( dispenser->DispenseCircle(dispense_path, mechCenter))
+        double temp_theta = (pr_theta - parameters.initTheta())*PI/180;
+        double x = mechCenter.x();
+        double y = mechCenter.y();
+        QPointF dispenseMechCenter;
+        dispenseMechCenter.setX(x*cos(temp_theta) + y*sin(temp_theta) + pos_x + pr_x + parameters.dispenseXOffset());
+        dispenseMechCenter.setX(y*cos(temp_theta)- x*sin(temp_theta) + pos_y + pr_y + parameters.dispenseYOffset());
+
+        if( dispenser->DispenseCircle(dispense_path, dispenseMechCenter))
             return dispenser->WaitForFinish();
     }
     qInfo("Dispense fail");

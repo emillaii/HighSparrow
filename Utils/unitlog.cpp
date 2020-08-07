@@ -79,7 +79,7 @@ bool Unitlog::postDataToELK(QString uuid)
          request.setHeader(QNetworkRequest::ContentTypeHeader,
                            QVariant(QString("application/json")));
          //json log
-//         qInfo(doc.toJson().toStdString().c_str());
+         qInfo(doc.toJson().toStdString().c_str());
          QString filename = "";
          filename.append(getUnitLogDir())
                          .append(getCurrentTimeString())

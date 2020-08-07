@@ -67,6 +67,9 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
             &this->aaCoreNew, &AACoreNew::receiveStartAAProcessRequestResponse, Qt::DirectConnection);
     connect(&this->aaCoreNew, &AACoreNew::sendAAProcessFinishSignal,
             &this->sh_lsut_module, &SingleheadLSutModule::receiveAAProcessFinishResponse, Qt::DirectConnection);
+
+
+    connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
     //timer.start(1000);
 
     startCameraDoe = new StartCameraDOE();

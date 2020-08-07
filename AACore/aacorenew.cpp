@@ -18,7 +18,7 @@
 #define PI  3.14159265
 #include <math.h>
 
-vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
+vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY, vector<double> & y_output) {
     size_t n = x.size();
 
     double minX = 999999;
@@ -92,6 +92,14 @@ vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int 
         }
     }
     qInfo("Local Maxima X : %f local maxima Y : %f", localMaxX, localMaxY);
+    for (size_t j = 0; j < x.size(); j++){
+        double tmp = 1; double ey = 0;
+        for (int i = 0; i <= order; ++i){
+            ey += A(i,0)*tmp;
+            tmp *= x[j];
+        }
+        y_output.push_back(ey);
+    }
     return ans;
 }
 
@@ -892,7 +900,9 @@ ErrorCodeStruct AACoreNew::performDispense()
 
     lsut->moveToZPos(0);
     hasDispense = true;
-    if(!dispense->performDispense()) { return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};}
+    if(!dispense->performDispense()) {
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "dispense fail"};
+    }
 
     bool checkGlueRes = true;
     if(is_run)   //自动模式
@@ -1275,15 +1285,15 @@ void AACoreNew::performAAOffline()
     QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
     QElapsedTimer timer;
     timer.start();
-    int resize_factor = 2;
+    int resize_factor = 1;
     int sfrCount = 0;
     double step_size = 0.01, start = -20.5;
     double xsum=0,x2sum=0,ysum=0,xysum=0;
     double estimated_fov_slope = 15;
     isZScanNeedToStop = false;
     QString foldername = AA_DEBUG_DIR;
-    int inputImageCount = 15;
-    for (int i = 0; i < inputImageCount -1; i++)
+    int inputImageCount = 10;
+    for (int i = 0; i < inputImageCount ; i++)
     {
         if (isZScanNeedToStop) {
             qInfo("All peak passed, stop zscan");
@@ -1291,7 +1301,7 @@ void AACoreNew::performAAOffline()
         }
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
-        QString filename = "C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_" + QString::number(i) + ".bmp";
+        QString filename = "C:\\Users\\emil\\Desktop\\hw\\image\\image\\Zstep\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "1\\" + QString::number(i+1) + ".bmp";
         cv::Mat img = cv::imread(filename.toStdString());
         if (!blackScreenCheck(img)) {
@@ -1352,6 +1362,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
 {
     QVariantMap result, map;
     vector<vector<Sfr_entry>> sorted_sfr_map;
+    vector<vector<double>> sorted_sfr_fit_map;
     for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
     {
         vector<Sfr_entry> sfr_map;
@@ -1368,19 +1379,19 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         return result;
     }
     int fitOrder = parameters.aaScanCurveFitOrder();
-    if (clustered_sfr_map[0].size() == 6) {
-        qInfo("Down the curve fitting to 5 order");
-        fitOrder = 5;
-    } else if (clustered_sfr_map[0].size() == 5) {
-        qInfo("Down the curve fitting to 4 order");
-        fitOrder = 4;
-    }
+//    if (clustered_sfr_map[0].size() == 6) {
+//        qInfo("Down the curve fitting to 5 order");
+//        fitOrder = 5;
+//    } else if (clustered_sfr_map[0].size() == 5) {
+//        qInfo("Down the curve fitting to 4 order");
+//        fitOrder = 4;
+//    }
     threeDPoint point_0;
     vector<threeDPoint> points_1, points_11;
     vector<threeDPoint> points_2, points_22;
     vector<threeDPoint> points_3, points_33;
     for (size_t i = 0; i < sorted_sfr_map.size(); i++) {
-        vector<double> sfr, z;
+        vector<double> sfr, z, sfr_fit;
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
             sfr.push_back(sorted_sfr_map[i][ii].sfr);
@@ -1392,7 +1403,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         ey /= (sorted_sfr_map[i].size()*parameters.SensorYRatio());
 
         double peak_sfr, peak_z;
-        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr);
+        fitCurve(z, sfr, fitOrder, peak_z, peak_sfr, sfr_fit);
+        sorted_sfr_fit_map.push_back(sfr_fit);
         if (i==0) {
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
         } else if ( i >= 1 && i <= 4) {
@@ -1553,7 +1565,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     QVariantMap sfrMap;
     for(size_t i = 0; i < sorted_sfr_map[0].size(); i++)
     {
-        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_map[0][i].sfr, 0);
+        data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_fit_map[0][i], sorted_sfr_map[0][i].sfr);
         QVariantMap s;
         s.insert("index", i);
         s.insert("px", sorted_sfr_map[0][i].px);
@@ -1569,10 +1581,10 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         sfrMap.insert(QString::number(i), s);
 
         if (points_1.size() > 0) {
-            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_map[1+4*display_layer][i].sfr, 0);
-            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_map[4+4*display_layer][i].sfr, 0);
-            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_map[3+4*display_layer][i].sfr, 0);
-            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_map[2+4*display_layer][i].sfr, 0);
+            data->addData(1, sorted_sfr_map[1+4*display_layer][i].pz*1000, sorted_sfr_fit_map[1+4*display_layer][i], sorted_sfr_map[1+4*display_layer][i].sfr);
+            data->addData(2, sorted_sfr_map[4+4*display_layer][i].pz*1000, sorted_sfr_fit_map[4+4*display_layer][i], sorted_sfr_map[4+4*display_layer][i].sfr);
+            data->addData(3, sorted_sfr_map[3+4*display_layer][i].pz*1000, sorted_sfr_fit_map[3+4*display_layer][i], sorted_sfr_map[3+4*display_layer][i].sfr);
+            data->addData(4, sorted_sfr_map[2+4*display_layer][i].pz*1000, sorted_sfr_fit_map[2+4*display_layer][i], sorted_sfr_map[2+4*display_layer][i].sfr);
         }
     }
     data->plot();
@@ -1695,6 +1707,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         map.insert("zPeak_3_UR", points_3[3].z);
         map.insert("fov_slope", current_fov_slope);
     }
+
     emit postSfrDataToELK(runningUnit, map);
     return result;
 }
@@ -2603,7 +2616,84 @@ ErrorCodeStruct AACoreNew::performOC_HW(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performAA_HW(QJsonValue params)
 {
-    return ErrorCodeStruct {ErrorCode::OK, ""};
+    //Read Sequence image and z level
+    QList<QString> imageFilenameList;
+    QList<double> zPosition;
+    {// Read image file name
+        QString dataFilename = "C:\\Users\\emil\\Desktop\\hw\\image\\image\\Zstep\\imageFilename.txt";
+        QFile file;
+        file.setFileName(dataFilename);
+        if (file.open(QIODevice::ReadOnly))
+        {
+           QTextStream in(&file);
+           while (!in.atEnd())
+           {
+              QString line = in.readLine();
+              line.replace("\\", "\\\\");
+              imageFilenameList.append(line);
+           }
+        }
+    }
+    {// Read z Position txt
+        QString dataFilename = "C:\\Users\\emil\\Desktop\\hw\\image\\image\\Zstep\\zPosition.txt";
+        QFile file;
+        file.setFileName(dataFilename);
+        if (file.open(QIODevice::ReadOnly))
+        {
+           QTextStream in(&file);
+           while (!in.atEnd())
+           {
+              QString line = in.readLine();
+              QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
+              for (int i = 0; i < list.size(); i++) {
+                  zPosition.append(list[i].toDouble());
+              }
+           }
+        }
+    }
+
+    int inputImageCount = imageFilenameList.size();
+    double startZ = zPosition.at(0);
+    //
+    clustered_sfr_map.clear();
+    ErrorCodeStruct ret = { OK, ""};
+    QVariantMap map, stepTimerMap, dFovMap, sfrTimeElapsedMap;
+    QElapsedTimer timer; timer.start();
+    int resize_factor = 1;
+    int sfrCount = 0;
+
+    for (int i = 0; i < inputImageCount ; i++)
+    {
+        //QString filename = "C:\\Users\\emil\\Desktop\\hw\\image\\image\\Zstep\\zscan_" + QString::number(i+1) + ".bmp";
+        QString filename = imageFilenameList.at(i);
+        cv::Mat img = cv::imread(filename.toStdString());
+        if (!blackScreenCheck(img)) {
+            qInfo("[AACoreNew] Detected black screen");
+            return ErrorCodeStruct{ErrorCode::OK, ""};
+        }
+        cv::Mat dst;
+        cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
+        cv::resize(img, dst, size);
+
+        emit sfrWorkerController->calculate(i, zPosition.at(i), dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+        img.release();
+        dst.release();
+        sfrCount++;
+    }
+    int timeout=1000;
+    while(this->clustered_sfr_map.size() != sfrCount && timeout > 0) {
+        Sleep(10);
+        timeout--;
+    }
+    if (timeout <= 0) {
+        qInfo("[AACoreNew] Error in performing AA HW: %d", timeout);
+        return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+    }
+    qInfo("[AACoreNew] clustered sfr map pattern size: %d clustered_sfr_map size: %d", clustered_sfr_map[0].size(), clustered_sfr_map.size());
+    QVariantMap aa_result = sfrFitCurve_Advance(resize_factor, startZ);
+    clustered_sfr_map.clear();
+    qInfo("[AACoreNew] time elapsed: %d", timer.elapsed());
+    return ErrorCodeStruct{ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
@@ -2625,6 +2715,14 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
 
     std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
     std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), -1);
+
+    for (int i = 0; i < patterns1.size(); i++){
+        qInfo("pattern 1 i: %d x: %f y: %f", i,  patterns1[i].center.x(), patterns2[i].center.y() );
+    }
+
+    for (int i = 0; i < patterns2.size(); i++){
+        qInfo("pattern 2 i: %d x: %f y: %f",i,  patterns2[i].center.x(), patterns2[i].center.y() );
+    }
 
     std::vector<AA_Helper::patternAttr> patterns;
 
@@ -2665,6 +2763,7 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
             roi.width = width*4; roi.height = width*4;
             roi.x = patterns[i].center.x() - width*2;
             roi.y = patterns[i].center.y() - width*2;
+            qInfo("i: %d x: %f y: %f", i, patterns[i].center.x(), patterns[i].center.y() );
             if (roi.x < 0) roi.x = 0;
             if (roi.x + roi.width > input_img.cols) { roi.width = input_img.cols - roi.x; }
             if (roi.y < 0) roi.y = 0;

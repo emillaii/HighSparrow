@@ -28,35 +28,41 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
         double imageCenterX = img.cols/2;
         double imageCenterY = img.rows/2;
         double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
-        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_1, min_area, max_area, -1);
-//        std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_1, min_area, max_area, -1);
-//        std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_2, min_area, max_area, -1);
-//        std::vector<AA_Helper::patternAttr> patterns;
+//        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_1, min_area, max_area, -1);
+        std::vector<AA_Helper::patternAttr> patterns1 = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_1, min_area, max_area, -1);
+        std::vector<AA_Helper::patternAttr> patterns2 = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity_2, min_area, max_area, -1);
+        std::vector<AA_Helper::patternAttr> patterns;
 
-//        if (patterns2.size() < patterns1.size()) {
-//            patterns2.swap(patterns1);
-//        }
+        if (patterns2.size() < patterns1.size()) {
+            patterns2.swap(patterns1);
+        }
 
-//        if (patterns2.size() >= patterns1.size()) {
-//            for (uint i = 0; i < patterns2.size(); i++) {
-//                patterns.push_back(patterns2[i]);
-//            }
-//            for (uint i = 0; i < patterns1.size(); i++) {
-//                bool isDuplicated = false;
-//                for (uint j = 0; j < patterns2.size(); j++) {
-//                    double positionDiff = sqrt(pow(patterns1[i].center.x()-patterns2[j].center.x(), 2) + pow(patterns1[i].center.y()-patterns2[j].center.y(),2));
-//                    if (positionDiff < 20) { //threshold diff
-//                        isDuplicated = true;
-//                    }
-//                }
-//                if (!isDuplicated) {
-//                    patterns.push_back(patterns1[i]);
-//                }
-//            }
-//        }
+        if (patterns2.size() >= patterns1.size()) {
+            for (uint i = 0; i < patterns2.size(); i++) {
+                patterns.push_back(patterns2[i]);
+            }
+            for (uint i = 0; i < patterns1.size(); i++) {
+                bool isDuplicated = false;
+                for (uint j = 0; j < patterns2.size(); j++) {
+                    double positionDiff = sqrt(pow(patterns1[i].center.x()-patterns2[j].center.x(), 2) + pow(patterns1[i].center.y()-patterns2[j].center.y(),2));
+                    if (positionDiff < 20) { //threshold diff
+                        isDuplicated = true;
+                    }
+                }
+                if (!isDuplicated) {
+                    patterns.push_back(patterns1[i]);
+                }
+            }
+        }
         for (uint i = 0; i < patterns.size(); i++) {
             //Crop ROI
             {
+                qInfo("index: %d x: %f y: %f", i, patterns[i].center.x(), patterns[i].center.y());
+
+                if (patterns[i].center.x() < 40) {
+                    qInfo("Discard index: %d", i);
+                    continue;
+                }
                 cv::Rect roi; cv::Mat copped_roi;
                 double width = sqrt(patterns[i].area)/2;
                 roi.width = width*4; roi.height = width*4;

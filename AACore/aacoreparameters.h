@@ -109,6 +109,8 @@ class AACoreParameters : public PropertyBase
 
     int m_MaxIntensity2 = 20;
 
+    int m_aaSelectedLayer = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -136,6 +138,7 @@ public:
     Q_PROPERTY(int aaScanCurveFitOrder READ aaScanCurveFitOrder WRITE setAAScanCurveFitOrder NOTIFY aaScanCurveFitOrderChanged)
     Q_PROPERTY(int aaScanOversampling READ aaScanOversampling WRITE setAAScanOversampling NOTIFY aaScanOversamplingChanged)
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
+    Q_PROPERTY(int aaSelectedLayer READ aaSelectedLayer WRITE setAASelectedLayer NOTIFY aaSelectedLayerChanged)
     Q_PROPERTY(int drawTextSize READ drawTextSize WRITE setDrawTextSize NOTIFY drawTextSizeChanged)
 
     Q_PROPERTY(QString x1 READ x1 WRITE setX1 NOTIFY x1Changed)
@@ -426,6 +429,11 @@ public:
     int MaxIntensity2() const
     {
         return m_MaxIntensity2;
+    }
+
+    int aaSelectedLayer() const
+    {
+        return m_aaSelectedLayer;
     }
 
 public slots:
@@ -861,6 +869,15 @@ public slots:
         emit paramsChanged();
     }
 
+    void setAASelectedLayer(int aaSelectedLayer)
+    {
+        if (m_aaSelectedLayer == aaSelectedLayer)
+            return;
+
+        m_aaSelectedLayer = aaSelectedLayer;
+        emit aaSelectedLayerChanged(m_aaSelectedLayer);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -902,6 +919,7 @@ signals:
     void ryLimitChanged(double ryLimit);
     void rzLimitChanged(double rzLimit);
     void drawTextSizeChanged(int drawTextSize);
+    void aaSelectedLayerChanged(int aaSelectedLayer);
 };
 class AACoreStates: public PropertyBase
 {

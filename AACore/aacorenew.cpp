@@ -1033,7 +1033,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
            x2sum=x2sum+pow(realZ,2);
            xysum=xysum+realZ*dfov;
            zScanCount++;
-           emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+           emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1, parameters.aaSelectedLayer() + 1);
            img.release();
            dst.release();
          }
@@ -1127,7 +1127,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 cv::Mat dst;
                 cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
                 cv::resize(img, dst, size);
-                emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+                emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1, parameters.aaSelectedLayer() + 1);
                 img.release();
                 dst.release();
                 zScanCount++;
@@ -1170,7 +1170,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
              cv::Mat dst;
              cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
              cv::resize(img, dst, size);
-             emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+             emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1, parameters.aaSelectedLayer() + 1);
              img.release();
              dst.release();
              zScanCount++;
@@ -1326,7 +1326,7 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1, parameters.aaSelectedLayer() + 1);
         img.release();
         dst.release();
         sfrCount++;
@@ -2675,7 +2675,7 @@ ErrorCodeStruct AACoreNew::performAA_HW(QJsonValue params)
         cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
         cv::resize(img, dst, size);
 
-        emit sfrWorkerController->calculate(i, zPosition.at(i), dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1);
+        emit sfrWorkerController->calculate(i, zPosition.at(i), dst, parameters.MaxIntensity(), parameters.MaxIntensity2(), parameters.MinArea(), parameters.MaxArea(), parameters.aaScanMTFFrequency()+1, parameters.aaSelectedLayer()+1);
         img.release();
         dst.release();
         sfrCount++;

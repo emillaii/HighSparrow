@@ -13,7 +13,7 @@ bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_
 
 int count = 0;
 
-void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity_1, int max_intensity_2, int min_area, int max_area, int freq_factor)
+void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity_1, int max_intensity_2, int min_area, int max_area, int freq_factor, int selectedLayer)
 {
     qInfo("Max I_1: %d Max I_2: %d Min A: %d Max A: %d", max_intensity_1, max_intensity_2, min_area, max_area);
     QElapsedTimer timerTest;
@@ -25,6 +25,8 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
     vector<Sfr_entry> sv_result;
     {
         std::vector<MTF_Pattern_Position> vec;
+        std::vector<MTF_Pattern_Position> result_vec;
+
         double imageCenterX = img.cols/2;
         double imageCenterY = img.rows/2;
         double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
@@ -59,10 +61,6 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
             {
                 qInfo("index: %d x: %f y: %f", i, patterns[i].center.x(), patterns[i].center.y());
 
-                if (patterns[i].center.x() < 40) {
-                    qInfo("Discard index: %d", i);
-                    continue;
-                }
                 cv::Rect roi; cv::Mat copped_roi;
                 double width = sqrt(patterns[i].area)/2;
                 roi.width = width*4; roi.height = width*4;
@@ -86,29 +84,39 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
 
         vector<int> layers = sfr::classifyLayers(vec);
 
+        for (int i = 0; i < vec.size(); i++) {
+            if (vec[i].layer <= selectedLayer) {
+                result_vec.push_back(vec[i]);
+            }
+        }
+
+        for (int i = 0; i < result_vec.size(); i++) {
+            qInfo("Detected result layer: %d x: %f y: %f . User Selected layer: %d", result_vec[i].layer, result_vec[i].x, result_vec[i].y, selectedLayer);
+        }
+
         if (layers.size() >= 1) {
-            Sfr_entry entry = Sfr_entry(vec[0].x, vec[0].y, z, vec[0].avg_sfr, vec[0].area,
-                                       vec[0].t_sfr, vec[0].r_sfr, vec[0].b_sfr, vec[0].l_sfr, vec[0].layer, 0);
+            Sfr_entry entry = Sfr_entry(result_vec[0].x, result_vec[0].y, z, result_vec[0].avg_sfr, result_vec[0].area,
+                                       result_vec[0].t_sfr, result_vec[0].r_sfr, result_vec[0].b_sfr, result_vec[0].l_sfr, result_vec[0].layer, 0);
             sv_result.push_back(entry);
         }
         if (layers.size() >= 2) {
-            for (size_t i = 1; i < vec.size(); i++) {
+            for (size_t i = 1; i < result_vec.size(); i++) {
                 int location = 1;
-                if ( (vec[i].x < imageCenterX) && (vec[i].y < imageCenterY))
+                if ( (result_vec[i].x < imageCenterX) && (result_vec[i].y < imageCenterY))
                 {
                     location = 1; //UL
-                } else if ((vec[i].x > imageCenterX) && (vec[i].y < imageCenterY))
+                } else if ((result_vec[i].x > imageCenterX) && (result_vec[i].y < imageCenterY))
                 {
                     location = 2; //UR
-                } else if ((vec[i].x > imageCenterX) && (vec[i].y > imageCenterY))
+                } else if ((result_vec[i].x > imageCenterX) && (result_vec[i].y > imageCenterY))
                 {
                     location = 3; //LR
-                } else if ((vec[i].x < imageCenterX) && (vec[i].y > imageCenterY))
+                } else if ((result_vec[i].x < imageCenterX) && (result_vec[i].y > imageCenterY))
                 {
                     location = 4; //LL
                 }
-                Sfr_entry entry = Sfr_entry(vec[i].x, vec[i].y, z, vec[i].avg_sfr, vec[i].area,
-                                           vec[i].t_sfr, vec[i].r_sfr, vec[i].b_sfr, vec[i].l_sfr, vec[i].layer, location);
+                Sfr_entry entry = Sfr_entry(result_vec[i].x, result_vec[i].y, z, result_vec[i].avg_sfr, result_vec[i].area,
+                                           result_vec[i].t_sfr, result_vec[i].r_sfr, result_vec[i].b_sfr, result_vec[i].l_sfr, result_vec[i].layer, location);
                 sv_result.push_back(entry);
             }
         }

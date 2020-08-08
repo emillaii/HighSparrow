@@ -60,11 +60,15 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
-                            text: qsTr("Selected Profile: ")
+                            text: qsTr("Selected Layer: ")
                         }
                         ComboBox {
                             width: 200
-                            model: [ "Default", "Profile 1", "Profile 2" ]
+                            model: [ "Layer 1", "Layer 2", "Layer 3" ]
+                            currentIndex: aaCoreParams.aaSelectedLayer
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setAASelectedLayer(currentIndex)
+                            }
                         }
                     }
 

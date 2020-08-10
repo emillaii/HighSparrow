@@ -150,6 +150,7 @@ bool Calibration::performCalibration_HW()
            QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
            xPosList.push_back(list[0].toDouble());
            yPosList.push_back(list[1].toDouble());
+           list[2].replace("\\", "\\\\");
            fileNameList.push_back(list[2].toStdString().c_str());
            rows++;
        }

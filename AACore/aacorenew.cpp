@@ -2620,45 +2620,88 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
 
 ErrorCodeStruct AACoreNew::performOC_HW(QJsonValue params)
 {
-    return ErrorCodeStruct {ErrorCode::OK, ""};
+    qInfo("Perform HW OC!");
+    QString imageFileName = params["image_file_name"].toString();
+    bool enableMotion = params["enable_motion"].toInt();
+    ErrorCodeStruct ret = { ErrorCode::OK, "" };
+    QVariantMap map;
+    QElapsedTimer timer;
+    timer.start();
+    cv::Mat img = cv::imread(imageFileName.toStdString());
+    QImage outImage;
+    double offsetX, offsetY;
+    unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
+
+    std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
+                                                                    ccIndex, ulIndex, urIndex,
+                                                                    llIndex, lrIndex);
+    ocImageProvider_1->setImage(outImage);
+    emit callQmlRefeshImg(1);
+    if( vector.size()<1 || ccIndex > 9 )
+    {
+        LogicNg(current_aa_ng_time);
+        return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+    }
+    qInfo("vector size = %d, ccIndex = %d, ulIndex = %d, urIndex = %d, lrIndex = %d, llIndex = %d", vector.size(), ccIndex, ulIndex, urIndex, lrIndex, llIndex);
+    qInfo("center.x() = %f, center.y() = %f, width = %f, height = %f", vector[ccIndex].center.x(), vector[ccIndex].center.y(), vector[ccIndex].width, vector[ccIndex].height);
+    offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
+    offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
+    qInfo("OC OffsetX: %f, OC OffsetY: %f", offsetX, offsetY);
+    map.insert("OC_OFFSET_X_IN_PIXEL", offsetX);
+    map.insert("OC_OFFSET_Y_IN_PIXEL", offsetY);
+	
+	for (unsigned int i=0; i<vector.size();i++)
+    {
+        qInfo("%dth point location: (x:%f y:%f)", i+1, vector[i].center.x(),vector[i].center.y());
+    }
+	
+    if (enableMotion)
+    {
+        QPointF x_ratio = chartCalibration->getOneXPxielDistance();
+        qInfo("x pixel Ratio: %f %f ", x_ratio.x(), x_ratio.y());
+        QPointF y_ratio = chartCalibration->getOneYPxielDistance();
+        qInfo("y pixel Ratio: %f %f ", y_ratio.x(), y_ratio.y());
+        double stepX = offsetX * x_ratio.x() + offsetY * y_ratio.x();
+        double stepY = offsetX * x_ratio.y() + offsetY * y_ratio.y();
+        map.insert("OC_OFFSET_X_IN_MM", stepX);
+        map.insert("OC_OFFSET_Y_IN_MM", stepY);
+        qInfo("xy step: %f %f ", stepX, stepY);
+        if(abs(stepX)>0.5||abs(stepY)>0.5)
+        {
+            LogicNg(current_aa_ng_time);
+            qInfo("OC result too big (x:%f,y:%f) pixel:(%f,%f) cmosPixelToMM (x:)%f,%f) ",stepY,stepY,offsetX,offsetY,x_ratio.x(),x_ratio.y());
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC step too large" };
+        }
+        // Try and test if (-stepX, -stepY) is correct or not
+        this->lsut->stepMove_XY_Sync(-stepX, -stepY);
+    }
+    map.insert("timeElapsed", timer.elapsed());
+    emit pushDataToUnit(this->runningUnit, "HW OC", map);
+    qInfo("Finish HW OC");
+    return ret;
 }
 
 ErrorCodeStruct AACoreNew::performAA_HW(QJsonValue params)
 {
-    //Read Sequence image and z level
+    qInfo("Perform AA HW");
+    QString zposFileName = params["zpos_file_name"].toString();
     QList<QString> imageFilenameList;
     QList<double> zPosition;
-    {// Read image file name
-        QString dataFilename = "C:\\Users\\emil\\Desktop\\hw\\image\\image\\Zstep\\imageFilename.txt";
-        QFile file;
-        file.setFileName(dataFilename);
-        if (file.open(QIODevice::ReadOnly))
-        {
-           QTextStream in(&file);
-           while (!in.atEnd())
-           {
-              QString line = in.readLine();
-              line.replace("\\", "\\\\");
-              imageFilenameList.append(line);
-           }
-        }
-    }
-    {// Read z Position txt
-        QString dataFilename = "C:\\Users\\emil\\Desktop\\hw\\image\\image\\Zstep\\zPosition.txt";
-        QFile file;
-        file.setFileName(dataFilename);
-        if (file.open(QIODevice::ReadOnly))
-        {
-           QTextStream in(&file);
-           while (!in.atEnd())
-           {
-              QString line = in.readLine();
-              QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
-              for (int i = 0; i < list.size(); i++) {
-                  zPosition.append(list[i].toDouble());
-              }
-           }
-        }
+
+    QFile file;
+    file.setFileName(zposFileName);
+    if (file.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&file);
+       while (!in.atEnd())
+       {
+           QString line = in.readLine();
+           QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
+           zPosition.append(list[0].toDouble());
+           list[1].replace("\\", "\\\\");
+           imageFilenameList.push_back(list[1].toStdString().c_str());
+       }
+       file.close();
     }
 
     int inputImageCount = imageFilenameList.size();
@@ -2810,7 +2853,7 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
         data.insert("x", vec[i].x);
         data.insert("y", vec[i].y);
         data.insert("sfr", vec[i].avg_sfr);
-        qPainter.setPen(QPen(Qt::blue, 4.0));
+        qPainter.setPen(QPen(Qt::red, 4.0));
         qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
         qPainter.drawText(vec[i].x + rect_width, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
         qPainter.drawText(vec[i].x - rect_width, vec[i].y + rect_width*3,  QString::number(vec[i].b_sfr, 'g', 4));

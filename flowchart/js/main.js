@@ -9,8 +9,8 @@ $(document).ready(function () {
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0, exposure_time: 5000, delay: 500 };
   var init_hw_camera_capture_params = { directory: '', command: '', delay: 500, width: 0, height: 0, filename: '', save_image: 0, image_file_name: '' };
-  var init_hw_oc_params = { image_file_name: '' };
-  var init_hw_aa_params = { image_file_name: '' };
+  var init_hw_oc_params = { image_file_name: '', enable_motion: 1 };
+  var init_hw_aa_params = { zpos_file_name: '' };
   var init_hw_mtf_params = { image_file_name: '' };
   var init_motion_move_params = { };
   var init_command_params = { directory: '', command_name: '' };
@@ -101,8 +101,9 @@ $(document).ready(function () {
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_camera_capture_image_file_name\"></div>");
   
   $hw_oc_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_oc_image_file_name\"></div>");
+  $hw_oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"hw_oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   
-  $hw_aa_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_aa_image_file_name\"></div>");
+  $hw_aa_operator_properties.append("<div style=\"margin-top:20px\">Zpos file name: <input type=\"text\" id=\"hw_aa_zpos_file_name\"></div>");
   
   $hw_mtf_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_mtf_image_file_name\"></div>");
   
@@ -294,11 +295,12 @@ $(document).ready(function () {
 		$hw_oc_operator_properties.show();
 		$hw_oc_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#hw_oc_image_file_name').val(params["image_file_name"]);
+		$('#hw_oc_enable_motion').val(params["enable_motion"]);
 	  } else if (operatorId.includes("HW Alignment")) {
 		console.log("Show HW Alignment");
 		$hw_aa_operator_properties.show();
 		$hw_aa_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
-		$('#hw_aa_image_file_name').val(params["image_file_name"]);
+		$('#hw_aa_zpos_file_name').val(params["zpos_file_name"]);
 	  } else if (operatorId.includes("HW Check")) {
 		console.log("Show HW Check");
 		$hw_mtf_operator_properties.show();
@@ -791,11 +793,12 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Center")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_oc_operator_title').val());
-	  var params = {image_file_name: $('#hw_oc_image_file_name').val()};
+	  var params = {image_file_name: $('#hw_oc_image_file_name').val(), 
+	  enable_motion: Number($('#hw_oc_enable_motion').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Alignment")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_aa_operator_title').val());
-	  var params = {image_file_name: $('#hw_aa_image_file_name').val()};
+	  var params = {image_file_name: $('#hw_aa_zpos_file_name').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Check")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_mtf_operator_title').val());
@@ -1037,11 +1040,12 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Center")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_oc_operator_title').val());
-	  var params = { image_file_name: $('#hw_oc_image_file_name').val()};
+	  var params = { image_file_name: $('#hw_oc_image_file_name').val(),
+	  enable_motion: Number($('#hw_oc_enable_motion').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Alignment")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_aa_operator_title').val());
-	  var params = { image_file_name: $('#hw_aa_image_file_name').val()};
+	  var params = { image_file_name: $('#hw_aa_zpos_file_name').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_mtf_operator_title').val());

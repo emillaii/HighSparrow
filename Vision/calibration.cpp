@@ -120,6 +120,82 @@ bool Calibration::performCalibration()
                                    parameters.deltaX(),
                                    parameters.deltaY()),
                                    QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
+        if (!location) {
+            double sensorSizeX = 0, sensorSizeY = 0, angle = 0;
+            calculateMatrixAttribute(pixelPoints, motorPoints, sensorSizeX, sensorSizeY, angle);
+            emit updata_aaCore_sensor_parameters_signal(sensorSizeX, sensorSizeY, angle);
+        }
+
+//        saveJs onConfig();
+    }
+    return true;
+}
+
+bool Calibration::performCalibration_HW()
+{
+    qInfo("Performing calibration HW");
+
+    QFile file;
+    file.setFileName("hw_oc_calibration.txt");
+    int rows = 0;
+    QVector<double> xPosList;
+    QVector<double> yPosList;
+    QVector<QString> fileNameList;
+    if (file.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&file);
+       while (!in.atEnd())
+       {
+           QString line = in.readLine();
+           QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
+           xPosList.push_back(list[0].toDouble());
+           yPosList.push_back(list[1].toDouble());
+           fileNameList.push_back(list[2].toStdString().c_str());
+           rows++;
+       }
+       file.close();
+    }
+
+    double pixel_x,pixel_y;
+    QVector<QPointF> pixelPoints;
+    QVector<QPointF> motorPoints;
+
+    for (int i = 1; i<=4; i++)
+    {
+        if (GetPixelPoint_HW(fileNameList[i],pixel_x,pixel_y))
+        {
+            qInfo((name + " mech x: %f y: %f").toStdString().data(), xPosList[i], yPosList[i]);
+            pixelPoints.append(QPointF(pixel_x,pixel_y));
+            motorPoints.append(QPointF(xPosList[i], yPosList[i]));
+        }
+        else {
+            qInfo(("error in performing " + name +" PR").toStdString().data());
+            return false;
+        }
+    }
+    qInfo("---------------------------------------------------------------------");
+    for(int i =0;i<pixelPoints.size();i++){
+        qInfo("pixels[%d], x: %f, y: %f",i,pixelPoints[i].x(),pixelPoints[i].y());
+        qInfo("motors[%d], x: %f, y: %f",i,motorPoints[i].x(),motorPoints[i].y());
+    }
+    qInfo("---------------------------------------------------------------------");
+    if(coordinateA2BMapping(pixelPoints,motorPoints))
+    {
+        parameters.setOriginX(mOriginB.x());
+        parameters.setOriginY(mOriginB.y());
+        parameters.setMatrix11(mA2BMatrix.m11());
+        parameters.setMatrix12(mA2BMatrix.m12());
+        parameters.setMatrix21(mA2BMatrix.m21());
+        parameters.setMatrix22(mA2BMatrix.m22());
+        parameters.setDeltaX(mA2BMatrix.dx());
+        parameters.setDeltaY(mA2BMatrix.dy());
+        mapping.ChangeParameter(QMatrix(parameters.matrix11(),
+                                   parameters.matrix12(),
+                                   parameters.matrix21(),
+                                   parameters.matrix22(),
+                                   parameters.deltaX(),
+                                   parameters.deltaY()),
+                                   QPointF(parameters.imageWidth()/2,parameters.imageHeight()/2));
 
 //        saveJs onConfig();
     }
@@ -253,4 +329,40 @@ bool Calibration::GetPixelPoint(double &x, double &y)
     return  false;
 }
 
+bool Calibration::GetPixelPoint_HW(QString fileName, double &x, double &y)
+{
+    return GetPixelPoint(x,y);
+}
 
+bool Calibration::calculateMatrixAttribute(QVector<QPointF> p, QVector<QPointF> m, double &scaleX, double &scaleY, double &closestAngle)
+{
+    double diff_py10 = p[1].y() - p[0].y();
+    double diff_px10 = p[1].x() - p[0].x();
+    double diff_py30 = p[3].y() - p[0].y();
+    double diff_px30 = p[3].x() - p[0].x();
+    double diff_mx10 = m[1].x() - m[0].x();
+    double diff_mx30 = m[3].x() - m[0].x();
+    double diff_my10 = m[1].y() - m[0].y();
+    double diff_my30 = m[3].y() - m[0].y();
+    double a_11 = (diff_py10 * diff_mx30 - diff_py30 * diff_mx10) / (diff_px30 * diff_py10 - diff_py30 * diff_px10);
+    double a_12 = (diff_mx10 - diff_px10 * a_11) / diff_py10;
+    double a_13 = (m[0].x() - p[0].x() * a_11 - p[0].y() * a_12);
+
+    double a_21 = (diff_py10 * diff_my30 - diff_py30 * diff_my10) / (diff_px30 * diff_py10 - diff_py30 * diff_px10);
+    double a_22 = (diff_my10 - diff_px10 * a_21) / diff_py10;
+    double a_23 = (m[0].y() - p[0].x() * a_21 - p[0].y() * a_22);
+
+    double s_x = sqrt(a_11 * a_11 + a_21 * a_21);
+    double s_y = sqrt(a_12 * a_12 + a_22 * a_22);
+    if (s_x == 0 || s_y == 0) { return false; }
+    scaleX = 1/s_x;
+    scaleY = 1/s_y;
+    double angle = acos(a_11 / s_x) * 180;
+    double steppedAngle = angle - 360*((int)((int)angle/360));
+    closestAngle = 0;
+    if (steppedAngle <= 45) { closestAngle = 0; }
+    else if (steppedAngle <= 135) { closestAngle = 90; }
+    else if (steppedAngle <= 225) { closestAngle = 180; }
+    else if (steppedAngle <= 315) { closestAngle = 270; }
+    return true;
+}

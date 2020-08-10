@@ -19,6 +19,7 @@ private:
     // Calibration interface
 public:
     bool GetPixelPoint(double &x, double &y)override;
+    bool GetPixelPoint_HW(QString fileName, double &x, double &y);
 private:
     Dothinkey *dothinkey;
     int max_intensity;

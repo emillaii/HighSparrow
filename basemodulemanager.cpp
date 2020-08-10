@@ -766,6 +766,7 @@ bool BaseModuleManager::InitStruct()
         chart_calibration->Init(GetMotorByName(chart_calibration->parameters.motorXName()),
                                 GetMotorByName(chart_calibration->parameters.motorYName()),
                                 nullptr);
+        connect(chart_calibration, &Calibration::updata_aaCore_sensor_parameters_signal, &aaCoreNew, &AACoreNew::updateAACoreSensorParameters);
     }
     foreach (VisionLocation* temp_vision, vision_locations.values()) {
         temp_vision->Init(visionModule,GetPixel2MechByName(temp_vision->parameters.calibrationName()),lightingModule);
@@ -1183,6 +1184,11 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
     {
         qInfo("Perform chart calibration");
         return  chart_calibration->performCalibration();
+    }
+    else if (calibration_name.contains("chart_HW_calibration"))
+    {
+        qInfo("Perform HW chart calibration");
+        return  chart_calibration->performCalibration_HW();
     }
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);
     if(temp_caliration == nullptr)

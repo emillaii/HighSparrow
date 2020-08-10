@@ -170,6 +170,15 @@ void AACoreNew::receiveStartAAProcessRequestResponse(int sensorIndex, int lensIn
     start_process = true;
 }
 
+void AACoreNew::updateAACoreSensorParameters(double scaleX, double scaleY, double angle)
+{
+    qInfo("AACoreNew update aa core sensor parameters is called. scaleX: %f scaleY: %f angle: %f", scaleX, scaleY, angle);
+    this->parameters.setSensorXRatio(scaleX);
+    this->parameters.setSensorYRatio(scaleY);
+    this->parameters.setSensorOrientation(angle);
+    //ToDo: Expect the sensor orientation is related to the aa compensation
+}
+
 void AACoreNew::run(bool has_material)
 {
     qInfo("Start AACore Thread");

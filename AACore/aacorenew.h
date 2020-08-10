@@ -241,6 +241,7 @@ public slots:
     }
     void sfrImageReady(QImage);
     void receiveStartAAProcessRequestResponse(int sensorIndex, int lensIndex, bool isAAPickedLens);
+    void updateAACoreSensorParameters(double scaleX, double scaleY, double angle);
 };
 
 #endif // AACORENEW_H

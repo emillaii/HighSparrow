@@ -32,6 +32,7 @@ public:
     Calibration(const Calibration &calibration) = delete;
     Calibration &operator=(const Calibration &calibration) = delete;
     bool performCalibration();
+    bool performCalibration_HW();
     bool performPRResult(PrOffset offset);
     double getRotationAngle();
     bool getDeltaDistanceFromCenter(const QPointF pixelPoint, QPointF &distanceMech);
@@ -41,10 +42,15 @@ public:
     double caculateRotationAngle();
     Pixel2Mech *getCaliMapping();
 
+signals:
+    void updata_aaCore_sensor_parameters_signal(double sensorScaleX, double sensorScaleY, double angle);
+
 public:
     virtual bool GetPixelPoint(double &x,double &y);
+    virtual bool GetPixelPoint_HW(QString fileName, double &x,double &y);
 private:
     bool coordinateA2BMapping(const QVector<QPointF>& APoints, const QVector<QPointF>& BPoints);
+    bool calculateMatrixAttribute(QVector<QPointF> p, QVector<QPointF> m, double &scaleX, double &scaleY, double &closestAngle);
 public:
     CalibrationParameter parameters;
 protected:

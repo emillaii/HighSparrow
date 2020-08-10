@@ -21,6 +21,8 @@ class AACoreParameters : public PropertyBase
 
     int m_SensorYRatio = 892;
 
+    int m_SensorOrientation = 0;
+
     double m_ROIRatio = 1.45;
 
     bool m_firstRejectSensor = false;
@@ -125,6 +127,7 @@ public:
     Q_PROPERTY(int MaxArea READ MaxArea WRITE setMaxArea NOTIFY paramsChanged)
     Q_PROPERTY(int SensorXRatio READ SensorXRatio WRITE setSensorXRatio NOTIFY paramsChanged)
     Q_PROPERTY(int SensorYRatio READ SensorYRatio WRITE setSensorYRatio NOTIFY paramsChanged)
+    Q_PROPERTY(int SensorOrientation READ SensorOrientation WRITE setSensorOrientation NOTIFY SensorOrientationChanged)
     Q_PROPERTY(double ROIRatio READ ROIRatio WRITE setROIRatio NOTIFY paramsChanged)
     Q_PROPERTY(QVariantList WeightList READ WeightList WRITE setWeightList NOTIFY paramsChanged)
     Q_PROPERTY(bool firstRejectSensor READ firstRejectSensor WRITE setFirstRejectSensor NOTIFY firstRejectSensorChanged)
@@ -429,6 +432,11 @@ public:
     int MaxIntensity2() const
     {
         return m_MaxIntensity2;
+    }
+
+    int SensorOrientation() const
+    {
+        return m_SensorOrientation;
     }
 
     int aaSelectedLayer() const
@@ -869,6 +877,15 @@ public slots:
         emit paramsChanged();
     }
 
+    void setSensorOrientation(int SensorOrientation)
+    {
+        if (m_SensorOrientation == SensorOrientation)
+            return;
+
+        m_SensorOrientation = SensorOrientation;
+        emit SensorOrientationChanged(m_SensorOrientation);
+    }
+
     void setAASelectedLayer(int aaSelectedLayer)
     {
         if (m_aaSelectedLayer == aaSelectedLayer)
@@ -919,6 +936,7 @@ signals:
     void ryLimitChanged(double ryLimit);
     void rzLimitChanged(double rzLimit);
     void drawTextSizeChanged(int drawTextSize);
+    void SensorOrientationChanged(int SensorOrientation);
     void aaSelectedLayerChanged(int aaSelectedLayer);
 };
 class AACoreStates: public PropertyBase

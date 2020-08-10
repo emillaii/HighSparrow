@@ -632,13 +632,18 @@ void VisionModule::ProfileCalc( ProfileCalcState& state, const avl::Image& inIma
     avl::SmoothProfile_Mean( state.profile2, 30, false, state.profile3 );
     avl::ProfileZeroCrossings( state.profile3, state.realArray1 );
 
-    // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
-    avs::AvsFilter_GetArrayElement< float >( state.realArray1, 0, false, outValue1 );
+    if (state.realArray1.Size() < 2) {
+        outHalfHeightWidth = inImage.Width();
+        outCenterY1 = outHalfHeightWidth/2;
+    } else {
+        // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
+        avs::AvsFilter_GetArrayElement< float >( state.realArray1, 0, false, outValue1 );
 
-    // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
-    avs::AvsFilter_GetArrayElement< float >( state.realArray1, 1, false, outValue2 );
-    outHalfHeightWidth = _avfml_st_real(_avfml_ld_real(outValue2) - _avfml_ld_real(outValue1));
-    outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
+        // AvsFilter_GetArrayElement is intended for use in generated programs. One should use indexing operator[] to access array' elements.
+        avs::AvsFilter_GetArrayElement< float >( state.realArray1, 1, false, outValue2 );
+        outHalfHeightWidth = _avfml_st_real(_avfml_ld_real(outValue2) - _avfml_ld_real(outValue1));
+        outCenterY1 = _avfml_st_real(_avfml_ld_real(outValue1) + _avfml_ld_real(outHalfHeightWidth) / 2.0);
+    }
 }
 
 TOFResult VisionModule::imageProcessing1(QString filename, double y1, double y2, double y4, double y5, double intensity_percentage, double alpha, bool grabFromCamera)

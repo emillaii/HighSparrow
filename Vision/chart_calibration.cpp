@@ -45,20 +45,11 @@ bool ChartCalibration::GetPixelPoint(double &x, double &y)
 
 bool ChartCalibration::GetPixelPoint_HW(QString fileName, double &x, double &y)
 {
-    bool grabRet;
-    cv::Mat img = dothinkey->DothinkeyGrabImageCV(0, grabRet);
-    if (!grabRet) {
-        qInfo("ChartCalibration Cannot grab image.");
-        return false;
-    }
+    cv::Mat img = cv::imread(fileName.toStdString());
+
     QImage outImage;
     double offsetX, offsetY;
     unsigned int ccIndex = 10000, ulIndex = 0, urIndex = 0, lrIndex = 0, llIndex = 0;
-    QString imageName;
-    imageName.append(getGrabberLogDir())
-                    .append(getCurrentTimeString())
-                    .append(".jpg");
-    cv::imwrite(imageName.toStdString().c_str(), img);
     std::vector<AA_Helper::patternAttr> vector = AA_Helper::AA_Search_MTF_Pattern(img, outImage, false,
                                                                                   ccIndex, ulIndex, urIndex, llIndex, lrIndex,max_intensity,min_area,max_area);
     this->parameters.setimageWidth(img.cols);

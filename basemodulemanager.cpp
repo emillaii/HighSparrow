@@ -1182,12 +1182,8 @@ bool BaseModuleManager::performCalibration(QString calibration_name)
     qInfo("perform %s",calibration_name.toStdString().c_str());
     if(calibration_name.contains("chart_calibration"))
     {
-        qInfo("Perform chart calibration");
-        return  chart_calibration->performCalibration();
-    }
-    else if (calibration_name.contains("chart_HW_calibration"))
-    {
         qInfo("Perform HW chart calibration");
+        //return  chart_calibration->performCalibration();
         return  chart_calibration->performCalibration_HW();
     }
     Calibration* temp_caliration = GetCalibrationByName(calibration_name);

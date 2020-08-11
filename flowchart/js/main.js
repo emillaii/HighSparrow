@@ -798,7 +798,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Alignment")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_aa_operator_title').val());
-	  var params = {image_file_name: $('#hw_aa_zpos_file_name').val()};
+	  var params = {zpos_file_name: $('#hw_aa_zpos_file_name').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Check")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_mtf_operator_title').val());
@@ -1045,7 +1045,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Alignment")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_aa_operator_title').val());
-	  var params = { image_file_name: $('#hw_aa_zpos_file_name').val()};
+	  var params = { zpos_file_name: $('#hw_aa_zpos_file_name').val()};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Check")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_mtf_operator_title').val());

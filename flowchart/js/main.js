@@ -4,9 +4,9 @@ $(document).ready(function () {
   var init_aa_params = {
     mode: 1, aa1_start_pos: 0, aa1_stop_pos: 0, aa2_start_pos: 0, aa2_stop_pos: 0, delay_in_ms: 0,
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
-    position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0
+    position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0, xyscan_step_size_x: 1, xyscan_step_size_y: 1
   };
-  var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, oc_intensity_threshold: 100, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
+  var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, oc_intensity_threshold: 100, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5, golden_center_x_in_pixel: 0, golden_center_y_in_pixel: 0 };
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
   var init_y_level_params = { enable_plot: 1, min: 0, max: 200, mode: 0, margin: 100 };
@@ -50,7 +50,7 @@ $(document).ready(function () {
   var $partical_check_operator_properties = $('#partical_check_operator_properties');
 
   //Init the table 
-  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select disabled id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button></div></div></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select disabled id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option><option value=4>XYScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button><button id=\"select_xy_scan_mode\" class=\"btn btn-info test_button\">XYScan Mode</button></div></div></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa1_start_position_div\">AA 1 Start Position: <input type=\"number\" id=\"aa1_start_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa1_stop_position_div\">AA 1 Stop Position: <input type=\"number\" id=\"aa1_stop_position\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\" id=\"aa2_start_position_div\">AA 2 Start Position: <input type=\"number\" id=\"aa2_start_position\"></div>");
@@ -62,6 +62,8 @@ $(document).ready(function () {
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Image Count: <input type=\"number\" id=\"aa_image_count\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px;\">Enable Tilt:  <select id=\"aa_enable_tilt\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_delay_in_ms\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">X Step Size in um: <input type=\"number\" id=\"aa_xyscan_step_size_x\"></div>");
+  $aa_operator_properties.append("<div style=\"margin-top:20px\">Y Step Size in um: <input type=\"number\" id=\"aa_xyscan_step_size_y\"></div>");
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Pitch: <input type=\"number\" id=\"pitch\"></div>");
@@ -78,7 +80,7 @@ $(document).ready(function () {
 
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Fast Mode: <select id=\"oc_fast_mode\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Mode: <select id=\"oc_mode\" size=\"2\"><option value=0>Chart Pattern</option><option value=1>Optical Mass Center</option></select></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">OC Mode: <select id=\"oc_mode\" size=\"3\"><option value=0>Chart Pattern</option><option value=1>Optical Mass Center</option><option value=2>Golden Center</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Debug: <select id=\"oc_is_debug\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Retry Count: <input type=\"number\" id=\"oc_retry\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"oc_delay_in_ms\"></div>");
@@ -86,6 +88,8 @@ $(document).ready(function () {
   $oc_operator_properties.append("<div style=\"margin-top:20px\">X limit in um: <input type=\"number\" id=\"oc_x_limit_in_um\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Y limit in um: <input type=\"number\" id=\"oc_y_limit_in_um\"></div>");
   $oc_operator_properties.append("<div style=\"margin-top:20px\">Intensity threshold: <input type=\"number\" id=\"oc_intensity_threshold\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Golden Center X in Pixel: <input type=\"number\" id=\"golden_center_x_in_pixel\"></div>");
+  $oc_operator_properties.append("<div style=\"margin-top:20px\">Golden Center Y in Pixel: <input type=\"number\" id=\"golden_center_y_in_pixel\"></div>");
   
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT X Offset in um: <input type=\"number\" id=\"dispense_x_offset_in_um\"></div>");
   $dispense_operator_properties.append("<div style=\"margin-top:20px\">SUT Y Offset in um: <input type=\"number\" id=\"dispense_y_offset_in_um\"></div>");
@@ -179,6 +183,8 @@ $(document).ready(function () {
         $('#aa_image_count').val(params["image_count"]);
         $('#aa_enable_tilt').val(params["enable_tilt"]);
         $('#aa_delay_in_ms').val(params["delay_in_ms"]);
+        $('#aa_xyscan_step_size_x').val(params["xyscan_step_size_x"]);
+        $('#aa_xyscan_step_size_y').val(params["xyscan_step_size_y"]);
       } else if (operatorId.includes("Initial Tilt")) {
         $initial_tilt_properties.show();
         $initial_tilt_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -222,7 +228,8 @@ $(document).ready(function () {
 		$('#oc_x_limit_in_um').val(params["x_limit_in_um"]);
 		$('#oc_y_limit_in_um').val(params["y_limit_in_um"]);
 		$('#oc_intensity_threshold').val(params["oc_intensity_threshold"]);
-		
+		$('#golden_center_x_in_pixel').val(params["golden_center_x_in_pixel"]);
+		$('#golden_center_y_in_pixel').val(params["golden_center_y_in_pixel"]);
       } else if (operatorId.includes("Save Image")) {
 		$save_image_operator_properties.show();
 		$save_image_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -426,7 +433,9 @@ $(document).ready(function () {
         position_checking: Number($('#aa_position_checking').val()), 
 		edge_filter: Number($('#aa_edge_filter').val()), 
 		is_debug: Number($('#aa_is_debug').val()),
-		delay_in_ms: Number($('#aa_delay_in_ms').val())
+		delay_in_ms: Number($('#aa_delay_in_ms').val()),
+		xyscan_step_size_x: Number($('#aa_xyscan_step_size_x').val()),
+		xyscan_step_size_y: Number($('#aa_xyscan_step_size_y').val())
       };
 
 	  $flowchart.flowchart('setOperatorParams', operatorId, params);
@@ -449,7 +458,9 @@ $(document).ready(function () {
 		is_check: Number($('#oc_is_check').val()),
 		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
 		y_limit_in_um: Number($('#oc_y_limit_in_um').val()),
-		oc_intensity_threshold: Number($('#oc_intensity_threshold').val())
+		oc_intensity_threshold: Number($('#oc_intensity_threshold').val()),
+		golden_center_x_in_pixel: Number($('#golden_center_x_in_pixel').val()),
+		golden_center_y_in_pixel: Number($('#golden_center_y_in_pixel').val())
       };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
@@ -823,7 +834,9 @@ $(document).ready(function () {
         position_checking: Number($('#aa_position_checking').val()), 
 		edge_filter: Number($('#aa_edge_filter').val()), 
 		is_debug: Number($('#aa_is_debug').val()),
-		delay_in_ms: Number($('#aa_delay_in_ms').val())
+    delay_in_ms: Number($('#aa_delay_in_ms').val()),
+    xyscan_step_size_x: Number($('#aa_xyscan_step_size_x').val()),
+    xyscan_step_size_y: Number($('#aa_xyscan_step_size_y').val())
       };
 
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -846,7 +859,9 @@ $(document).ready(function () {
 		is_check: Number($('#oc_is_check').val()),
 		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
 		y_limit_in_um: Number($('#oc_y_limit_in_um').val()),
-		oc_intensity_threshold: Number($('oc_intensity_threshold').val())
+		oc_intensity_threshold: Number($('oc_intensity_threshold').val()),
+		golden_center_x_in_pixel: Number($('golden_center_x_in_pixel').val()),
+		golden_center_y_in_pixel: Number($('golden_center_y_in_pixel').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
@@ -1074,7 +1089,8 @@ $(document).ready(function () {
 	  $('#aa2_start_position_div')[0].style.display = "block";
 	  $('#aa2_stop_position_div')[0].style.display = "block";
 	  $('#aa_offset_in_um_div')[0].style.display = "none";
-	  
+	  $('#aa_xyscan_step_size_x')[0].style.display = "none";
+	  $('#aa_xyscan_step_size_y')[0].style.display = "none";
   });
   
   $('#select_dfov_mode').click(function(){
@@ -1085,6 +1101,8 @@ $(document).ready(function () {
 	  $('#aa2_start_position_div')[0].style.display = "block";
 	  $('#aa2_stop_position_div')[0].style.display = "block";
 	  $('#aa_offset_in_um_div')[0].style.display = "block";
+	  $('#aa_xyscan_step_size_x')[0].style.display = "none";
+	  $('#aa_xyscan_step_size_y')[0].style.display = "none";
   });
   
   $('#select_stationary_scan_mode').click(function(){
@@ -1095,11 +1113,25 @@ $(document).ready(function () {
 	  $('#aa2_start_position_div')[0].style.display = "none";
 	  $('#aa2_stop_position_div')[0].style.display = "none";
 	  $('#aa_offset_in_um_div')[0].style.display = "block";
+	  $('#aa_xyscan_step_size_x')[0].style.display = "none";
+	  $('#aa_xyscan_step_size_y')[0].style.display = "none";
   });
   
    $('#select_x_scan_mode').click(function(){
-	  console.log("Selecting aa stationary scan mode");
+	  console.log("Selecting aa x scan mode");
 	  $('#aa_mode').val(3);
+	  $('#aa1_start_position_div')[0].style.display = "none";
+	  $('#aa1_stop_position_div')[0].style.display = "none";
+	  $('#aa2_start_position_div')[0].style.display = "none";
+	  $('#aa2_stop_position_div')[0].style.display = "none";
+	  $('#aa_offset_in_um_div')[0].style.display = "block";
+	  $('#aa_xyscan_step_size_x')[0].style.display = "block";
+	  $('#aa_xyscan_step_size_y')[0].style.display = "block";
+  });
+
+  $('#select_xy_scan_mode').click(function(){
+	  console.log("Selecting aa xy scan mode");
+	  $('#aa_mode').val(4);
   });
   
   $flowchart.siblings('.delete_selected_button').click(function () { $flowchart.flowchart('deleteSelected'); });
@@ -1124,7 +1156,9 @@ $(document).ready(function () {
         position_checking: Number($('#aa_position_checking').val()), 
 		edge_filter: Number($('#aa_edge_filter').val()), 
 		is_debug: Number($('#aa_is_debug').val()),
-		delay_in_ms: Number($('#aa_delay_in_ms').val())
+		delay_in_ms: Number($('#aa_delay_in_ms').val()),
+		xyscan_step_size_x: Number($('#aa_xyscan_step_size_x').val()),
+		xyscan_step_size_y: Number($('#aa_xyscan_step_size_y').val())
       };
 
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -1147,7 +1181,9 @@ $(document).ready(function () {
 		is_check: Number($('#oc_is_check').val()),
 		x_limit_in_um: Number($('#oc_x_limit_in_um').val()),
 		y_limit_in_um: Number($('#oc_y_limit_in_um').val()),
-		oc_intensity_threshold: Number($('#oc_intensity_threshold').val())
+		oc_intensity_threshold: Number($('#oc_intensity_threshold').val()),
+		golden_center_x_in_pixel: Number($('#golden_center_x_in_pixel').val()),
+		golden_center_y_in_pixel: Number($('#golden_center_y_in_pixel').val())
       };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("Z Offset")) {
@@ -1265,19 +1301,34 @@ $(document).ready(function () {
 			$('#aa2_start_position_div')[0].style.display = "block";
 			$('#aa2_stop_position_div')[0].style.display = "block";
 			$('#aa_offset_in_um_div')[0].style.display = "none";
+			$('#aa_xyscan_step_size_x')[0].style.display = "none";
+			$('#aa_xyscan_step_size_y')[0].style.display = "none";
 		} else if (($('#aa_mode').val() == "1")) {
 			$('#aa1_start_position_div')[0].style.display = "block";
 			$('#aa1_stop_position_div')[0].style.display = "block";
 			$('#aa2_start_position_div')[0].style.display = "block";
 			$('#aa2_stop_position_div')[0].style.display = "block";
 			$('#aa_offset_in_um_div')[0].style.display = "block";
+			$('#aa_xyscan_step_size_x')[0].style.display = "none";
+			$('#aa_xyscan_step_size_y')[0].style.display = "none";
 		} else if (($('#aa_mode').val() == "2")) {
 			$('#aa1_start_position_div')[0].style.display = "none";
 			$('#aa1_stop_position_div')[0].style.display = "none";
 			$('#aa2_start_position_div')[0].style.display = "none";
 			$('#aa2_stop_position_div')[0].style.display = "none";
 			$('#aa_offset_in_um_div')[0].style.display = "block";
-		}
+			$('#aa_xyscan_step_size_x')[0].style.display = "none";
+			$('#aa_xyscan_step_size_y')[0].style.display = "none";
+		} else if (($('#aa_mode').val() == "4")) {
+			$('#aa1_start_position_div')[0].style.display = "none";
+			$('#aa1_stop_position_div')[0].style.display = "none";
+			$('#aa2_start_position_div')[0].style.display = "none";
+			$('#aa2_stop_position_div')[0].style.display = "none";
+			$('#aa_offset_in_um_div')[0].style.display = "block";
+			$('#aa_xyscan_step_size_x')[0].style.display = "block";
+			$('#aa_xyscan_step_size_y')[0].style.display = "block";
+    }
+    
 		$('#ex1').modal({
 			showClose: false,
 			escapeClose: false,

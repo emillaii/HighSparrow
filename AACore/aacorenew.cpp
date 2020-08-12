@@ -3954,13 +3954,15 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     int finish_delay = params["delay_in_ms"].toInt();
     int mode = params["mode"].toInt();  //0: Pattern ; else : Mass center
     int oc_intensity_threshold = params["oc_intensity_threshold"].toInt(0);
+    int golden_center_x_in_pixel = params["golden_center_x_in_pixel"].toInt(0);
+    int golden_center_y_in_pixel = params["golden_center_y_in_pixel"].toInt(0);
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
 
     QVariantMap map;
     QElapsedTimer timer;
     timer.start();
     bool grabRet;
-    //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_10.bmp");
+    //cv::Mat img = cv::imread("D:\\AOA.bmp");
     cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
     if (!grabRet) {
         qInfo("OC Cannot grab image.");
@@ -4000,10 +4002,12 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
         offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
-        qInfo("OC OffsetX: %f %f", offsetX, offsetY);
+        qInfo("OC Offset: %f %f", offsetX, offsetY);
         map.insert("OC_OFFSET_X_IN_PIXEL", round(offsetX*1000)/1000);
         map.insert("OC_OFFSET_Y_IN_PIXEL", round(offsetY*1000)/1000);
-    } else {
+    }
+    else if (mode == 1)
+    {
         QImage outImage; QPointF center;
         if (!AA_Helper::calculateOC(img, center, outImage, oc_intensity_threshold))
         {
@@ -4018,6 +4022,29 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         offsetX = center.x() - img.cols/2;
         offsetY = center.y() - img.rows/2;
     }
+    else if (mode == 2)
+    {
+        qInfo("Using golden center");
+        std::vector<AA_Helper::patternAttr> vector = search_mtf_pattern(img, outImage, false,
+                                                                        ccIndex, ulIndex, urIndex,
+                                                                        llIndex, lrIndex);
+        ocImageProvider_1->setImage(outImage);
+        emit callQmlRefeshImg(1);
+        if( vector.size() < 1 || ccIndex > 9 )
+        {
+            LogicNg(current_aa_ng_time);
+            map.insert("result", "OC Cannot find enough pattern");
+            map.insert("timeElapsed", timer.elapsed());
+            emit pushDataToUnit(this->runningUnit, "OC", map);
+            return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
+        }
+        offsetX = vector[ccIndex].center.x() - golden_center_x_in_pixel;
+        offsetY = vector[ccIndex].center.y() - golden_center_y_in_pixel;
+        qInfo("OC Offset from Golden Center: %f %f", offsetX, offsetY);
+        map.insert("OC_OFFSET_X_IN_PIXEL", round(offsetX*1000)/1000);
+        map.insert("OC_OFFSET_Y_IN_PIXEL", round(offsetY*1000)/1000);
+    }
+
     if (enable_motion)
     {
         QPointF x_ratio = chartCalibration->getOneXPxielDistance();

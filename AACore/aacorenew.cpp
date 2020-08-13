@@ -2864,6 +2864,10 @@ bool AACoreNew::aoaMTF(bool saveImage)
    map.insert("AA_A", this->aa_head->motor_a->GetFeedbackPos());
    map.insert("AA_B", this->aa_head->motor_b->GetFeedbackPos());
 
+   map.insert("SUT_X",round(sut->carrier->GetFeedBackPos().X*1000*1000)/1000);
+   map.insert("SUT_Y",round(sut->carrier->GetFeedBackPos().Y*1000*1000)/1000);
+   map.insert("SUT_Z",round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
+
    map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
    map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
    map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);

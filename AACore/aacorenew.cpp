@@ -1763,7 +1763,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
         return ErrorCodeStruct{ ErrorCode::OK, ""};
     }
 
-    int timeout=1000;
+    int timeout=10000;
     QElapsedTimer sfr_wait_timer; sfr_wait_timer.start();
     while(this->clustered_sfr_map.size() != zScanCount && timeout >0) {
         Sleep(10);
@@ -2823,9 +2823,7 @@ bool AACoreNew::aoaMTF(bool saveImage)
    }
 
    qInfo("Finish mtf calculation for whole image. Time Elapsed: %d", timer.elapsed());
-   vector<int> layers = sfr::classifyLayers(vec);
 
-   double display_factor = input_img.cols/CONSTANT_REFERENCE;
    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
    QPainter qPainter(&qImage);
    qPainter.setBrush(Qt::NoBrush);

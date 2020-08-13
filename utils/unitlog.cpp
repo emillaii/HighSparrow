@@ -73,8 +73,11 @@ bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          json["uuid"] = uuid;
          json["lotNumber"] = lotNumber;
+         QDateTime local(QDateTime::currentDateTime());
+         QDateTime UTC(local.toUTC());
+         json["timestamp"] = UTC.toString(Qt::ISODate);
          QJsonDocument doc(json);
-         QUrl unitLogEndpoint = QString("http://192.168.0.250:5044");
+         QUrl unitLogEndpoint = QString("http://118.190.216.174:8000");
          // QString unitLogEndpoint = serverAddress;
          //unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
          QNetworkRequest request(unitLogEndpoint);

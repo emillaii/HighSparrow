@@ -165,6 +165,16 @@ RowLayout {
     }
 
     Label {
+        text: "测试 ID:"
+    }
+    TextField {
+        text: aaCoreParams.materialId
+        onTextEdited: {
+            aaCoreParams.setMaterialId(text)
+        }
+    }
+
+    Label {
         text: aaCoreParams.aaCoreRunningTest
         font.pointSize: 20
     }

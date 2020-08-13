@@ -204,7 +204,7 @@ signals:
     void pushDataToUnit(QString uuid, QString name, QVariantMap map);
     void pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage);
     void clearHeaders();
-    void postDataToELK(QString, QString);
+    void postDataToELK(QString, QString, QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
     void needUpdateParameterInTcpModule();

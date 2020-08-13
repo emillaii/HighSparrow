@@ -141,6 +141,8 @@ class AACoreParameters : public PropertyBase
 
     int m_tiltSelection = 0;
 
+    QString m_materialId;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -214,6 +216,7 @@ public:
     Q_PROPERTY(QString vcmSlaveId READ vcmSlaveId WRITE setVCMSlaveId NOTIFY vcmSlaveIdChanged)
     Q_PROPERTY(QString vcmRegAddress READ vcmRegAddress WRITE setVCMRegAddress NOTIFY vcmRegAddressChanged)
     Q_PROPERTY(int tiltSelection READ tiltSelection WRITE setTiltSelection NOTIFY tiltSelectionChanged)
+    Q_PROPERTY(QString materialId READ materialId WRITE setMaterialId NOTIFY materialIdChanged)
 
     double EFL() const
     {
@@ -547,6 +550,11 @@ public:
     int tiltSelection() const
     {
         return m_tiltSelection;
+    }
+
+    QString materialId() const
+    {
+        return m_materialId;
     }
 
 public slots:
@@ -1136,6 +1144,15 @@ public slots:
         emit tiltSelectionChanged(m_tiltSelection);
     }
 
+    void setMaterialId(QString materialId)
+    {
+        if (m_materialId == materialId)
+            return;
+
+        m_materialId = materialId;
+        emit materialIdChanged(m_materialId);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1193,6 +1210,8 @@ signals:
     void vcmSlaveIdChanged(QString vcmSlaveId);
     void vcmRegAddressChanged(QString vcmRegAddress);
     void tiltSelectionChanged(int tiltSelection);
+    void materialId(QString materialId);
+    void materialIdChanged(QString materialId);
 };
 class AACoreStates: public PropertyBase
 {

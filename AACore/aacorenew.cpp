@@ -212,7 +212,7 @@ void AACoreNew::run(bool has_material)
         oc_fov = -1;
         hasDispense = false;
         runFlowchartTest();
-        emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
+        emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
         QThread::msleep(100);
         double temp_time = timer.elapsed();
         temp_time/=1000;
@@ -463,7 +463,7 @@ void AACoreNew::startWork( int run_mode)
         QElapsedTimer timer;timer.start();
         runningUnit = this->unitlog->createUnit();
         runFlowchartTest();
-        emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
+        emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
         double temp_time = timer.elapsed();
         temp_time/=1000;
         qInfo("circle_time :%f",temp_time);
@@ -699,7 +699,7 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     {
         performParticalCheck(params);
     }
-    emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
+    emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
     is_handling = false;
 }
 

@@ -6,6 +6,8 @@
 #include <qfileinfo.h>
 #include "config.h"
 #include "utils/commonutils.h"
+#include <QHostInfo>
+
 Unitlog::Unitlog(QObject * parent) : QObject(parent)
 {
     nam = new QNetworkAccessManager();
@@ -66,13 +68,15 @@ void Unitlog::clearHeaders()
     headers.clear();
 }
 
-bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
+bool Unitlog::postDataToELK(QString uuid, QString lotNumber, QString testId)
 {
     if (unit_log_list.contains(uuid))
     {
          QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
          json["uuid"] = uuid;
          json["lotNumber"] = lotNumber;
+         json["testId"] = testId;
+         json["hostName"] = QHostInfo::localHostName();
          QDateTime local(QDateTime::currentDateTime());
          QDateTime UTC(local.toUTC());
          json["timestamp"] = UTC.toString(Qt::ISODate);

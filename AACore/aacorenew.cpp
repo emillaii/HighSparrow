@@ -477,6 +477,7 @@ void AACoreNew::startWork( int run_mode)
            loopTestResult = "";
            loopTestResult.append("CC, UL,UR,LL,LR,\n");
            while (is_run) {
+               runningUnit = this->unitlog->createUnit();
                QJsonObject  params;
                params["CC_MIN"] = 0;
                params["03F_MIN"] = 0;
@@ -489,6 +490,7 @@ void AACoreNew::startWork( int run_mode)
                params["SFR_DEV_TOL"] = 100;
                //performMTFNew(params,true);
                aoaMTF();
+               emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
                QThread::msleep(500);
            }
            writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");

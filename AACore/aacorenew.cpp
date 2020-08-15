@@ -489,7 +489,7 @@ void AACoreNew::startWork( int run_mode)
                params["08F_MAX"] = 100;
                params["SFR_DEV_TOL"] = 100;
                //performMTFNew(params,true);
-               aoaMTF();
+               aoaMTF(false, true);
                emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
                QThread::msleep(500);
            }
@@ -2715,7 +2715,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     return result;
 }
 
-bool AACoreNew::aoaMTF(bool saveImage)
+bool AACoreNew::aoaMTF(bool saveImage, bool isLoopTest)
 {
    QVariantMap map;
 //   cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\AA fail\\_12-37-35-821.bmp");
@@ -2869,6 +2869,8 @@ bool AACoreNew::aoaMTF(bool saveImage)
    map.insert("SUT_X",round(sut->carrier->GetFeedBackPos().X*1000*1000)/1000);
    map.insert("SUT_Y",round(sut->carrier->GetFeedBackPos().Y*1000*1000)/1000);
    map.insert("SUT_Z",round(sut->carrier->GetFeedBackPos().Z*1000*1000)/1000);
+
+   map.insert("Is_LoopTest", isLoopTest);
 
    map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
    map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);

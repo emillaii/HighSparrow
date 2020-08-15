@@ -90,7 +90,7 @@ public:
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
     ErrorCodeStruct performParticalCheck(QJsonValue params);
 
-    bool aoaMTF(bool saveImage = false);
+    bool aoaMTF(bool saveImage = false, bool loopTest = false);
     static bool performThreadTest(vector<QString> testList, QJsonValue params);
     static double performMTFInThread( cv::Mat input, int freq);
     bool blackScreenCheck(cv::Mat inImage);

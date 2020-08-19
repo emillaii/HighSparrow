@@ -601,12 +601,12 @@ void AACoreNew::stopWork(bool wait_finish)
 void AACoreNew::performHandlingOperation(int cmd,QVariant param)
 {
     emit clearHeaders();
-    qInfo("AACore perform command: %d parmas :%s", cmd, param.toString().toStdString().c_str());
     QJsonDocument jsonDoc = QJsonDocument::fromJson(param.toString().toLocal8Bit().data());
     QJsonValue params = jsonDoc.object();
 
     runningUnit = this->unitlog->createUnit();
     if (cmd == HandleTest::Dispense)
+
     {
         sut->DownlookPrDone = false;
         bool enable = parameters.enableCheckDispense();
@@ -700,6 +700,10 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     else if (cmd == HandleTest::PARTICAL_CHECK)
     {
         performParticalCheck(params);
+    }
+    else if (cmd == HandleTest::AOA_SCAN)
+    {
+        performAOAScan(params);
     }
     emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
     is_handling = false;
@@ -1059,6 +1063,10 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("Performing Partical Check");
             performParticalCheck(params);
         }
+        else if (testItemName.contains(AA_AOA_SCAN))
+        {
+            qInfo("Performing AOA Scan");
+        }
     }
 
     if (ret.code != ErrorCode::OK) {
@@ -1302,6 +1310,168 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
     emit pushDataToUnit(this->runningUnit, "Dispense", map);
     qInfo("Finish Dispense");
     return ErrorCodeStruct {ErrorCode::OK, ""};
+}
+
+bool AACoreNew::calculateCCSFR(cv::Mat input, double &avg_sfr, double &t_sfr, double &r_sfr, double &b_sfr, double &l_sfr, double &pattern_x, double &pattern_y)
+{
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    if (patterns.size() == 0) {
+        qWarning("Cannot detect any mtf pattern");
+        return false;
+    }
+    for (int i = 0; i < patterns.size(); i++) {
+        qInfo("x: %f y: %f", patterns[i].center.x(), patterns[i].center.y());
+    }
+    pattern_x = patterns[0].center.x();
+    pattern_y = patterns[0].center.y();
+
+    //Crop ROI
+    {
+        QString filename;
+        cv::Rect roi;
+        cv::Mat copped_roi;
+        double width = sqrt(patterns[0].area)/2;
+        roi.width = width*4; roi.height = width*4;
+        roi.x = patterns[0].center.x() - width*2;
+        roi.y = patterns[0].center.y() - width*2;
+        input(roi).copyTo(copped_roi);
+        filename = "ROI_CC";
+        filename.append(".bmp");
+        cv::imwrite(filename.toStdString(), copped_roi);
+        QStringList args;
+        args.append(filename);
+        args.append(filename);
+        QProcess *child = new QProcess();
+        child->setWorkingDirectory(QDir::currentPath());
+        child->start(QDir::currentPath() + "/sfr.bat", args);
+        child->waitForFinished();
+        {
+            QFile file;
+            QString sfr_filename = QString("temp/").append(filename).append("/raw_sfr_values.txt");
+            file.setFileName(sfr_filename);
+
+            if (file.open(QIODevice::ReadOnly))
+            {
+               QTextStream in(&file);
+               int i = 0;
+               while (!in.atEnd())
+               {
+                  QString line = in.readLine();
+                  QStringList list = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                  QString value = list[24];
+                  //qInfo(list[20].toStdString().c_str());
+                  if ( i == 0 ) t_sfr = list[8].toDouble()*100;
+                  if ( i == 1 ) r_sfr = list[8].toDouble()*100;
+                  if ( i == 2 ) b_sfr = list[8].toDouble()*100;
+                  if ( i == 3 ) l_sfr = list[8].toDouble()*100;
+                  i++;
+               }
+               file.close();
+            }
+            avg_sfr = (t_sfr + r_sfr + b_sfr + l_sfr) /4;
+        }
+    }
+    return true;
+}
+
+ErrorCodeStruct AACoreNew::performAOAScan(QJsonValue params)
+{
+    QVariantMap map;
+    map.insert("Result","OK");
+    int mode = params["mode"].toInt();
+    double x_step_size = params["aoa_x_step_size"].toDouble()/1000;    // To um
+    double y_step_size = params["aoa_y_step_size"].toDouble()/1000;
+    int count = params["aoa_count"].toInt();
+    int delay_in_ms = params["delay_in_ms"].toInt();
+
+    //Step 1 Run a cross to measure the CC_SFR gradient
+    int selected_init_v = 0;  // 1 - +ve x , 2 -ve x , 3 +ve y, 4 -ve y
+    double init_aa_x_pos = aa_head->motor_x->GetFeedbackPos();
+    double init_aa_y_pos = aa_head->motor_y->GetFeedbackPos();
+    map.insert("init_aa_x_pos", init_aa_x_pos);
+    map.insert("init_aa_y_pos", init_aa_y_pos);
+    {
+        QList<double> avg_sfr_v;
+        for (int i = 0; i < 5; i ++) {
+            if (i == 1) {
+                aa_head->motor_x->StepMoveSync(x_step_size);      //+ve x step
+            } else if (i == 2) {
+                aa_head->motor_x->StepMoveSync(-2*x_step_size);  // -ve y step
+            } else if (i == 3) {
+                aa_head->motor_x->StepMoveSync(x_step_size);     // +ve y step
+                aa_head->motor_y->StepMoveSync(y_step_size);
+            } else if (i == 4) {
+                aa_head->motor_y->StepMoveSync(-2*y_step_size);  // -ve y step
+            }
+            double aa_x_pos = aa_head->motor_x->GetFeedbackPos();
+            double aa_y_pos = aa_head->motor_y->GetFeedbackPos();
+
+            QThread::msleep(delay_in_ms);
+            bool grabRet = false;
+            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+            if (!grabRet) { qWarning("grab image from grabber fail"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+            double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+            double pattern_x = 0, pattern_y = 0;
+            this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
+            QVariantMap m;
+            m.insert("avg_sfr", avg_sfr);m.insert("t_sfr", t_sfr); m.insert("r_sfr", r_sfr); m.insert("b_sfr", b_sfr); m.insert("l_sfr", l_sfr);
+            m.insert("pattern_x", pattern_x); m.insert("pattern_y", pattern_y);
+            m.insert("aa_x_pos", aa_x_pos);
+            m.insert("aa_y_pos", aa_y_pos);
+
+            map.insert(QString("InitScan").append(QString::number(i)), m);
+            avg_sfr_v.append(avg_sfr);
+        }
+        qInfo("Finish the initial cross scan....detecting the initial vector");
+        double v1 = avg_sfr_v.at(1) - avg_sfr_v.at(0);
+        double v2 = avg_sfr_v.at(2) - avg_sfr_v.at(0);
+        double v3 = avg_sfr_v.at(3) - avg_sfr_v.at(0);
+        double v4 = avg_sfr_v.at(4) - avg_sfr_v.at(0);
+        qInfo("v1: %f v2: %f v3: %f v4: %f", v1, v2, v3, v4);
+
+        map.insert("v1", v1);
+        map.insert("v2", v2);
+        map.insert("v3", v3);
+        map.insert("v4", v4);
+        if (v1 > v2 && v1 > v3 && v1 > v4) {
+           selected_init_v = 0;
+           if (v1 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+        }
+        if (v2 > v1 && v2 > v3 && v2 > v4) {
+           selected_init_v = 1;
+           if (v2 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+        }
+        if (v3 > v1 && v3 > v2 && v3 > v4) {
+           selected_init_v = 2;
+           if (v3 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+        }
+        if (v4 > v1 && v4 > v2 && v4 > v3) {
+           selected_init_v = 3;
+           if (v4 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+        }
+        map.insert("selected_init_v", selected_init_v);
+    }
+
+    //Testing code
+//    for (int i = 0; i < count; i++)
+//    {
+//        cv::Mat img = cv::imread(QString("C:\\Users\\emil\\Desktop\\AAProject\\AOA\\AAFail\\zscan_").append(QString::number(i+1)).append(".bmp").toStdString().c_str());
+//        double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+//        double pattern_x = 0, pattern_y = 0;
+//        this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
+//        QVariantMap m;
+//        m.insert("avg_sfr", avg_sfr);m.insert("t_sfr", t_sfr);m.insert("r_sfr", r_sfr);
+//        m.insert("b_sfr", b_sfr);
+//        m.insert("l_sfr", l_sfr);
+//        m.insert("pattern_x", pattern_x);
+//        m.insert("pattern_y", pattern_y);
+//        map.insert(QString("Scan").append(QString::number(i)), m);
+//        qInfo("avg_sfr: %f t_sfr: %f r_sfr: %f b_sfr: %f l_sfr: %f", avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr);
+//    }
+
+    map.insert("params", params);
+    emit pushDataToUnit(this->runningUnit, "AOA", map);
+    return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)

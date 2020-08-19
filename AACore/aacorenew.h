@@ -55,7 +55,8 @@ public:
         AA_HEAD_MOVE_TO_PICK_LENS = 18,
         DISPENSE_XY_OFFSET_TEST = 19,
         DISPENSE_Z_TEST = 20,
-        PARTICAL_CHECK = 21
+        PARTICAL_CHECK = 21,
+        AOA_SCAN
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
@@ -89,6 +90,9 @@ public:
     ErrorCodeStruct performOTP(QJsonValue params);
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
     ErrorCodeStruct performParticalCheck(QJsonValue params);
+    ErrorCodeStruct performAOAScan(QJsonValue params);
+
+    bool calculateCCSFR(cv::Mat input, double &avg_sfr, double &t_sfr, double &r_sfr, double &b_sfr, double &l_sfr, double &pattern_x, double &pattern_y);
 
     bool aoaMTF(bool saveImage = false, bool loopTest = false);
     static bool performThreadTest(vector<QString> testList, QJsonValue params);

@@ -6,6 +6,9 @@ $(document).ready(function () {
     offset_in_um: -40, delay_Z_in_ms: 200, step_size: 10,
     position_checking: 0, is_debug: 0, image_count: 7, enable_tilt: 0, xyscan_step_size_x: 1, xyscan_step_size_y: 1
   };
+  var init_aoa_params = {
+	mode: 1, aoa_x_step_size: 1, aoa_y_step_size: 1, aoa_delay_in_ms: 200, aoa_count: 7
+  }
   var init_oc_params = { enable_motion: 1, fast_mode: 0, mode: 0, oc_intensity_threshold: 100, is_debug: 0, delay_in_ms: 0, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5, golden_center_x_in_pixel: 0, golden_center_y_in_pixel: 0 };
   var init_initial_tilt_params = { roll: 0, pitch: 0, delay_in_ms: 0};
   var init_basic_params = { retry: 0, delay_in_ms: 200 };
@@ -48,6 +51,8 @@ $(document).ready(function () {
   var $init_lens_operator_properties = $('#init_lens_operator_properties');
   var $partical_check_operator_title = $('#partical_check_operator_title');
   var $partical_check_operator_properties = $('#partical_check_operator_properties');
+  var $aoa_operator_properties = $('#aoa_operator_properties');
+  var $aoa_operator_title = $('#aoa_operator_title');
 
   //Init the table 
   $aa_operator_properties.append("<div style=\"margin-top:20px;\">Select AA mode: <select disabled id=\"aa_mode\" style=\"position: relative;\"><option value=2>StationaryScan</option><option value=1>DOV_Search</option><option value=0>ZScan</option><option value=3>XScan</option><option value=4>XYScan</option></select><div class=\"dropdown\"><button id=\"aa_select_mode\" class=\"dropbtn\">Select AA Mode</button><div id=\"myDropdown\" class=\"dropdown-content\"><button id=\"select_zscan_mode\" class=\"btn btn-info test_button\">ZScan Mode</button><button id=\"select_dfov_mode\" class=\"btn btn-info test_button\">DFOV Search Mode</button><button id=\"select_stationary_scan_mode\" class=\"btn btn-info test_button\">Stationary Scan Mode</button><button id=\"select_x_scan_mode\" class=\"btn btn-info test_button\">XScan Mode</button><button id=\"select_xy_scan_mode\" class=\"btn btn-info test_button\">XYScan Mode</button></div></div></div>");
@@ -64,6 +69,12 @@ $(document).ready(function () {
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Delay: <input type=\"number\" id=\"aa_delay_in_ms\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">X Step Size in um: <input type=\"number\" id=\"aa_xyscan_step_size_x\"></div>");
   $aa_operator_properties.append("<div style=\"margin-top:20px\">Y Step Size in um: <input type=\"number\" id=\"aa_xyscan_step_size_y\"></div>");
+  
+  $aoa_operator_properties.append("<div style=\"margin-top:20px\">Mode: <input type=\"number\" id=\"aoa_mode\"></div>");
+  $aoa_operator_properties.append("<div style=\"margin-top:20px\">X Step Size in um: <input type=\"number\" id=\"aoa_x_step_size\"></div>");
+  $aoa_operator_properties.append("<div style=\"margin-top:20px\">Y Step Size in um: <input type=\"number\" id=\"aoa_y_step_size\"></div>");
+  $aoa_operator_properties.append("<div style=\"margin-top:20px\">Delay in ms: <input type=\"number\" id=\"aoa_delay_in_ms\"></div>");
+  $aoa_operator_properties.append("<div style=\"margin-top:20px\">Step Count: <input type=\"number\" id=\"aoa_count\"></div>");
 
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Roll: <input type=\"number\" id=\"roll\"></div>");
   $initial_tilt_properties.append("<div style=\"margin-top:20px\">Pitch: <input type=\"number\" id=\"pitch\"></div>");
@@ -166,6 +177,7 @@ $(document).ready(function () {
 	  $uv_operator_properties.hide();
 	  $init_lens_operator_properties.hide();
 	  $partical_check_operator_properties.hide();
+	  $aoa_operator_properties.hide();
       if (operatorId.includes("AA_")) {
         $aa_operator_properties.show();
         $aa_operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -310,7 +322,15 @@ $(document).ready(function () {
 		$partical_check_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
 		$('#enable_partical_check').val(params["enable_partical_check"]);
 		$('#partical_check_delay_in_ms').val(params["delay_in_ms"]);
-	  }	  
+	  }else if (operatorId.includes("AOA")) {
+		$aoa_operator_properties.show();
+		$aoa_operator_title.val($flowchart.flowchart('getOperatorTitle', operatorId));
+		$('#aoa_mode').val(params["mode"]);
+		$('#aoa_x_step_size').val(params["aoa_x_step_size"]);
+		$('#aoa_y_step_size').val(params["aoa_y_step_size"]);
+		$('#aoa_count').val(params["aoa_count"]);
+		$('#aoa_delay_in_ms').val(params["aoa_delay_in_ms"]);
+	  }
 	  else {
         $operator_properties.show();
         $operatorTitle.val($flowchart.flowchart('getOperatorTitle', operatorId));
@@ -334,6 +354,7 @@ $(document).ready(function () {
 	  $uv_operator_properties.hide();
 	  $init_lens_operator_properties.hide();
 	  $partical_check_operator_properties.hide();
+	  $aoa_operator_properties.hide();
       return true;
     },
 	onOperatorCreate: function (operatorId, operatorData, fullElement) {
@@ -549,7 +570,17 @@ $(document).ready(function () {
 	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', operatorId, params);
-    } else {
+    } else if (selectedOperatorId.includes("AOA")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#AOA_operator_title').val());
+	  var params = { mode: Number($('#aoa_mode').val()),
+	  aoa_x_step_size: Number($('#aoa_x_step_size').val()),
+	  aoa_y_step_size: Number($('#aoa_y_step_size').val()),
+	  aoa_count: Number($('#aoa_count').val()),
+	  aoa_delay_in_ms: Number($('#aoa_delay_in_ms').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+	}
+	else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
 	  delay_in_ms: Number($('#basic_delay').val())
@@ -607,6 +638,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_lens_params);
 	}else if (operatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_partical_check_params);
+	}else if (operatorId.includes("AOA")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_aoa_params);
 	}
 	else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -665,6 +698,8 @@ $(document).ready(function () {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_lens_params);
 	}else if (operatorId.includes("Partical Check")) {
 	  $flowchart.flowchart('setOperatorParams', operatorId, init_partical_check_params);
+	}else if (operatorId.includes("AOA")) {
+	  $flowchart.flowchart('setOperatorParams', operatorId, init_aoa_params);
 	}
 	else {
       $flowchart.flowchart('setOperatorParams', operatorId, init_basic_params);
@@ -834,9 +869,9 @@ $(document).ready(function () {
         position_checking: Number($('#aa_position_checking').val()), 
 		edge_filter: Number($('#aa_edge_filter').val()), 
 		is_debug: Number($('#aa_is_debug').val()),
-    delay_in_ms: Number($('#aa_delay_in_ms').val()),
-    xyscan_step_size_x: Number($('#aa_xyscan_step_size_x').val()),
-    xyscan_step_size_y: Number($('#aa_xyscan_step_size_y').val())
+		delay_in_ms: Number($('#aa_delay_in_ms').val()),
+		xyscan_step_size_x: Number($('#aa_xyscan_step_size_x').val()),
+		xyscan_step_size_y: Number($('#aa_xyscan_step_size_y').val())
       };
 
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
@@ -950,7 +985,17 @@ $(document).ready(function () {
 	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    } else {
+    } else if (selectedOperatorId.includes("AOA")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#AOA_operator_title').val());
+	  var params = { mode: Number($('#aoa_mode').val()),
+	  aoa_x_step_size: Number($('#aoa_x_step_size').val()),
+	  aoa_y_step_size: Number($('#aoa_y_step_size').val()),
+	  aoa_count: Number($('#aoa_count').val()),
+	  aoa_delay_in_ms: Number($('#aoa_delay_in_ms').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', operatorId, params);
+	}
+	else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
 	  delay_in_ms: Number($('#basic_delay').val())
@@ -1063,7 +1108,7 @@ $(document).ready(function () {
   $('#create_otp').click(function () { addOperationWidget("OTP"); });
   $('#create_grr').click(function () { addOperationWidget("GRR"); });
   $('#create_partical_check').click(function () { addOperationWidget("Partical Check"); });
-
+  $('#create_aoa').click(function() { addOperationWidget("AOA"); });
 
   $('#get_data').click(function () {
     var data = $flowchart.flowchart('getData');
@@ -1272,7 +1317,16 @@ $(document).ready(function () {
 	  enable_partical_check: Number($('#enable_partical_check').val()),
 	  };
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
-    } else {
+    } else if (selectedOperatorId.includes("AOA")) {
+	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#AOA_operator_title').val());
+	  var params = { mode: Number($('#aoa_mode').val()),
+	  aoa_x_step_size: Number($('#aoa_x_step_size').val()),
+	  aoa_y_step_size: Number($('#aoa_y_step_size').val()),
+	  aoa_count: Number($('#aoa_count').val()),
+	  aoa_delay_in_ms: Number($('#aoa_delay_in_ms').val())
+	  };
+      $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
+	} else {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, init_basic_params);
       var params = { retry: Number($('#basic_retry').val()),
 	  delay_in_ms: Number($('#basic_delay').val())

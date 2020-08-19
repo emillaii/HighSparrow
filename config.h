@@ -224,7 +224,6 @@
 #define AA_PIECE_TERMINATE "Terminate"
 #define AA_PIECE_GRR "GRR"
 #define AA_PIECE_PARTICAL_CHECK "Partical Check"
-
 #define AA_PIECE_INITIAL_POSITION "Init Pos"
 #define AA_PIECE_INIT_SENSOR "Init Sensor"
 #define AA_LOAD_CAMERA "Load Camera"
@@ -233,6 +232,7 @@
 #define AA_UV        "UV"
 #define AA_UNLOAD_CAMERA "Unload Camera"
 #define AA_DELAY     "DELAY"
+#define AA_AOA_SCAN "AOA"
 #define AA_PIECE_END "END"
 
 #define AA_PARAM_DIRECTION "direction"

@@ -495,12 +495,12 @@ void VisionModule::testVision()
     QString imageName;
     QElapsedTimer timer; timer.start();
     double outMinGlueWidth = 0, outMaxGlueWidth = 0, outMaxAvgGlueWidth = 0;
-    this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
+    //this->Glue_Inspection(1, 1, 1, 1, "", "", &imageName, &outMinGlueWidth, &outMaxGlueWidth, &outMaxAvgGlueWidth);
 
     //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
     PRResultStruct prResult;
-    //this->PR_Edge_Fitting(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_no_offset_edgeModel.avdata", prResult);
-    //this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder_edgeModel.avdata", prResult);
+    //this->PR_Edge_Fitting(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\testLens_edgeModel.avdata", prResult, 0.6, true);
+    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder.avdata", prResult);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);
@@ -1197,9 +1197,14 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
     QString pr_offset_name = pr_name;
     QString pr_region_name = pr_name;
     QString pr_small_circle_name = pr_name;
+    QString pr_small_object_region_name = pr_name;
+    QString pr_small_object_grayModel_name = pr_name;
     pr_offset_name.replace(".avdata", "_offset.avdata");
     pr_region_name.replace(".avdata", "_searchRegion.avdata");
     pr_small_circle_name.replace(".avdata", "_smallCircle.avdata");
+    pr_small_object_region_name.replace(".avdata", "_smallObjectRegion.avdata");
+    pr_small_object_grayModel_name.replace(".avdata", "_smallObjectGrayModel.avdata");
+
     ErrorCodeStruct error_code = { OK, "" };
     try {
         atl::String g_constData1;
@@ -1241,10 +1246,12 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image1;
         avl::Image image2;
         avl::Region region1;
+        avl::Region region2;
         avl::CircleFittingField circleFittingField1;
         avl::Vector2D vector2D1;
         avl::GrayModel grayModel1;
         atl::Conditional< avl::Object2D > object2D1;
+        atl::Conditional< avl::Object2D > object2D2;
         atl::Conditional< avl::Point2D > point2D1;
         atl::Conditional< avl::Point2D > point2D2;
         atl::Conditional< atl::String > string1;
@@ -1259,9 +1266,13 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avl::Image image7;
         avl::Image image8;
         atl::Array< atl::Conditional< avl::Region > > regionArray1;
+        atl::Array< atl::Conditional< avl::Region > > regionArray2;
         avs::FitCircleToEdgesState fitCircleToEdgesState1;
         atl::Conditional< avl::Circle2D > circle2D1;
-        //avl::LoadImage( "04blighting190.jpg", false, image1 );
+
+        avl::Rectangle2D smallObjectRectangle2D;
+        avl::GrayModel smallObjectGrayModel;
+        //avl::LoadImage( "C:\\Users\\emil\\Desktop\\AAProject\\sunny_issue\\small_hole_detection\\small_hole_detection\\10-33-49-449_raw.jpg", false, image1 );
         this->grabImageFromCamera(camera_name, image1);
         avl::SaveImageToJpeg( image1 , rawImageName.toStdString().c_str(), atl::NIL, false );
         prResult.rawImageName = rawImageName;
@@ -1269,13 +1280,25 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
         avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
 
-        QFileInfo fileInfo(pr_small_circle_name);
-        if(fileInfo.isFile())
+        bool found_pr_small_object_grayModel = false;
         {
-            avs::LoadObject< avl::CircleFittingField >( g_constData12, avl::StreamMode::Binary, g_constData11, circleFittingField1 );
+            QFileInfo fileInfo(pr_small_object_region_name);
+            if(fileInfo.isFile())
+            {
+                avs::LoadObject< avl::Rectangle2D >( pr_small_object_region_name.toStdString().c_str(), avl::StreamMode::Binary, L"Rectangle2D", smallObjectRectangle2D );
+            }
         }
 
-        avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+        {
+            QFileInfo fileInfo(pr_small_object_grayModel_name);
+            if(fileInfo.isFile())
+            {
+                found_pr_small_object_grayModel = true;
+                avs::LoadObject< avl::GrayModel >( pr_small_object_grayModel_name.toStdString().c_str(), avl::StreamMode::Binary, L"GrayModel", smallObjectGrayModel);
+            }
+        }
+
+        avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 1, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
         {
@@ -1291,8 +1314,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             string1.AssignNonNil();
             rectangle2D1.AssignNonNil();
             point2D1.Get() = object2D1.Get().Point();
-            coordinateSystem2D1 = avl::CoordinateSystem2D(point2D1.Get(), 0.0f, 1.0f);
-            avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, paramStruct->smallHoleScanCount, paramStruct->smallHoleScanWidth, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, paramStruct->smallHoleEdgeResponse, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
+            coordinateSystem2D1 = avl::CoordinateSystem2D(point2D1.Get(), object2D1.Get().Angle(), 1.0f);
+            //avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1, coordinateSystem2D1, paramStruct->smallHoleScanCount, paramStruct->smallHoleScanWidth, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, paramStruct->smallHoleEdgeResponse, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
             avl::TranslatePoint( point2D1.Get(), vector2D1, false, point2D2.Get() );
             real1 = object2D1.Get().Angle();
             avl::RealToString( real1, string2 );
@@ -1323,22 +1346,15 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             prResult.imageName = imageName;
             prResult.rawImageName = rawImageName;
             qInfo("Object score: %f", object2D1.Get().score);
-            if (paramStruct->detectSmallHole) {
-                if (circle2D1 != atl::NIL) {
-                    qInfo("Detected small hole at x: %f y: %f radius: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y(), circle2D1.Get().Radius());
-                    if (circle2D1.Get().Radius() < paramStruct->smallHoleRadiusMin || circle2D1.Get().Radius() > paramStruct->smallHoleRadiusMax) {
-                        error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
-                        error_code.errorMessage = "Cannot detect small hole, the detected radius is out of spec";
-                        qWarning("Cannot detect small hole, the detected radius is out of spec");
-                        QThread::msleep(500);
-                        return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
-                    }
-                } else {
+            if (paramStruct->detectSmallHole && found_pr_small_object_grayModel) {
+                avl::CreateRectangleRegion( smallObjectRectangle2D, coordinateSystem2D1, image1.Width(), image1.Height(), region2, atl::NIL );
+                avl::LocateSingleObject_NCC( image1, region2, smallObjectGrayModel, 0, 1, false, 0.3f, object2D2, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+                qInfo("Detected small hole at x: %f y: %f score: %f", object2D2.Get().Point().X(), object2D2.Get().Point().Y(), object2D2.Get().Score());
+                if (object2D2.Get().Score() < 0.88) {
                     error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
                     error_code.errorMessage = "Cannot detect small hole";
-                    qWarning("Cannot find the small hole");
-                    QThread::msleep(500);
-                    return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
+                    qWarning("Cannot find the small object. Detected score: %f", object2D2.Get().Score());
+                    return error_code;
                 }
             }
         }
@@ -1359,9 +1375,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         stringArray1.Resize(1);
         stringArray1[0] = string1;
         if (is_object_score_pass)
-            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 38.0f, 0.0f, true, atl::NIL, image3 );
+            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 28.0f, 0.0f, true, atl::NIL, image3 );
         else {
-            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 38.0f, 0.0f, true, atl::NIL, image3 );
+            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 28.0f, 0.0f, true, atl::NIL, image3 );
         }
         avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 115.0f, 251.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image4 );
         avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );
@@ -1369,9 +1385,13 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         regionArray1.Resize(1);
         regionArray1[0].AssignNonNil();
         regionArray1[0].Get() = region1;
+        regionArray2.Resize(1);
+        regionArray2[0].AssignNonNil();
+        regionArray2[0].Get() = region2;
         avs::DrawRegions_SingleColor( image6, regionArray1, atl::NIL, avl::Pixel(192.0f, 255.0f, 192.0f, 0.0f), 0.3f, true, image7 );
-        avs::DrawCircles_SingleColor( image7, atl::ToArray< atl::Conditional< avl::Circle2D > >(circle2D1), atl::NIL, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, true, atl::NIL, 20.0f), true, image8 );
-        avl::SaveImageToJpeg( image8 , imageName.toStdString().c_str(), atl::NIL, false );
+        avs::DrawRegions_SingleColor( image7, regionArray2, atl::NIL, avl::Pixel(255.0f, 0.0f, 192.0f, 0.0f), 0.3f, true, image6 );
+        avs::DrawCircles_SingleColor( image6, atl::ToArray< atl::Conditional< avl::Circle2D > >(circle2D1), atl::NIL, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, true, atl::NIL, 20.0f), true, image8 );
+        avl::SaveImageToJpeg( image6 , imageName.toStdString().c_str(), atl::NIL, false );
         if(!is_object_score_pass) {
             QThread::msleep(500);
             return PR_Generic_NCC_Template_Matching(camera_name, pr_name,prResult,object_score, --retryCount, paramStruct);
@@ -1648,6 +1668,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     atl::String g_constData14;
     atl::String g_constData15;
     atl::String g_constData16;
+    atl::String g_constData18;
     atl::Array< atl::Conditional< avl::Location > > g_constData17;
 
     QString edgeFittingField1Filename = pr_name;
@@ -1655,23 +1676,28 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     QString edgeFittingField3Filename = pr_name;
     QString edgeFittingField4Filename = pr_name;
     QString offsetFilename = pr_name;
-    QString searchHoleFilename = pr_name;
+    QString searchSmallObjectGrayModelFilename = pr_name;
+    QString searchSmallObjectRegionFilename = pr_name;
 
     edgeFittingField1Filename.replace("_edgeModel", "_edgeFittingField1");
     edgeFittingField2Filename.replace("_edgeModel", "_edgeFittingField2");
     edgeFittingField3Filename.replace("_edgeModel", "_edgeFittingField3");
     edgeFittingField4Filename.replace("_edgeModel", "_edgeFittingField4");
     offsetFilename.replace("_edgeModel", "_offset");
-    searchHoleFilename.replace("_edgeModel", "_searchHole");
+    searchSmallObjectGrayModelFilename.replace("_edgeModel", "_searchSmallObjectGrayModel");
+    searchSmallObjectRegionFilename.replace("_edgeModel", "_searchSmallObjectRegion");
 
-    qInfo("Edge Fitting pr filename: %s %s %s %s %s %s", edgeFittingField1Filename.toStdString().c_str(),
+    qInfo("Edge Fitting pr filename: %s %s %s %s %s %s %s", edgeFittingField1Filename.toStdString().c_str(),
           edgeFittingField2Filename.toStdString().c_str(),
           edgeFittingField3Filename.toStdString().c_str(),
           edgeFittingField4Filename.toStdString().c_str(),
           offsetFilename.toStdString().c_str(),
-          searchHoleFilename.toStdString().c_str());
+          searchSmallObjectGrayModelFilename.toStdString().c_str(),
+          searchSmallObjectRegionFilename.toStdString().c_str());
 
-    g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting210.jpg";
+    //g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\04blens_lighting100-220 (1)\\04blens_lighting100-220\\04blighting210.jpg";
+    //g_constData1 = L"config\\prConfig\\testLens.jpg";
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\AAProject\\sunny_issue\\small_hole_detection\\small_hole_detection\\10-33-49-449_raw.jpg";
     g_emptyString = L"";
     g_constData11 = L"SegmentFittingField?";
     g_constData12 = L"GrayModel?";
@@ -1679,6 +1705,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     g_constData14 = L"CircleFittingField?";
     g_constData15 = L"Angle: ";
     g_constData16 = L" Score:";
+    g_constData18 = L" Mark Score:";
     g_constData17.Reset(1);
     g_constData17[0] = avl::Location(200, 60);
 
@@ -1690,13 +1717,15 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     atl::String string5 = edgeFittingField4Filename.toStdString().c_str();
     atl::String string6 = pr_name.toStdString().c_str();
     atl::String string7 = offsetFilename.toStdString().c_str();
-    atl::String string8 = searchHoleFilename.toStdString().c_str();
+    atl::String string8 = searchSmallObjectGrayModelFilename.toStdString().c_str();
+    atl::String string12 = searchSmallObjectRegionFilename.toStdString().c_str();
 
     atl::Conditional< avl::SegmentFittingField > segmentFittingField1;
     atl::Conditional< avl::SegmentFittingField > segmentFittingField2;
     atl::Conditional< avl::SegmentFittingField > segmentFittingField3;
     atl::Conditional< avl::SegmentFittingField > segmentFittingField4;
     atl::Conditional< avl::GrayModel > grayModel1;
+    atl::Conditional< avl::GrayModel > grayModel2;
     atl::Conditional< avl::Vector2D > vector2D1;
     atl::Conditional< avl::CircleFittingField > circleFittingField1;
     avs::FitSegmentToEdgesState fitSegmentToEdgesState1;
@@ -1709,17 +1738,20 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     avs::FitCircleToEdgesState fitCircleToEdgesState1;
     atl::String string11;
     atl::Conditional< avl::Rectangle2D > rectangle2D1;
+    avl::Rectangle2D searchSmallObjectRectangle2D1;
     atl::Conditional< avl::Point2D > point2D1;
     atl::Conditional< avl::Point2D > point2D2;
-    atl::Conditional< avl::Circle2D > circle2D1;
     avl::Image image2;
     avl::Image image3;
     avl::Image image4;
     avl::Image image5;
     atl::Array< atl::Conditional< atl::String > > stringArray1;
     avl::Image image6;
+    avl::Image image7;
     avl::SaveImageState saveImage_AsynchronousState1;
     avl::SaveImageState saveImage_AsynchronousState2;
+    atl::Conditional< avl::Region > region3;
+    atl::Array< atl::Conditional< avl::Region > > regionArray3;
     QString imageName;
     imageName.append(getVisionLogDir())
             .append(getCurrentTimeString())
@@ -1731,6 +1763,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
     prResult.rawImageName = rawImageName;
     try {
         this->grabImageFromCamera(camera_name, image1);
+
         //avl::LoadImage( g_constData1, false, image1 );
         avl::SaveImage_Asynchronous( saveImage_AsynchronousState1, image1, atl::NIL, rawImageName.toStdString().c_str());
         avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string2, avl::StreamMode::Binary, g_constData11, segmentFittingField1 );
@@ -1739,16 +1772,17 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
         avs::LoadObject< atl::Conditional< avl::SegmentFittingField > >( string5, avl::StreamMode::Binary, g_constData11, segmentFittingField4 );
         avs::LoadObject< atl::Conditional< avl::GrayModel > >( string6, avl::StreamMode::Binary, g_constData12, grayModel1 );
         avs::LoadObject< atl::Conditional< avl::Vector2D > >( string7, avl::StreamMode::Binary, g_constData13, vector2D1 );
+        avs::LoadObject< atl::Conditional< avl::GrayModel > >( string8, avl::StreamMode::Binary, L"GrayModel?", grayModel2 );
+        avs::LoadObject< avl::Rectangle2D >( string12, avl::StreamMode::Binary, L"Rectangle2D", searchSmallObjectRectangle2D1 );
         bool circleFittingFieldFileExist = false;
-        avl::TestFileExists( string8, circleFittingFieldFileExist );
-        if (circleFittingFieldFileExist) {
-            avs::LoadObject< atl::Conditional< avl::CircleFittingField > >( string8, avl::StreamMode::Binary, g_constData14, circleFittingField1 );
-        }
+        region3.AssignNonNil();
+
         if (grayModel1 != atl::NIL)
         {
             atl::Conditional< avl::Object2D > object2D1;
+            atl::Conditional< avl::Object2D > object2D2;
 
-            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 3, 3, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+            avl::LocateSingleObject_NCC( image1, atl::NIL, grayModel1.Get(), 0, 1, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
 
             if (object2D1 != atl::NIL)
             {
@@ -1912,20 +1946,36 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             prResult.theta = real3;
                             avl::RealToString( real3, string11 );
 
+                            //Search Small Region Logic
+                            coordinateSystem2D2 = avl::CoordinateSystem2D(point2D1.Get(), real3, 1.0f);
 
-                            if (circleFittingField1 != atl::NIL)
+                            avl::CreateRectangleRegion( searchSmallObjectRectangle2D1, coordinateSystem2D1, image1.Width(), image1.Height(), region3.Get(), atl::NIL );
+                            atl::String markScore = "--";
+                            if (grayModel2 != atl::NIL && detect_small_hole)
                             {
-                                coordinateSystem2D2 = avl::CoordinateSystem2D(point2D1.Get(), real3, 1.0f);
-                                avs::AvsFilter_FitCircleToEdges( fitCircleToEdgesState1, image1, circleFittingField1.Get(), coordinateSystem2D2, 10, 5, avl::InterpolationMethod::Bilinear, avl::EdgeScanParams(avl::ProfileInterpolationMethod::Quadratic4, 1.0f, 5.0f, avl::EdgeTransition::Any), avl::Selection::Best, atl::NIL, 0.1f, avl::CircleFittingMethod::AlgebraicTaubin, atl::NIL, circle2D1, atl::NIL, atl::NIL, atl::NIL, atl::Dummy< atl::Array< avl::Segment2D > >().Get(), atl::Dummy< atl::Array< avl::Rectangle2D > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get(), atl::Dummy< atl::Array< avl::Profile > >().Get() );
-                            }
-                            else
-                            {
-                                circle2D1 = atl::NIL;
+                                avl::LocateSingleObject_NCC( image1, region3.Get(), grayModel2.Get(), 0, 1, false, 0.3f, object2D2, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
+                                if (object2D2 != atl::NIL)
+                                {
+                                    qInfo("Small Object score: %f", object2D2.Get().Score());
+                                    avl::RealToString(object2D2.Get().Score(), markScore);
+                                    if (object2D2.Get().Score() < 0.9) {
+                                        error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
+                                        error_code.errorMessage = "Cannot find small object marking. Score too low";
+                                        qWarning("Cannot find small object marking. Score too low");
+                                        return error_code;
+                                    }
+                                } else
+                                {
+                                    error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
+                                    error_code.errorMessage = "Cannot find small object marking";
+                                    qWarning("Cannot find small object marking");
+                                    return error_code;
+                                }
                             }
 
                             real2 = rectangle2D1.Get().Angle();
 
-                            avs::AvsFilter_ConcatenateStrings( g_constData15, string11, g_constData16, string10, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string9.Get() );
+                            avs::AvsFilter_ConcatenateStrings( g_constData15, string11, g_constData16, string10, g_constData18, markScore, g_emptyString, g_emptyString, string9.Get() );
                         }
                         else
                         {
@@ -1933,7 +1983,6 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                             point2D1 = atl::NIL;
                             string9 = atl::NIL;
                             point2D2 = atl::NIL;
-                            circle2D1 = atl::NIL;
                         }
                     }
                     else
@@ -1941,7 +1990,6 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                         rectangle2D1 = atl::NIL;
                         point2D1 = atl::NIL;
                         point2D2 = atl::NIL;
-                        circle2D1 = atl::NIL;
                         string9 = atl::NIL;
                     }
                 }
@@ -1950,7 +1998,6 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                     rectangle2D1 = atl::NIL;
                     point2D1 = atl::NIL;
                     point2D2 = atl::NIL;
-                    circle2D1 = atl::NIL;
                     string9 = atl::NIL;
                 }
             }
@@ -1959,7 +2006,6 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
                 rectangle2D1 = atl::NIL;
                 point2D1 = atl::NIL;
                 point2D2 = atl::NIL;
-                circle2D1 = atl::NIL;
                 string9 = atl::NIL;
             }
         }
@@ -1968,7 +2014,6 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
             rectangle2D1 = atl::NIL;
             point2D1 = atl::NIL;
             point2D2 = atl::NIL;
-            circle2D1 = atl::NIL;
             string9 = atl::NIL;
         }
 
@@ -1992,24 +2037,19 @@ ErrorCodeStruct VisionModule::PR_Edge_Fitting(QString camera_name, QString pr_na
             return error_code;
         }
 
-        if (circle2D1 != atl::NIL) {
-            qInfo("Detected small hole at x: %f y: %f", circle2D1.Get().Center().X(), circle2D1.Get().Center().Y());
-        } else {
-            if (detect_small_hole) {
-                error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
-                error_code.errorMessage = "Cannot detect small hole";
-                qWarning("Cannot find the small hole");
-            }
-        }
-
-        avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 3.0f, false, atl::NIL, 1.0f), true, image2 );
-        avs::DrawCircles_SingleColor( image2, atl::ToArray< atl::Conditional< avl::Circle2D > >(circle2D1), atl::NIL, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 5.0f, false, atl::NIL, 1.0f), true, image3 );
+        avs::DrawRectangles_SingleColor( image1, atl::ToArray< atl::Conditional< avl::Rectangle2D > >(rectangle2D1), atl::NIL, avl::Pixel(255.0f, 1.0f, 255.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 3.0f, false, atl::NIL, 1.0f), true, image3 );
         avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image4 );
         avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 30.0f), true, image5 );
         stringArray1.Resize(1);
         stringArray1[0] = string9;
-        avs::DrawStrings_SingleColor( image5, stringArray1, g_constData17, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 20.0f), 25.0f, 0.0f, true, atl::NIL, image6 );
-        avl::SaveImage_Asynchronous( saveImage_AsynchronousState1, image6, atl::NIL, imageName.toStdString().c_str());
+
+        regionArray3.Resize(1);
+        regionArray3[0] = region3;
+        avs::DrawRegions_Palette( image5, regionArray3, atl::NIL, atl::NIL, 0.5f, true, image6 );
+        stringArray1.Resize(1);
+
+        avs::DrawStrings_SingleColor( image6, stringArray1, g_constData17, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 20.0f), 25.0f, 0.0f, true, atl::NIL, image7 );
+        avl::SaveImage_Asynchronous( saveImage_AsynchronousState1, image7, atl::NIL, imageName.toStdString().c_str());
     } catch (const atl::Error& error) {
         error_code.code = ErrorCode::PR_OBJECT_NOT_FOUND;
         qWarning(error.Message());

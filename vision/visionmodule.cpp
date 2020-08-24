@@ -1331,7 +1331,6 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
                 qWarning("PR oject score is too low: %f < object_score: %f", object2D1.Get().Score(), object_score);
             }
             avl::RealToString( real4, string3 );
-            avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_constData10, string3, g_emptyString, g_emptyString, g_emptyString, g_emptyString, string1.Get() );
 
             // Function AvsFilter_MakeRectangle is intended for generated code only. Consider use of proper Rectangle2D constructor instead.
             avs::AvsFilter_MakeRectangle( point2D3, real1, real2, real3, rectangle2D1.Get() );
@@ -1346,10 +1345,12 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             prResult.imageName = imageName;
             prResult.rawImageName = rawImageName;
             qInfo("Object score: %f", object2D1.Get().score);
+            atl::String markScore = "--";
             if (paramStruct->detectSmallHole && found_pr_small_object_grayModel) {
                 avl::CreateRectangleRegion( smallObjectRectangle2D, coordinateSystem2D1, image1.Width(), image1.Height(), region2, atl::NIL );
                 avl::LocateSingleObject_NCC( image1, region2, smallObjectGrayModel, 0, 1, false, 0.3f, object2D2, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
                 qInfo("Detected small hole at x: %f y: %f score: %f", object2D2.Get().Point().X(), object2D2.Get().Point().Y(), object2D2.Get().Score());
+                avl::RealToString(object2D2.Get().Score(), markScore);
                 if (object2D2.Get().Score() < 0.88) {
                     error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
                     error_code.errorMessage = "Cannot detect small hole";
@@ -1357,6 +1358,8 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
                     return error_code;
                 }
             }
+            avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_constData10, string3, " Mark Score: ", markScore, g_emptyString, g_emptyString, string1.Get() );
+
         }
         else
         {
@@ -1375,9 +1378,9 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         stringArray1.Resize(1);
         stringArray1[0] = string1;
         if (is_object_score_pass)
-            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 28.0f, 0.0f, true, atl::NIL, image3 );
+            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 22.0f, 0.0f, true, atl::NIL, image3 );
         else {
-            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 28.0f, 0.0f, true, atl::NIL, image3 );
+            avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 22.0f, 0.0f, true, atl::NIL, image3 );
         }
         avs::DrawPoints_SingleColor( image3, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D2), atl::NIL, avl::Pixel(255.0f, 115.0f, 251.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image4 );
         avs::DrawPoints_SingleColor( image4, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(0.0f, 255.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 4.0f, false, avl::PointShape::Cross, 40.0f), true, image5 );

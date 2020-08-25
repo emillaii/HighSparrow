@@ -97,51 +97,6 @@ ItemDelegate {
                                     setEnableSmallHoleDetection(checked)
                                 }
                             }
-                            Label {
-                                text: qsTr("Response")
-                                visible: displaySmallHoleDetectionSetting
-                            }
-                            TextField{
-                                color: "#57f529"
-                                visible: displaySmallHoleDetectionSetting
-                                text: smallCircleEdgeResponse
-                                font.pixelSize: 14
-                                width: 30
-                                Layout.preferredWidth: 30
-                                onEditingFinished: {
-                                    setSmallCircleEdgeResponse(text)
-                                }
-                            }
-                            Label {
-                                text: qsTr("count")
-                                visible: displaySmallHoleDetectionSetting
-                            }
-                            TextField{
-                                color: "#57f529"
-                                visible: displaySmallHoleDetectionSetting
-                                text: smallCircleScanCount
-                                font.pixelSize: 14
-                                width: 30
-                                Layout.preferredWidth: 30
-                                onEditingFinished: {
-                                    setSmallCircleScanCount(text)
-                                }
-                            }
-                            Label {
-                                text: qsTr("width")
-                                visible: displaySmallHoleDetectionSetting
-                            }
-                            TextField{
-                                color: "#57f529"
-                                visible: displaySmallHoleDetectionSetting
-                                text: smallCircleScanWidth
-                                font.pixelSize: 14
-                                width: 30
-                                Layout.preferredWidth: 30
-                                onEditingFinished: {
-                                    setSmallCircleScanWidth(text)
-                                }
-                            }
                         }
 
                         RowLayout{

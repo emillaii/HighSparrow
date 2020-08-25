@@ -1280,24 +1280,6 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
         avs::LoadObject< avl::GrayModel >( g_constData4, avl::StreamMode::Binary, g_constData5, grayModel1 );
         avs::LoadObject< avl::Region >( g_constData8, avl::StreamMode::Binary, g_constData9, region1 );
 
-        bool found_pr_small_object_grayModel = false;
-        {
-            QFileInfo fileInfo(pr_small_object_region_name);
-            if(fileInfo.isFile())
-            {
-                avs::LoadObject< avl::Rectangle2D >( pr_small_object_region_name.toStdString().c_str(), avl::StreamMode::Binary, L"Rectangle2D", smallObjectRectangle2D );
-            }
-        }
-
-        {
-            QFileInfo fileInfo(pr_small_object_grayModel_name);
-            if(fileInfo.isFile())
-            {
-                found_pr_small_object_grayModel = true;
-                avs::LoadObject< avl::GrayModel >( pr_small_object_grayModel_name.toStdString().c_str(), avl::StreamMode::Binary, L"GrayModel", smallObjectGrayModel);
-            }
-        }
-
         avl::LocateSingleObject_NCC( image1, region1, grayModel1, 0, 1, false, 0.3f, object2D1, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
         bool is_object_score_pass = true;
         if (object2D1 != atl::NIL)
@@ -1346,7 +1328,22 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
             prResult.rawImageName = rawImageName;
             qInfo("Object score: %f", object2D1.Get().score);
             atl::String markScore = "--";
-            if (paramStruct->detectSmallHole && found_pr_small_object_grayModel) {
+            if (paramStruct->detectSmallHole) {
+                {
+                    QFileInfo fileInfo(pr_small_object_region_name);
+                    if(fileInfo.isFile())
+                    {
+                        avs::LoadObject< avl::Rectangle2D >( pr_small_object_region_name.toStdString().c_str(), avl::StreamMode::Binary, L"Rectangle2D", smallObjectRectangle2D );
+                    }
+                }
+                {
+                    QFileInfo fileInfo(pr_small_object_grayModel_name);
+                    if(fileInfo.isFile())
+                    {
+                        avs::LoadObject< avl::GrayModel >( pr_small_object_grayModel_name.toStdString().c_str(), avl::StreamMode::Binary, L"GrayModel", smallObjectGrayModel);
+                    }
+                }
+
                 avl::CreateRectangleRegion( smallObjectRectangle2D, coordinateSystem2D1, image1.Width(), image1.Height(), region2, atl::NIL );
                 avl::LocateSingleObject_NCC( image1, region2, smallObjectGrayModel, 0, 1, false, 0.3f, object2D2, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
                 qInfo("Detected small hole at x: %f y: %f score: %f", object2D2.Get().Point().X(), object2D2.Get().Point().Y(), object2D2.Get().Score());

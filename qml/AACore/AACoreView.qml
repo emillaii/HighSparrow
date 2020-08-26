@@ -90,7 +90,7 @@ ItemDelegate {
                             text: qsTr("Oversampling:")
                         }
                         ComboBox {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 100
                             model: [ "1", "2"]
                             currentIndex: aaCoreParams.aaScanOversampling
                             onCurrentIndexChanged: {
@@ -101,7 +101,7 @@ ItemDelegate {
                             text: qsTr("AA Scan MTF Nyquist Frequency:")
                         }
                         ComboBox {
-                            Layout.preferredWidth: 300
+                            Layout.preferredWidth: 100
                             model: [ "1/8", "1/4" ]
                             currentIndex: aaCoreParams.aaScanMTFFrequency
                             onCurrentIndexChanged: {
@@ -137,6 +137,20 @@ ItemDelegate {
                             }
                             onEditingFinished: {
                                 aaCoreParams.setDrawTextSize(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Label {
+                            text: qsTr("Sensor Resolution Ratio:")
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 100
+                            model: [ "4:3", "16:9" ]
+                            currentIndex: aaCoreParams.selectedSensorResolutionRatio
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setSelectedSensorResolutionRatio(currentIndex)
                             }
                         }
                     }

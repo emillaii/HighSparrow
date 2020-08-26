@@ -2644,6 +2644,40 @@ ErrorCodeStruct AACoreNew::performOC_HW(QJsonValue params)
     }
     qInfo("vector size = %d, ccIndex = %d, ulIndex = %d, urIndex = %d, lrIndex = %d, llIndex = %d", vector.size(), ccIndex, ulIndex, urIndex, lrIndex, llIndex);
     qInfo("center.x() = %f, center.y() = %f, width = %f, height = %f", vector[ccIndex].center.x(), vector[ccIndex].center.y(), vector[ccIndex].width, vector[ccIndex].height);
+
+    {
+        double t1 = atan(fabs(vector[ccIndex].center.y() - vector[ulIndex].center.y()) / fabs(vector[ccIndex].center.x() - vector[ulIndex].center.x()));
+        double t2 = atan(fabs(vector[ccIndex].center.y() - vector[llIndex].center.y()) / fabs(vector[ccIndex].center.x() - vector[llIndex].center.x()));
+        double t3 = atan(fabs(vector[ccIndex].center.y() - vector[lrIndex].center.y()) / fabs(vector[ccIndex].center.x() - vector[lrIndex].center.x()));
+        double t4 = atan(fabs(vector[ccIndex].center.y() - vector[urIndex].center.y()) / fabs(vector[ccIndex].center.x() - vector[urIndex].center.x()));
+        double reference_angle = 0;
+        if (this->parameters.selectedSensorResolutionRatio() == 0) {  //This is 4:3
+            reference_angle = atan(3.0/4.0)*180/PI;
+        } else {
+            reference_angle = atan(9.0/16.0)*180/PI;
+        }
+        t1 = fabs(t1*180/PI - reference_angle);
+        t2 = fabs(t2*180/PI - reference_angle);
+        t3 = fabs(t3*180/PI - reference_angle);
+        t4 = fabs(t4*180/PI - reference_angle);
+        double avg_t = 0; int count = 0;
+        if (!isnan(t1)) {
+            avg_t += t1; count++;
+        }
+        if (!isnan(t2)) {
+            avg_t += t2; count++;
+        }
+        if (!isnan(t3)) {
+            avg_t += t3; count++;
+        }
+        if (!isnan(t4)) {
+            avg_t += t4; count++;
+        }
+        avg_t /= count;
+        qInfo("t1 : %f t2: %f t3: %f t4: %f ra: %f", t1, t2, t3, t4, avg_t);
+        map.insert("chart_theta", avg_t);
+    }
+
     offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
     offsetY = vector[ccIndex].center.y() - (vector[ccIndex].height/2);
     qInfo("OC OffsetX: %f, OC OffsetY: %f", offsetX, offsetY);

@@ -113,6 +113,8 @@ class AACoreParameters : public PropertyBase
 
     int m_aaSelectedLayer = 0;
 
+    int m_selectedSensorResolutionRatio = 0;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -143,6 +145,7 @@ public:
     Q_PROPERTY(int aaScanCurveFitErrorThreshold READ aaScanCurveFitErrorThreshold WRITE setAAScanCurveFitErrorThreshold NOTIFY aaScanCurveFitErrorThresholdChanged)
     Q_PROPERTY(int aaSelectedLayer READ aaSelectedLayer WRITE setAASelectedLayer NOTIFY aaSelectedLayerChanged)
     Q_PROPERTY(int drawTextSize READ drawTextSize WRITE setDrawTextSize NOTIFY drawTextSizeChanged)
+    Q_PROPERTY(int selectedSensorResolutionRatio READ selectedSensorResolutionRatio WRITE setSelectedSensorResolutionRatio NOTIFY selectedSensorResolutionRatioChanged)
 
     Q_PROPERTY(QString x1 READ x1 WRITE setX1 NOTIFY x1Changed)
     Q_PROPERTY(QString y1 READ y1 WRITE setY1 NOTIFY y1Changed)
@@ -442,6 +445,11 @@ public:
     int aaSelectedLayer() const
     {
         return m_aaSelectedLayer;
+    }
+
+    int selectedSensorResolutionRatio() const
+    {
+        return m_selectedSensorResolutionRatio;
     }
 
 public slots:
@@ -895,6 +903,15 @@ public slots:
         emit aaSelectedLayerChanged(m_aaSelectedLayer);
     }
 
+    void setSelectedSensorResolutionRatio(int selectedSensorResolutionRatio)
+    {
+        if (m_selectedSensorResolutionRatio == selectedSensorResolutionRatio)
+            return;
+
+        m_selectedSensorResolutionRatio = selectedSensorResolutionRatio;
+        emit selectedSensorResolutionRatioChanged(m_selectedSensorResolutionRatio);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -938,6 +955,7 @@ signals:
     void drawTextSizeChanged(int drawTextSize);
     void SensorOrientationChanged(int SensorOrientation);
     void aaSelectedLayerChanged(int aaSelectedLayer);
+    void selectedSensorResolutionRatioChanged(int selectedSensorResolutionRatio);
 };
 class AACoreStates: public PropertyBase
 {

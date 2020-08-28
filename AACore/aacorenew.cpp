@@ -2598,6 +2598,12 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
        {
           QString line = in.readLine();
           QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
+          // Check if the number of column is valid for each line
+          if (list.size() != width)
+          {
+              qWarning("Invalid number in columns!");
+              return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of columns."};
+          }
           for (int i = 0; i < list.size(); i++) {
               mat.at<cv::Vec3b>(rows, i)[0] = list[i].toInt();
               mat.at<cv::Vec3b>(rows, i)[1] = list[i].toInt();
@@ -2607,6 +2613,13 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
        }
        file.close();
     }
+    // Check if the number of columns is valid
+    if (rows != height)
+    {
+        qWarning("Invalid number in rows!");
+        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of rows."};
+    }
+
     QImage outputImage = ImageGrabbingWorkerThread::cvMat2QImage(mat);
     if (save_image)
     {

@@ -87,6 +87,7 @@ struct SmallHoleDetectionParam
     int smallHoleScanCount;
     double smallHoleRadiusMax;
     double smallHoleRadiusMin;
+    double smallObjectScore;
 
     SmallHoleDetectionParam()
     {
@@ -96,6 +97,7 @@ struct SmallHoleDetectionParam
         smallHoleScanCount = 10;
         smallHoleRadiusMax = 7;
         smallHoleRadiusMin = 6;
+        smallObjectScore = 0.8;
     }
 };
 

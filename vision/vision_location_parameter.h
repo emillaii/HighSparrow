@@ -36,6 +36,7 @@ public:
     Q_PROPERTY(int smallCircleScanCount READ smallCircleScanCount WRITE setSmallCircleScanCount NOTIFY smallCircleScanCountChanged)
     Q_PROPERTY(double smallCircleRadiusMax READ smallCircleRadiusMax WRITE setSmallCircleRadiusMax NOTIFY smallCircleRadiusMaxChanged)
     Q_PROPERTY(double smallCircleRadiusMin READ smallCircleRadiusMin WRITE setSmallCircleRadiusMin NOTIFY smallCircleRadiusMinChanged)
+    Q_PROPERTY(double smallObjectScore READ smallObjectScore WRITE setSmallObjectScore NOTIFY smallObjectScoreChanged)
     Q_PROPERTY(int retryCount READ retryCount WRITE setRetryCount NOTIFY retryCountChanged)
     Q_PROPERTY(bool closeLightAfterPR READ closeLightAfterPR WRITE setCloseLightAfterPR NOTIFY closeLightAfterPRChanged)
 
@@ -183,6 +184,11 @@ public:
     double smallCircleRadiusMin() const
     {
         return m_smallCircleRadiusMin;
+    }
+
+    double smallObjectScore() const
+    {
+        return m_smallObjectScore;
     }
 
 public slots:
@@ -449,6 +455,16 @@ public slots:
         emit smallCircleRadiusMinChanged(m_smallCircleRadiusMin);
     }
 
+    void setSmallObjectScore(double smallObjectScore)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_smallObjectScore, smallObjectScore))
+            return;
+
+        m_smallObjectScore = smallObjectScore;
+        emit smallObjectScoreChanged(m_smallObjectScore);
+    }
+
 signals:
     void prFileNameChanged(QString prFileName);
 
@@ -508,6 +524,8 @@ signals:
 
     void smallCircleRadiusMinChanged(double smallCircleRadiusMin);
 
+    void smallObjectScoreChanged(double smallObjectScore);
+
 private:
     QString m_prFileName = "";
     QString m_cameraName = "";
@@ -538,6 +556,7 @@ private:
     double m_smallCircleRadiusMax = 7;
     double m_smallCircleRadiusMin = 6;
     int m_retryCount = 3;
+    double m_smallObjectScore = 0.8;
 };
 
 

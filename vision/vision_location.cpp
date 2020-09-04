@@ -48,6 +48,7 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         paramStruct.smallHoleEdgeResponse = parameters.smallCircleEdgeResponse();
         paramStruct.smallHoleRadiusMax = parameters.smallCircleRadiusMax();
         paramStruct.smallHoleRadiusMin = parameters.smallCircleRadiusMin();
+        paramStruct.smallObjectScore = parameters.smallObjectScore();
         temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(),
                                                        parameters.prFileName(),
                                                        pr_result,

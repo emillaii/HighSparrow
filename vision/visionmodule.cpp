@@ -1343,12 +1343,24 @@ ErrorCodeStruct VisionModule::PR_Generic_NCC_Template_Matching(QString camera_na
                         avs::LoadObject< avl::GrayModel >( pr_small_object_grayModel_name.toStdString().c_str(), avl::StreamMode::Binary, L"GrayModel", smallObjectGrayModel);
                     }
                 }
-
                 avl::CreateRectangleRegion( smallObjectRectangle2D, coordinateSystem2D1, image1.Width(), image1.Height(), region2, atl::NIL );
                 avl::LocateSingleObject_NCC( image1, region2, smallObjectGrayModel, 0, 1, false, 0.3f, object2D2, atl::NIL, atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Array< avl::Image > >().Get(), atl::Dummy< atl::Conditional< atl::Array< float > > >().Get() );
                 qInfo("Detected small hole at x: %f y: %f score: %f", object2D2.Get().Point().X(), object2D2.Get().Point().Y(), object2D2.Get().Score());
                 avl::RealToString(object2D2.Get().Score(), markScore);
-                if (object2D2.Get().Score() < 0.88) {
+                if (object2D2.Get().Score() < paramStruct->smallObjectScore) {
+                    avs::AvsFilter_ConcatenateStrings( g_constData6, string2, g_constData10, string3, " Mark Score: ", markScore, g_emptyString, g_emptyString, string1.Get() );
+                    stringArray1.Resize(1);
+                    stringArray1[0] = string1;
+                    avs::DrawStrings_SingleColor( image1, stringArray1, g_constData7, atl::NIL, avl::Anchor2D::MiddleCenter, avl::Pixel(255.0f, 0.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 1.0f, false, atl::NIL, 40.0f), 22.0f, 0.0f, true, atl::NIL, image3 );
+                    regionArray1.Resize(1);
+                    regionArray1[0].AssignNonNil();
+                    regionArray1[0].Get() = region1;
+                    regionArray2.Resize(1);
+                    regionArray2[0].AssignNonNil();
+                    regionArray2[0].Get() = region2;
+                    avs::DrawRegions_SingleColor( image3, regionArray1, atl::NIL, avl::Pixel(192.0f, 255.0f, 192.0f, 0.0f), 0.3f, true, image4 );
+                    avs::DrawRegions_SingleColor( image4, regionArray2, atl::NIL, avl::Pixel(255.0f, 0.0f, 192.0f, 0.0f), 0.3f, true, image5 );
+                    avl::SaveImageToJpeg( image5 , imageName.toStdString().c_str(), atl::NIL, false );
                     error_code.code = ErrorCode::SMALL_HOLE_DETECTION_FAIL;
                     error_code.errorMessage = "Cannot detect small hole";
                     qWarning("Cannot find the small object. Detected score: %f", object2D2.Get().Score());

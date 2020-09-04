@@ -97,6 +97,27 @@ ItemDelegate {
                                     setEnableSmallHoleDetection(checked)
                                 }
                             }
+                            Label {
+                                text: qsTr("小物件 PR识别度")
+                                visible: displaySmallHoleDetectionSetting
+                            }
+                            TextField{
+                                visible: displaySmallHoleDetectionSetting
+                                color: "#57f529"
+                                text: smallObjectScore
+                                font.pixelSize: 14
+                                width: 50
+                                Layout.preferredWidth: 50
+                                onEditingFinished: {
+                                    if (text < 0.2) {
+                                        text = 0.2
+                                    }
+                                    else if (text > 0.98) {
+                                        text = 0.98
+                                    }
+                                    setSmallObjectScore(text)
+                                }
+                            }
                         }
 
                         RowLayout{

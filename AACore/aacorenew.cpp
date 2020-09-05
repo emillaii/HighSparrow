@@ -2602,6 +2602,7 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
           if (list.size() != width)
           {
               qWarning("Invalid number in columns!");
+              UIOperation::getIns()->showMessage("Error", "Invalid number in columns.", MsgBoxIcon::Error, OkBtn);
               return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of columns."};
           }
           for (int i = 0; i < list.size(); i++) {
@@ -2617,6 +2618,7 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
     if (rows != height)
     {
         qWarning("Invalid number in rows!");
+        UIOperation::getIns()->showMessage("Error", "Invalid number in rows.", MsgBoxIcon::Error, OkBtn);
         return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of rows."};
     }
 

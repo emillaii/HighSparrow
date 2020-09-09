@@ -1314,7 +1314,7 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
 
 bool AACoreNew::calculateCCSFR(cv::Mat input, double &avg_sfr, double &t_sfr, double &r_sfr, double &b_sfr, double &l_sfr, double &pattern_x, double &pattern_y)
 {
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1, input.cols/2, input.rows/2);
     if (patterns.size() == 0) {
         qWarning("Cannot detect any mtf pattern");
         return false;
@@ -1570,7 +1570,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             x2sum=x2sum+pow(realZ,2);
             xysum=xysum+realZ*dfov;
             zScanCount++;
-            emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
+            emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1, parameters.customCenterX(), parameters.customCenterY());
             img.release();
             dst.release();
         }
@@ -1690,7 +1690,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             cv::Mat dst;
             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
             cv::resize(img, dst, size);
-            emit sfrWorkerController->calculate(i, realZ, dst,  parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
+            emit sfrWorkerController->calculate(i, realZ, dst,  parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1, parameters.customCenterX(), parameters.customCenterY());
             img.release();
             dst.release();
             zScanCount++;
@@ -1744,7 +1744,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
             cv::Mat dst;
             cv::Size size(img.cols/resize_factor, img.rows/resize_factor);
             cv::resize(img, dst, size);
-            emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(),  false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
+            emit sfrWorkerController->calculate(i, realZ, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(),  false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1, parameters.customCenterX(), parameters.customCenterY());
             img.release();
             dst.release();
             zScanCount++;
@@ -1807,7 +1807,7 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
                 current_dfov.insert(QString::number(i),dfov);
             qInfo("fov: %f  sut_x: %f", dfov, sut->carrier->GetFeedBackPos().X);
             //Start calculate MTF
-            std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+            std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1, img.cols/2, img.rows/2);
             //Set the Image ROI Size for CC 4 edges
             //            cv::Rect roi; roi.width = 32; roi.height = 32;
             //            cv::Mat cropped_l_img, cropped_r_img, cropped_t_img, cropped_b_img;
@@ -2201,7 +2201,7 @@ void AACoreNew::performAAOfflineCCOnly()
             qWarning("Black screen check fail");
             return;
         }
-        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1, input_img.cols/2, input_img.rows/2);
         for (size_t i = 0; i < patterns.size(); i++) {
             qInfo("Pattern x: %f y: %f area: %f", patterns.at(i).center.x(), patterns.at(i).center.y(), patterns.at(i).area);
         }
@@ -2284,6 +2284,7 @@ void AACoreNew::performAAOffline()
             break;
         }
         QString filename = "C:\\Users\\emil\\Desktop\\AAProject\\AOA\\2020-08-04\\intensity 100_2\\zscan_"  + QString::number(i+1) + ".bmp";
+        //QString filename = "C:\\Users\\emil\\Desktop\\AAProject\\AOA\\2020-09-05Grabber\\zscan_"  + QString::number(i+1) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\AA fail\\7.28\\110\\aoa7\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "C:\\Users\\emil\\Desktop\\sunny_field\\aascan\\2\\2\\zscan_" + QString::number(i+1) + ".bmp";
         //QString filename = "aa_log\\aa_log_bug\\2018-11-10T14-42-55-918Z\\zscan_" + QString::number(i) + ".bmp";
@@ -2313,12 +2314,12 @@ void AACoreNew::performAAOffline()
         xysum=xysum+currZ*dfov;                 //calculate sigma(xi*yi)
         dFovMap.insert(QString::number(i), dfov);
 
-        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1);
+        emit sfrWorkerController->calculate(i, start+i*step_size, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), false, parameters.aaScanMTFFrequency()+1, parameters.aaScanOversampling()+1, parameters.customCenterX(), parameters.customCenterY());
         img.release();
         dst.release();
         sfrCount++;
     }
-    int timeout=2000;
+    int timeout=3000;
     while(this->clustered_sfr_map.size() != sfrCount && timeout > 0) {
         Sleep(10);
         timeout--;
@@ -2905,7 +2906,7 @@ bool AACoreNew::aoaMTF(bool saveImage, bool isLoopTest)
        cv::imwrite(rawimageName.toStdString().c_str(), input_img);
 
    QElapsedTimer timer; timer.start();
-   std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+   std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1, input_img.cols/2, input_img.rows/2);
    if (patterns.size() == 0) {
        qWarning("Cannot find mark pattern");
        return false;
@@ -3097,7 +3098,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     sfr_tol[3] = params["08F_TOL"].toDouble(-1);
 
     cv::Mat input_img = cv::imread("C:\\Users\\emil\\Desktop\\AAProject\\AOA\\2020-08-03\\1.bmp");
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1, input_img.cols/2, input_img.rows/2);
     vector<double> sfr_l_v, sfr_r_v, sfr_t_v, sfr_b_v;
     cv::Rect roi; roi.width = 32; roi.height = 32;
     double rect_width = 0;
@@ -3303,7 +3304,7 @@ ErrorCodeStruct AACoreNew::performMTFNew(QJsonValue params, bool write_log)
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
     }
 
-    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1);
+    std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(input_img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), -1, input_img.cols/2, input_img.rows/2);
     if (patterns.size() == 0) {
         qWarning("Cannot find any mark pattern");
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, error};
@@ -3646,7 +3647,7 @@ ErrorCodeStruct AACoreNew::performMTF(QJsonValue params)
     cv::resize(img, dst, size);
     qInfo("FOV: %f img resize: %d %d time elapsed: %d", fov, dst.cols, dst.rows, timer.elapsed() - start_time);
     start_time = timer.elapsed();
-    emit sfrWorkerController->calculate(0, 0, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), true, resize_factor);
+    emit sfrWorkerController->calculate(0, 0, dst, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), true, resize_factor, parameters.customCenterX(), parameters.customCenterY());
     int timeout=1000;
     while(this->clustered_sfr_map.size() != 1 && timeout >0) {
         Sleep(10);
@@ -4717,7 +4718,7 @@ std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImag
 
 double AACoreNew::calculateDFOV(cv::Mat img)
 {
-    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), 1);
+    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea(), 1, img.cols/2, img.rows/2);
     if (vector.size() == 4) {
         double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
         double d2 = sqrt(pow((vector[3].center.x() - vector[1].center.x()), 2) + pow((vector[3].center.y() - vector[1].center.y()), 2));

@@ -13,9 +13,9 @@ bool is_cc_falling = false, is_ul_falling = false, is_ur_falling = false, is_ll_
 
 int count = 0;
 
-void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity, int min_area, int max_area, bool is_display_image, int freq_factor, int overSampling)
+void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intensity, int min_area, int max_area, bool is_display_image, int freq_factor, int overSampling, int customCenterX, int customCenterY)
 {
-    qInfo("Max I: %d Min A: %d Max A: %d", max_intensity, min_area, max_area);
+    qInfo("Max I: %d Min A: %d Max A: %d customCenterX: %d customCenterY: %d", max_intensity, min_area, max_area, customCenterX, customCenterY);
     QElapsedTimer timerTest;
     timerTest.start();
     if (index == 0) {  //Reset all the curve analysis
@@ -25,10 +25,10 @@ void SfrWorker::doWork(unsigned int index, double z, cv::Mat img, int max_intens
     vector<Sfr_entry> sv_result;
     {
         std::vector<MTF_Pattern_Position> vec;
-        double imageCenterX = img.cols/2;
-        double imageCenterY = img.rows/2;
+        double imageCenterX = customCenterX;
+        double imageCenterY = customCenterY;
         double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
-        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity, min_area/(overSampling*overSampling), max_area/(overSampling*overSampling), -1);
+        std::vector<AA_Helper::patternAttr> patterns = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, max_intensity, min_area/(overSampling*overSampling), max_area/(overSampling*overSampling), -1, imageCenterX, imageCenterY);
 
         QList<QProcess *> processList;
         QList<QString> filenameList;

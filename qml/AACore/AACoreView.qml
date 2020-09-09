@@ -125,6 +125,38 @@ ScrollView {
                     }
 
                     RowLayout {
+                        Label {
+                            text: qsTr("Custom Center X: ")
+                        }
+                        TextField {
+                            text: aaCoreParams.customCenterX
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: -1
+                                top: 9999
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCustomCenterX(text)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Custom Center Y: ")
+                        }
+                        TextField {
+                            text: aaCoreParams.customCenterY
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: -1
+                                top: 9999
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setCustomCenterY(text)
+                            }
+                        }
+                    }
+
+
+                    RowLayout {
                         CheckBox {
                             text: qsTr("使能zpeak系数:")
                             checked: aaCoreParams.enableZpeakCoefficient

@@ -143,6 +143,10 @@ class AACoreParameters : public PropertyBase
 
     QString m_materialId;
 
+    int m_customCenterX = -1;
+
+    int m_customCenterY = -1;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -217,6 +221,8 @@ public:
     Q_PROPERTY(QString vcmRegAddress READ vcmRegAddress WRITE setVCMRegAddress NOTIFY vcmRegAddressChanged)
     Q_PROPERTY(int tiltSelection READ tiltSelection WRITE setTiltSelection NOTIFY tiltSelectionChanged)
     Q_PROPERTY(QString materialId READ materialId WRITE setMaterialId NOTIFY materialIdChanged)
+    Q_PROPERTY(int customCenterX READ customCenterX WRITE setCustomCenterX NOTIFY customCenterXChanged)
+    Q_PROPERTY(int customCenterY READ customCenterY WRITE setCustomCenterY NOTIFY customCenterYChanged)
 
     double EFL() const
     {
@@ -555,6 +561,16 @@ public:
     QString materialId() const
     {
         return m_materialId;
+    }
+
+    int customCenterX() const
+    {
+        return m_customCenterX;
+    }
+
+    int customCenterY() const
+    {
+        return m_customCenterY;
     }
 
 public slots:
@@ -1153,6 +1169,24 @@ public slots:
         emit materialIdChanged(m_materialId);
     }
 
+    void setCustomCenterX(int customCenterX)
+    {
+        if (m_customCenterX == customCenterX)
+            return;
+
+        m_customCenterX = customCenterX;
+        emit customCenterXChanged(m_customCenterX);
+    }
+
+    void setCustomCenterY(int customCenterY)
+    {
+        if (m_customCenterY == customCenterY)
+            return;
+
+        m_customCenterY = customCenterY;
+        emit customCenterYChanged(m_customCenterY);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1212,6 +1246,8 @@ signals:
     void tiltSelectionChanged(int tiltSelection);
     void materialId(QString materialId);
     void materialIdChanged(QString materialId);
+    void customCenterXChanged(int customCenterX);
+    void customCenterYChanged(int customCenterY);
 };
 class AACoreStates: public PropertyBase
 {

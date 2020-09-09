@@ -115,65 +115,25 @@ bool VisionModule::grabImageFromCamera(QString cameraName, avl::Image &image)
         qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
         return false;
     }
-    QPixmap p = QPixmap::fromImage(camera->getNewImage());
-    QImage q2 = p.toImage();
-    q2 = q2.convertToFormat(QImage::Format_RGB888);
-    avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-    image = image2;
 
-    //    qInfo("grabImageFromCamera current_thread_id: %d main_thread_id", this->thread()->currentThreadId(), this->threadId);
-    //    if (serverMode == 1) { //If vision module 2, need to ask vision module 1 to get image
-    //         if (this->thread()->currentThreadId() == this->threadId) //Main thread handle.
-    //         {
-    //             QRemoteObjectPendingReply<QByteArray> reply = visionRep->getImageEx(cameraName);
-    //             if (reply.waitForFinished()){
-    //                 QByteArray byteArray = reply.returnValue();
-    //                 QImage img((uchar *)byteArray.data(), visionRep->width(), visionRep->height(), (QImage::Format)visionRep->imgFormat());
-    //                 QPixmap p = QPixmap::fromImage(img);
-    //                 QImage q2 = p.toImage();
-    //                 q2 = q2.convertToFormat(QImage::Format_RGB888);
-    //                 avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-    //                 image = image2;
-    //             } else {
-    //                 qWarning("grabImageFromCamera fail from main thread handle");
-    //                 return false;
-    //             }
-    //         } else { //Call QTRO in another thread
-    //             QImage img = emit grabImageFromMainThreadSig(cameraName);
-    //             if (img.isNull()) {
-    //                 qWarning("grabImageFromCamera fail from another thread handle");
-    //                 return false;
-    //             }
-    //             QPixmap p = QPixmap::fromImage(img);
-    //             QImage q2 = p.toImage();
-    //             q2 = q2.convertToFormat(QImage::Format_RGB888);
-    //             avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-    //             image = image2;
-    //         }
-    //    } else {
-    //        BaslerPylonCamera *camera = Q_NULLPTR;
-    //        if (cameraName.contains(DOWNLOOK_VISION_CAMERA)) { camera = downlookCamera; }
-    //        else if (cameraName.contains(UPLOOK_VISION_CAMERA)) { camera = uplookCamera; }
-    //        else if (cameraName.contains(PICKARM_VISION_CAMERA)) { camera = pickarmCamera; }
-    //        else if (cameraName.contains(CAMERA_AA2_DL)) { camera = aa2DownlookCamera; }
-    //        else if (cameraName.contains(CAMERA_SPA_DL)) { camera = sensorPickarmCamera; }
-    //        else if (cameraName.contains(CAMERA_LPA_UL)) { camera = sensorUplookCamera; }
-    //        else if (cameraName.contains(CAMERA_LPA_BARCODE)) { camera = barcodeCamera; }
-    //        if (camera == Q_NULLPTR) {
-    //            qWarning("Cannot find camera %s", cameraName.toStdString().c_str());
-    //            return false;
-    //        }
-    //        if (!camera->isCameraGrabbing())
-    //        {
-    //            qWarning("camera grabbing fail %s", cameraName.toStdString().c_str());
-    //            return false;
-    //        }
-    //        QPixmap p = QPixmap::fromImage(camera->getNewImage());
-    //        QImage q2 = p.toImage();
-    //        q2 = q2.convertToFormat(QImage::Format_RGB888);
-    //        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
-    //        image = image2;
-    //    }
+    for (int i = 0; i < 3; i++)
+    {
+        QPixmap p = QPixmap::fromImage(camera->getNewImage());
+        QImage q2 = p.toImage();
+        q2 = q2.convertToFormat(QImage::Format_RGB888);
+        avl::Image image2(q2.width(), q2.height(), q2.bytesPerLine(), avl::PlainType::Type::UInt8, q2.depth() / 8, q2.bits());
+        image = image2;
+
+        QPixmap p1 = QPixmap::fromImage(camera->getNewImage());
+        QImage q21 = p1.toImage();
+        q21 = q21.convertToFormat(QImage::Format_RGB888);
+        avl::Image image3(q21.width(), q21.height(), q21.bytesPerLine(), avl::PlainType::Type::UInt8, q21.depth() / 8, q21.bits());
+
+        float score = 0;
+        avl::ImageCorrelation( image2, image3, atl::NIL, avl::CorrelationMeasure::NormalizedCrossCorrelation, score );
+        qInfo("correlation score : %f", score);
+        if (score > 0.95) break;
+    }
     return true;
 }
 
@@ -500,7 +460,10 @@ void VisionModule::testVision()
     //qInfo("Glue inspection reuslt: %s time: %d", imageName.toStdString().c_str(), timer.elapsed());
     PRResultStruct prResult;
     //this->PR_Edge_Fitting(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\testLens_edgeModel.avdata", prResult, 0.6, true);
-    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder.avdata", prResult);
+    SmallHoleDetectionParam params;
+    params.detectSmallHole = true;
+    params.smallObjectScore = 0.9;
+    this->PR_Generic_NCC_Template_Matching(DOWNLOOK_VISION_CAMERA, "config\\prConfig\\lens_holder.avdata", prResult, 0.8, 3, &params);
     //this->PR_Edge_Template_Matching(DOWNLOOK_VISION_CAMERA, "prConfig\\downlook_edgeModel.avdata", prResult);
     //this->PR_Prism_Only_Matching(DOWNLOOK_VISION_CAMERA, prResult);
     //this->PR_Prism_SUT_Matching(DOWNLOOK_VISION_CAMERA, prResult);

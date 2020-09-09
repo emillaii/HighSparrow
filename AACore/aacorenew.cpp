@@ -2878,7 +2878,7 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
             bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*(parameters.mtfFrequency()+1));
             if (!ret) {
                 qWarning("Cannot calculate MTF in the detected pattern");
-                return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
+                //return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};
             }
             double avg_sfr = ( t_sfr + r_sfr + b_sfr + l_sfr)/4;
             vec.emplace_back(patterns[i].center.x(), patterns[i].center.y(),

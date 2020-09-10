@@ -38,6 +38,7 @@ public:
     bool saveImage(QString imageName);
 public:
     VisionLocationParameter parameters;
+    Pixel2Mech* getMapping () { return mapping; }
 private:
     QString last_image_name = "";
     VisionModule* vison;

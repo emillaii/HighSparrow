@@ -75,6 +75,8 @@ public:
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
     Q_INVOKABLE void clearCurrentDispenseCount();
+    Q_INVOKABLE void drawPoint1(double x, double y);
+    Q_INVOKABLE void drawPoint2(double x, double y);
     ErrorCodeStruct performVCMInit(QJsonValue params);
     ErrorCodeStruct performVCMDirectMode(QJsonValue params);
     ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);
@@ -143,6 +145,7 @@ private:
     void SetProduct();
     double getSFRDev_mm(int count,double numbers,...);
     double getzPeakDev_um(int count,double numbers,...);
+    QImage dispenseImageCache;
 private:
     QString sensorID = "";
     int serverMode = 0;
@@ -158,6 +161,7 @@ private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QVariantMap current_dfov;
+    QPointF dispenseDrawPoint1, dispenseDrawPoint2;
     double current_fov_slope;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;

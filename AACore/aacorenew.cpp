@@ -1408,10 +1408,12 @@ ErrorCodeStruct AACoreNew::performDispense(QJsonValue params)
             //ToDo: return QImage from this function
             if (!glueInspectionImageName.isEmpty()) {
                 QImage image(glueInspectionImageName);
+                dispenseImageCache = image;
                 dispenseImageProvider->setImage(image);
                 emit callQmlRefeshImg(3);  //Emit dispense image to QML
             } else {
                 QImage image(imageNameAfterDispense);
+                dispenseImageCache = image;
                 dispenseImageProvider->setImage(image);
                 emit callQmlRefeshImg(3);  //Emit dispense image to QML
             }
@@ -4552,6 +4554,45 @@ void AACoreNew::clearCurrentDispenseCount()
 {
     this->parameters.setDispenseCount(0);
 }
+
+void AACoreNew::drawPoint1(double x, double y)
+{
+    if (dispenseImageCache.isNull()) return;
+    dispenseDrawPoint1.setX(x);
+    dispenseDrawPoint1.setY(y);
+    QImage img = dispenseImageCache;
+    QPainter qPainter(&img);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setPen(QPen(Qt::blue, 10.0));
+    qPainter.drawPoint(QPointF(x, y));
+    dispenseImageProvider->setImage(img);
+    emit callQmlRefeshImg(3);
+}
+
+void AACoreNew::drawPoint2(double x, double y)
+{
+    if (dispenseImageCache.isNull()) return;
+    dispenseDrawPoint2.setX(x);
+    dispenseDrawPoint2.setY(y);
+    QImage img = dispenseImageCache;
+    QPainter qPainter(&img);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setPen(QPen(Qt::blue, 10.0));
+    qPainter.drawPoint(dispenseDrawPoint1);
+    qPainter.drawPoint(dispenseDrawPoint2);
+    qPainter.setPen(QPen(Qt::cyan, 5.0));
+    qPainter.drawLine(dispenseDrawPoint1, dispenseDrawPoint2);
+    QPointF m1 = this->sut->vision_downlook_location->getMapping()->pixel2MechPoint(dispenseDrawPoint1);
+    QPointF m2 = this->sut->vision_downlook_location->getMapping()->pixel2MechPoint(dispenseDrawPoint2);
+    double distance = sqrt(pow(m1.x() - m2.x(), 2) + pow(m1.y() - m2.y(), 2));
+    qInfo("Measure distance: %f", distance);
+    qPainter.setBrush(Qt::NoBrush);
+    qPainter.setFont(QFont("Times", 40, QFont::Light));
+    qPainter.drawText(30 , 50, QString::number(distance, 'g', 4));
+    dispenseImageProvider->setImage(img);
+    emit callQmlRefeshImg(3);
+}
+
 
 void AACoreNew::aaCoreParametersChanged()
 {

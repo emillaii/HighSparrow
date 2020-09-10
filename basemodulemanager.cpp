@@ -807,6 +807,7 @@ bool BaseModuleManager::loadParameters()
     {
         sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
         sensor_pickarm.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
+        sensor_tray_loder_module.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE),SENSOR_TRAY_LOADER_PARAMETER);
 
         QMap<QString,PropertyBase*> temp_map;
         temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
@@ -865,6 +866,7 @@ bool BaseModuleManager::saveParameters()
     {
         sensor_loader_module.saveJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
         sensor_pickarm.parameters.saveJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
+        sensor_tray_loder_module.parameters.saveJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE),SENSOR_TRAY_LOADER_PARAMETER);
 
         QMap<QString,PropertyBase*> temp_map;
         temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
@@ -932,7 +934,13 @@ void BaseModuleManager::showMachineMap()
 void BaseModuleManager::loadModuleParameter(QString module_name)
 {
     if(module_name == sut_module.parameters.moduleName())
-          sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
+    {
+        sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
+    }
+    else if(module_name == sensor_tray_loder_module.parameters.moduleName())
+    {
+        sensor_tray_loder_module.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE),SENSOR_TRAY_LOADER_PARAMETER);
+    }
 }
 
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)

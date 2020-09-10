@@ -31,6 +31,7 @@
 #define SENSOR_PICKARM_FILE         "sensorPickArmConfig.json"
 #define SENSOR_PICKARM_PARAMETER     "sensor_pickarm"
 #define SENSOR_TRAY_LOADER_FILE     "sensorTrayLoaderConfig.json"
+#define SENSOR_TRAY_LOADER_PARAMETER     "sensor_tray_loader"
 #define LUT_CARRIER_FILE            "lutCarrierConfig.json"
 #define LUT_CARRIER_PARAMETER       "lut"
 #define LUT_FILE                    "lutConfig.json"

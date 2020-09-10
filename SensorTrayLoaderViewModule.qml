@@ -42,6 +42,12 @@ ItemDelegate {
                         sensor_tray_loader_module_motions.open()
                     }
                 }
+                Button{
+                    text:qsTr("加载")
+                    onClicked:{
+                        baseModuleManager.loadModuleParameter(sensor_tray_loader_module_parameter.moduleName)
+                    }
+                }
             }
             GroupBox{
                 title: qsTr("进盘弹夹")

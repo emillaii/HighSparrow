@@ -47,41 +47,16 @@ void DispenseModule::updatePath()
     QVector<QPoint> map_path = vision->Read_Dispense_Path();
     mechPoints.clear();
 
-    if (pattern_type == 0)  // Normal pattern
+    foreach(QPoint pt, map_path)
     {
-        foreach(QPoint pt, map_path)
-        {
-            QPointF mechPoint;
-            if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
-            {
-                mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
-            }
-        }
-        dispenser->parameters.setSpeedCount(mechPoints.size());
-        qInfo("read point :%d",mechPoints.size());
-    }
-    else if (pattern_type == 1) // Circle, 2 points in mech point vector
-    {
-        // Add opposite point from start point
-        QPointF oppositePoint;
-        oppositePoint.setX(2 * center.x() - map_path.front().x());
-        oppositePoint.setY(2 * center.y() - map_path.front().y());
         QPointF mechPoint;
-        if(calibration->getDeltaDistanceFromCenter(oppositePoint, mechPoint))
+        if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
         {
             mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
         }
-
-        // Add other points in circle
-        foreach(QPoint pt, map_path)
-        {
-            QPointF mechPoint;
-            if(calibration->getDeltaDistanceFromCenter(pt, mechPoint))
-            {
-                mechPoints.push_back(QPointF(-mechPoint.x(), -mechPoint.y()));
-            }
-        }
     }
+    dispenser->parameters.setSpeedCount(mechPoints.size());
+    qInfo("read point :%d",mechPoints.size());
     emit callQmlRefeshImg(12);
 }
 
@@ -233,17 +208,34 @@ bool DispenseModule::performDispense()
        qInfo("point too small :%d",temp_path.size());
        return false;
     }
-    for (int i = 0; i < temp_path.size(); ++i)
+    if (pattern_type == 0)
     {
-       QVector<double> pos;
-       PATH_POINT_TYPE type = PATH_POINT_LINE;
-       pos.append(temp_path[i].X);
-       pos.append(temp_path[i].Y);
-       pos.append(temp_path[i].Z);
-       if (i == temp_path.size() - 1) type = PATH_POINT_CLOSE_VALVE;
-       else if (i == 0) type = PATH_POINT_CLOSE_VALVE;
-       else type = PATH_POINT_OPEN_VALVE;
-       dispense_path.append(DispensePathPoint(3,pos,type));
+        for (int i = 0; i < temp_path.size(); ++i)
+        {
+           QVector<double> pos;
+           PATH_POINT_TYPE type = PATH_POINT_LINE;
+           pos.append(temp_path[i].X);
+           pos.append(temp_path[i].Y);
+           pos.append(temp_path[i].Z);
+           if (i == temp_path.size() - 1) type = PATH_POINT_CLOSE_VALVE;
+           else if (i == 0) type = PATH_POINT_CLOSE_VALVE;
+           else type = PATH_POINT_OPEN_VALVE;
+           dispense_path.append(DispensePathPoint(3,pos,type));
+        }
+    }
+    else if (pattern_type == 1)
+    {
+        for (int i = 0; i < temp_path.size(); ++i)
+        {
+           QVector<double> pos;
+           PATH_POINT_TYPE type = PATH_POINT_LINE;
+           pos.append(temp_path[i].X);
+           pos.append(temp_path[i].Y);
+           pos.append(temp_path[i].Z);
+           if (i == 0) type = PATH_POINT_CLOSE_VALVE;
+           else type = PATH_POINT_OPEN_VALVE;
+           dispense_path.append(DispensePathPoint(3,pos,type));
+        }
     }
 
     qInfo("Dispense start");

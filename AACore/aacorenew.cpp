@@ -18,6 +18,8 @@
 #define PI  3.14159265
 #include <math.h>
 
+#define HW_IMAGE_DIR "D:\\intensity_data\\img"
+
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY, vector<double> & y_output) {
     size_t n = x.size();
 
@@ -2580,56 +2582,75 @@ ErrorCodeStruct AACoreNew::performIRCameraCapture(QJsonValue params)
     int delay = params["delay"].toInt(0);
     int width = params["width"].toInt(0);
     int height = params["height"].toInt(0);
-    QString dataFilename = params["filename"].toString();
     bool save_image = params["save_image"].toInt();
-    QString imageFilename = params["image_file_name"].toString();
     performCommand(params);   // TO Be test
     QThread::msleep(delay);
 
-    qInfo("Perform init sensor");
+    QDir dir(HW_IMAGE_DIR);
+    QStringList nameFilters;
+    nameFilters << "*.txt";
+    QStringList dataFileNames = dir.entryList(nameFilters, QDir::Files|QDir::Readable, QDir::Name);
+    QStringList imageFileNames;
+
+    qInfo("Transform txt to image");
     QFile file;
-    file.setFileName(dataFilename);
-    cv::Mat mat(height, width, CV_8UC3);
-    int rows = 0;
-    if (file.open(QIODevice::ReadOnly))
+    for (int i=0;i<dataFileNames.size();i++)
     {
-       QTextStream in(&file);
-       while (!in.atEnd())
-       {
-          QString line = in.readLine();
-          QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
-          // Check if the number of column is valid for each line
-          if (list.size() != width)
-          {
-              qWarning("Invalid number in columns!");
-              UIOperation::getIns()->showMessage("Error", "Invalid number in columns.", MsgBoxIcon::Error, OkBtn);
-              return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of columns."};
-          }
-          for (int i = 0; i < list.size(); i++) {
-              mat.at<cv::Vec3b>(rows, i)[0] = list[i].toInt();
-              mat.at<cv::Vec3b>(rows, i)[1] = list[i].toInt();
-              mat.at<cv::Vec3b>(rows, i)[2] = list[i].toInt();
-          }
-          rows++;
-       }
-       file.close();
-    }
-    // Check if the number of columns is valid
-    if (rows != height)
-    {
-        qWarning("Invalid number in rows!");
-        UIOperation::getIns()->showMessage("Error", "Invalid number in rows.", MsgBoxIcon::Error, OkBtn);
-        return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of rows."};
+        QString tempFileName(HW_IMAGE_DIR);
+        file.setFileName(tempFileName.append("\\").append(dataFileNames[i]));
+        cv::Mat mat(height, width, CV_8UC3);
+        int rows = 0;
+        if (file.open(QIODevice::ReadOnly))
+        {
+           QTextStream in(&file);
+           while (!in.atEnd())
+           {
+              QString line = in.readLine();
+              QStringList list = line.split(QRegExp(","), QString::SkipEmptyParts);
+              // Check if the number of column is valid for each line
+              if (list.size() != width)
+              {
+                  qWarning("Invalid number in columns! File name: %s", dataFileNames[i].toStdString().c_str());
+                  UIOperation::getIns()->showMessage("Error", "Invalid number in columns.", MsgBoxIcon::Error, OkBtn);
+                  return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of columns."};
+              }
+              for (int i = 0; i < list.size(); i++) {
+                  mat.at<cv::Vec3b>(rows, i)[0] = list[i].toInt();
+                  mat.at<cv::Vec3b>(rows, i)[1] = list[i].toInt();
+                  mat.at<cv::Vec3b>(rows, i)[2] = list[i].toInt();
+              }
+              rows++;
+           }
+           file.close();
+        }
+
+        // Check if the number of columns is valid
+        if (rows != height)
+        {
+            qWarning("Invalid number in rows! File Name: %s", dataFileNames[i].toStdString().c_str());
+            UIOperation::getIns()->showMessage("Error", "Invalid number in rows.", MsgBoxIcon::Error, OkBtn);
+            return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "Invalid number of rows."};
+        }
+
+        // Save image files if needed
+        QString imageFileName;
+        imageFileName = tempFileName.replace(".txt",".bmp");
+        QImage outputImage = ImageGrabbingWorkerThread::cvMat2QImage(mat);
+        if (save_image)
+        {
+            imageFileNames.append(imageFileName);
+            cv::imwrite(imageFileName.toStdString(), mat);
+        }
+
+        // Show last image in UI
+        if (i == dataFileNames.size() - 1)
+        {
+            qInfo("Show image in UI, file name: %s", imageFileName.toStdString().c_str());
+            ocImageProvider_1->setImage(outputImage);
+            emit callQmlRefeshImg(1);
+        }
     }
 
-    QImage outputImage = ImageGrabbingWorkerThread::cvMat2QImage(mat);
-    if (save_image)
-    {
-        cv::imwrite(imageFilename.toStdString(), mat);
-    }
-
-    ocImageProvider_1->setImage(outputImage);
-    emit callQmlRefeshImg(1);
     return ErrorCodeStruct {ErrorCode::OK, ""};
 }
 

@@ -8,7 +8,7 @@ $(document).ready(function () {
   };
   var init_oc_params = { enable_motion: 1, fast_mode: 0, is_debug: 0, delay_in_ms: 200, retry: 0, is_check: 0, x_limit_in_um: 5, y_limit_in_um: 5 };
   var init_hw_tilt_params = { enable_motion: 0, image_processing_method: 0, exposure_time: 5000, delay: 500 };
-  var init_hw_camera_capture_params = { directory: '', command: '', delay: 500, width: 0, height: 0, filename: '', save_image: 0, image_file_name: '' };
+  var init_hw_camera_capture_params = { directory: '', command: '', delay: 500, width: 0, height: 0, save_image: 0 };
   var init_hw_oc_params = { image_file_name: '', enable_motion: 1 };
   var init_hw_aa_params = { zpos_file_name: '' };
   var init_hw_mtf_params = { image_file_name: '' };
@@ -96,9 +96,7 @@ $(document).ready(function () {
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Delay after camera capture: <input type=\"number\" id=\"hw_camera_capture_delay\"></div>");
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Width: <input type=\"text\" id=\"hw_camera_capture_width\"></div>");
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Height: <input type=\"text\" id=\"hw_camera_capture_height\"></div>");
-  $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Filename: <input type=\"text\" id=\"hw_camera_capture_filename\"></div>");
   $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Save image: <select id=\"hw_camera_capture_save_image\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
-  $hw_camera_capture_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_camera_capture_image_file_name\"></div>");
   
   $hw_oc_operator_properties.append("<div style=\"margin-top:20px\">Image file name: <input type=\"text\" id=\"hw_oc_image_file_name\"></div>");
   $hw_oc_operator_properties.append("<div style=\"margin-top:20px\">Enable Motion: <select id=\"hw_oc_enable_motion\" size=\"2\"><option value=0>False</option><option value=1>True</option></select></div>");
@@ -287,9 +285,7 @@ $(document).ready(function () {
 		$('#hw_camera_capture_delay').val(params["delay"]);
 		$('#hw_camera_capture_width').val(params["width"]);
 		$('#hw_camera_capture_height').val(params["height"]);
-		$('#hw_camera_capture_filename').val(params["filename"]);
 		$('#hw_camera_capture_save_image').val(params["save_image"]);
-		$('#hw_camera_capture_image_file_name').val(params["image_file_name"]);
 	  } else if (operatorId.includes("HW Center")) {
 		console.log("Show HW Center");
 		$hw_oc_operator_properties.show();
@@ -789,7 +785,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Camera Capture")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_camera_capture_operator_title').val());
-	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), width: Number($('#hw_camera_capture_width').val()), height: Number($('#hw_camera_capture_height').val()), filename: $('#hw_camera_capture_filename').val(), save_image: Number($('#hw_camera_capture_save_image').val()), image_file_name: $('#hw_camera_capture_image_file_name').val()};
+	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), width: Number($('#hw_camera_capture_width').val()), height: Number($('#hw_camera_capture_height').val()), save_image: Number($('#hw_camera_capture_save_image').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Center")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_oc_operator_title').val());
@@ -1036,7 +1032,7 @@ $(document).ready(function () {
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
     } else if (selectedOperatorId.includes("HW Camera Capture")){
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_camera_capture_operator_title').val());
-	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), width: Number($('#hw_camera_capture_width').val()), height: Number($('#hw_camera_capture_height').val()), filename: $('#hw_camera_capture_filename').val(), save_image: Number($('#hw_camera_capture_save_image').val()), image_file_name: $('#hw_camera_capture_image_file_name').val()};
+	  var params = { directory: $('#hw_camera_capture_directory').val(), command: $('#hw_camera_capture_command').val(), delay: Number($('#hw_camera_capture_delay').val()), width: Number($('#hw_camera_capture_width').val()), height: Number($('#hw_camera_capture_height').val()), save_image: Number($('#hw_camera_capture_save_image').val())};
       $flowchart.flowchart('setOperatorParams', selectedOperatorId, params);
 	} else if (selectedOperatorId.includes("HW Center")) {
 	  $flowchart.flowchart('setOperatorTitle', selectedOperatorId, $('#hw_oc_operator_title').val());

@@ -202,6 +202,134 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
     return true;
 }
 
+bool Dispenser::DispenseCircle(QVector<DispensePathPoint> &dispense_path)
+{
+    if(GetState()!= DISPENSER_IDLE)
+    {
+        qInfo("Dispenser NOT READY!");
+        return false;
+    }
+    for(int i=0; i<dispense_path.length(); i++)
+    {
+        if(dispense_path[i].dem!=dem)
+        {
+            qInfo("Dispenser's Dem is %d BUT dem of point %d is %d",dem,i,dispense_path[i].dem);
+            return false;
+        }
+    }
+    int nPoint_Index = 0;
+    QVector<int> axis;
+    QVector<int> axis_combine;
+    QVector<double> axis_max_vel;
+    QVector<double> axis_max_acc;
+    QVector<double> axis_max_jerk;
+    const XtMotor * m;
+    for(int i = 0; i<executive_motors.length(); i++)
+    {
+        m = executive_motors[i];
+        axis.append(m->AxisId());
+        axis_combine.append(1);
+        axis_max_vel.append(m->GetMaxVel());
+        axis_max_acc.append(m->GetMaxAcc());
+        axis_max_jerk.append(m->GetMaxJerk());
+    }
+    int res = XT_Controler_Extend::Set_Curve_Param(curve_id, 0.1, dem, axis.data(),
+                                                   axis_max_vel.data(), axis_max_acc.data(), axis_max_jerk.data(),
+                                                   axis_combine.data());
+    if (1 != res)
+    {
+        qInfo("Set_Curve_Param failed.");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+
+    // Add start point
+    res = XT_Controler_Extend::Append_Line_Pos(curve_id, dem, axis.data(), dispense_path[0].p.data(),
+                                               parameters.maximumSpeed(), parameters.maximumSpeed(), 0, nPoint_Index);
+    qInfo("point 0: %f,%f",dispense_path[0].p.data()[0],dispense_path[0].p.data()[1]);
+    if(1!=res)
+    {
+        qInfo("error in adding No 0 point!");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+
+    // Config open offset
+    res = XT_Controler_Extend::Set_Trig_Output(curve_id, nPoint_Index, parameters.openOffset(), 0, output_io->GetID(), 1);
+    qInfo("point:0 open offset:%f", parameters.openOffset());
+    if(1!=res)
+    {
+        qInfo("error in adding IO open In No 0 point!");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+    qInfo("Dispenser Open Position Set To %f", parameters.openOffset());
+
+    // Add whole circle with 3pos defined
+    XT_Controler_Extend::Append_Arc_3Pos(curve_id,
+           dem,
+           axis.data(),
+           dispense_path[1].p.data(),
+           dispense_path[2].p.data(),
+            1, //nFull_Circle: >0 arc, >=1 full circle
+            parameters.maximumSpeed(),
+            parameters.maximumSpeed(),
+            0,
+            nPoint_Index);
+    if(1!=res)
+    {
+        qInfo("error in adding arc 3pos");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+
+    // Config close offset
+    res = XT_Controler_Extend::Set_Trig_Output(curve_id, nPoint_Index, parameters.closeOffset(), 0, output_io->GetID(), 0);
+    qInfo("Last point close offset:%f", parameters.closeOffset());
+    if(1!=res)
+    {
+        qInfo("error in adding IO close In last point!");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+    qInfo("Dispenser Close Position Set To %f", parameters.closeOffset());
+
+    // Add extra arc for close offset
+    XT_Controler_Extend::Append_Arc_3Pos(curve_id,
+           dem,
+           axis.data(),
+           dispense_path[1].p.data(),
+           dispense_path[2].p.data(),
+            0, //nFull_Circle: >0 arc, >=1 full circle
+            parameters.maximumSpeed(),
+            parameters.maximumSpeed(),
+            0,
+            nPoint_Index);
+    if(1!=res)
+    {
+        qInfo("error in adding extra arc 3pos");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+
+    XT_Controler::SGO(thread_curve,axis[2],0);
+    XT_Controler::TILLSTOP(thread_curve,axis[2]);
+    XT_Controler::SGO(thread_curve,axis[0],dispense_path[0].p[0]);
+    XT_Controler::SGO(thread_curve,axis[1],dispense_path[0].p[1]);
+    XT_Controler::TILLSTOP(thread_curve,axis[0]);
+    XT_Controler::TILLSTOP(thread_curve,axis[1]);
+    XT_Controler::SGO(thread_curve,axis[2],dispense_path[0].p[2]);
+    XT_Controler::TILLSTOP(thread_curve,axis[2]);
+    res = XT_Controler_Extend::Exec_Curve(curve_id, thread_curve, thread_trig, 1);
+    if(1!=res)
+    {
+        qInfo("dispensing path execute fail");
+        state = DISPENSER_ERROR;
+        return false;
+    }
+    return true;
+}
+
 bool Dispenser::WaitForFinish(int time)
 {
     while (time>0) {
@@ -231,6 +359,19 @@ DISPENSER_STATE Dispenser::GetState()
     if(res!=1)
         return DISPENSER_BUSY;
     return DISPENSER_IDLE;
+}
+
+bool Dispenser::checkInputIoExist()
+{
+    if (input_io == nullptr)
+        return false;
+    else
+        return true;
+}
+
+bool Dispenser::getInputIoValue()
+{
+    return input_io->Value();
 }
 
 double Dispenser::getMaxSpeed(int index)

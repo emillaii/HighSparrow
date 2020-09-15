@@ -2086,7 +2086,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     if(!result) return false;
     sut_module.moveZToSafety();
     if(!result) return false;
-    GetMotorByName(sut_module.parameters.motorYName())->SeekOrigin();
+    GetMotorByName(sut_module.parameters.motorXName())->SeekOrigin();
 
     result = GetMotorByName(sensor_pickarm.parameters.motorZName())->WaitSeekDone();
     result &= GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->WaitSeekDone();
@@ -2096,7 +2096,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->sensor_pickarm.parameters.motorTName())->SeekOrigin();
     GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
 
-    result &= GetMotorByName(sut_module.parameters.motorYName())->WaitSeekDone();
+    result &= GetMotorByName(sut_module.parameters.motorXName())->WaitSeekDone();
     if(!result)return false;
 
     GetMotorByName(this->aa_head_module.parameters.motorXName())->SeekOrigin();
@@ -2106,7 +2106,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();
     //GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
-    GetMotorByName(this->sut_module.parameters.motorXName())->SeekOrigin();
+    GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();
     if(!result)return false;
     GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
 //    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
@@ -2128,7 +2128,7 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result &= GetMotorByName(this->aa_head_module.parameters.motorYName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
 //    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
-    result &= GetMotorByName(this->sut_module.parameters.motorXName())->WaitSeekDone();
+    result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
     result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();

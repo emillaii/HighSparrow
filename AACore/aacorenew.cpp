@@ -3043,31 +3043,41 @@ bool AACoreNew::aoaMTF(bool saveImage, bool isLoopTest)
 
    map.insert("Is_LoopTest", isLoopTest);
 
-   map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
-   map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
-   map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
-   map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
-   map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
-   map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
-   map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
-   map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
-   map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
-   map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
-   map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
-   map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
-   map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
-   map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
-   map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
-   map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
-   map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
-   map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
-   map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
-   map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
-   map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
-   map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
-   map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
-   map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
-   map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+   if (vec.size() > 0) {
+       map.insert("CC_T_SFR", round(vec[0].t_sfr*1000)/1000);
+       map.insert("CC_R_SFR", round(vec[0].r_sfr*1000)/1000);
+       map.insert("CC_B_SFR", round(vec[0].b_sfr*1000)/1000);
+       map.insert("CC_L_SFR", round(vec[0].l_sfr*1000)/1000);
+       map.insert("CC_SFR", round(((vec[0].t_sfr + vec[0].r_sfr + vec[0].b_sfr + vec[0].l_sfr)/4)*1000)/1000);
+   }
+   if (vec.size() > max_layer*4 + 1) {
+       map.insert("UL_T_SFR", round(vec[max_layer*4 + 1].t_sfr*1000)/1000);
+       map.insert("UL_R_SFR", round(vec[max_layer*4 + 1].r_sfr*1000)/1000);
+       map.insert("UL_B_SFR", round(vec[max_layer*4 + 1].b_sfr*1000)/1000);
+       map.insert("UL_L_SFR", round(vec[max_layer*4 + 1].l_sfr*1000)/1000);
+       map.insert("UL_SFR", round(vec[max_layer*4 + 1].avg_sfr*1000)/1000);
+   }
+   if (vec.size() > max_layer*4 + 2) {
+       map.insert("LL_T_SFR", round(vec[max_layer*4 + 2].t_sfr*1000)/1000);
+       map.insert("LL_R_SFR", round(vec[max_layer*4 + 2].r_sfr*1000)/1000);
+       map.insert("LL_B_SFR", round(vec[max_layer*4 + 2].b_sfr*1000)/1000);
+       map.insert("LL_L_SFR", round(vec[max_layer*4 + 2].l_sfr*1000)/1000);
+       map.insert("LL_SFR", round(vec[max_layer*4 + 2].avg_sfr*1000)/1000);
+   }
+   if (vec.size() > max_layer*4 + 3) {
+       map.insert("LR_T_SFR", round(vec[max_layer*4 + 3].t_sfr*1000)/1000);
+       map.insert("LR_R_SFR", round(vec[max_layer*4 + 3].r_sfr*1000)/1000);
+       map.insert("LR_B_SFR", round(vec[max_layer*4 + 3].b_sfr*1000)/1000);
+       map.insert("LR_L_SFR", round(vec[max_layer*4 + 3].l_sfr*1000)/1000);
+       map.insert("LR_SFR", round(vec[max_layer*4 + 3].avg_sfr*1000)/1000);
+   }
+   if (vec.size() > max_layer*4 + 4) {
+       map.insert("UR_T_SFR", round(vec[max_layer*4 + 4].t_sfr*1000)/1000);
+       map.insert("UR_R_SFR", round(vec[max_layer*4 + 4].r_sfr*1000)/1000);
+       map.insert("UR_B_SFR", round(vec[max_layer*4 + 4].b_sfr*1000)/1000);
+       map.insert("UR_L_SFR", round(vec[max_layer*4 + 4].l_sfr*1000)/1000);
+       map.insert("UR_SFR", round(vec[max_layer*4 + 4].avg_sfr*1000)/1000);
+   }
 
    if (true) {
        double cc = 0, ul = 0, ur = 0, lr = 0, ll = 0;

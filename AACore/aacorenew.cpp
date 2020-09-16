@@ -494,6 +494,7 @@ void AACoreNew::startWork( int run_mode)
                QThread::msleep(500);
            }
            writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");
+           return;
     }
     QVariantMap run_params = inquirRunParameters();
     if(run_params.isEmpty())
@@ -584,7 +585,7 @@ void AACoreNew::startWork( int run_mode)
             params["05F_MAX"] = 100;
             params["08F_MAX"] = 100;
             params["SFR_DEV_TOL"] = 100;
-            performMTFNew(params,true);
+            aoaMTF(false, true);
             QThread::msleep(200);
         }
         writeFile(loopTestResult, MTF_DEBUG_DIR, "mtf_loop_test.csv");

@@ -2381,7 +2381,7 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     QVariantMap result, map;
     map.insert("SensorID",sensorID);
     vector<vector<Sfr_entry>> sorted_sfr_map;
-    vector<vector<double>> sorted_sfr_fit_map;
+    vector<vector<double>> sorted_sfr_fit_map, sorted_t_sfr_fit_map, sorted_b_sfr_fit_map, sorted_l_sfr_fit_map, sorted_r_sfr_fit_map;
     for (size_t i = 0; i < clustered_sfr_map[0].size(); ++i)
     {
         vector<Sfr_entry> sfr_map;
@@ -2454,18 +2454,22 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
             fitCurve(z, b_sfr, fitOrder, b_peak_z, peak_sfr,error_avg,error_dev, b_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
+            sorted_b_sfr_fit_map.push_back(b_sfr_fit);
         }
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
             fitCurve(z, t_sfr, fitOrder, t_peak_z, peak_sfr,error_avg,error_dev, t_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
+            sorted_t_sfr_fit_map.push_back(t_sfr_fit);
         }
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
             fitCurve(z, l_sfr, fitOrder, l_peak_z, peak_sfr,error_avg,error_dev, l_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
+            sorted_l_sfr_fit_map.push_back(l_sfr_fit);
         }
         {
             int deletedIndex = -1; bool detectedAbnormlity = false;
             fitCurve(z, r_sfr, fitOrder, r_peak_z, peak_sfr,error_avg,error_dev, r_sfr_fit, detectedAbnormlity, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
+            sorted_r_sfr_fit_map.push_back(r_sfr_fit);
         }
         if (b_peak_z > maxPeakZ) maxPeakZ = b_peak_z;
         if (t_peak_z > maxPeakZ) maxPeakZ = t_peak_z;
@@ -2667,6 +2671,9 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         data = &aaData_2;
         currentChartDisplayChannel = 0;
     }
+
+    aaTBData.clear();
+    aaLRData.clear();
     data->clear();
     data->setDev(round(dev_1*1000)/1000);
     data->setWCCPeakZ(round(point_0.z*1000));
@@ -2750,12 +2757,17 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         s.insert("pz", sorted_sfr_map[0][i].pz);
         sfrMap.insert(QString::number(i), s);
 
+        qInfo("SFR %f %f %f %f ", sorted_sfr_map[0][i].t_sfr, sorted_sfr_map[0][i].b_sfr, sorted_sfr_map[0][i].l_sfr, sorted_sfr_map[0][i].r_sfr);
+        aaTBData.addData(0, sorted_sfr_map[0][i].pz*1000, (sorted_sfr_map[0][i].t_sfr + sorted_sfr_map[0][i].b_sfr)/2, (sorted_sfr_map[0][i].t_sfr + sorted_sfr_map[0][i].b_sfr)/2);
+        aaLRData.addData(0, sorted_sfr_map[0][i].pz*1000,  (sorted_sfr_map[0][i].l_sfr + sorted_sfr_map[0][i].r_sfr)/2, (sorted_sfr_map[0][i].l_sfr + sorted_sfr_map[0][i].r_sfr)/2);
         data->addData(0, sorted_sfr_map[0][i].pz*1000, sorted_sfr_fit_map[0][i], sorted_sfr_map[0][i].sfr);
         if (points_1.size() > 0) {
             for (int j = 1; j < 5; ++j) {
                 double avg_sfr = parameters.WeightList().at(4*j-4+0).toDouble()*sorted_sfr_map[j+4*display_layer][i].t_sfr + parameters.WeightList().at(4*j-4+1).toDouble()*sorted_sfr_map[j+4*display_layer][i].r_sfr
                         + parameters.WeightList().at(4*j-4+2).toDouble()*sorted_sfr_map[j+4*display_layer][i].b_sfr + parameters.WeightList().at(4*j-4+3).toDouble()*sorted_sfr_map[j+4*display_layer][i].l_sfr;
                 data->addData(j,sorted_sfr_map[j+4*display_layer][i].pz*1000, sorted_sfr_fit_map[j+4*display_layer][i],avg_sfr);
+                aaTBData.addData(j, sorted_sfr_map[j+4*display_layer][i].pz*1000,  (sorted_sfr_map[j+4*display_layer][i].t_sfr + sorted_sfr_map[j+4*display_layer][i].b_sfr)/2, (sorted_sfr_map[j+4*display_layer][i].t_sfr + sorted_sfr_map[j+4*display_layer][i].b_sfr)/2);
+                aaLRData.addData(j, sorted_sfr_map[j+4*display_layer][i].pz*1000,  (sorted_sfr_map[j+4*display_layer][i].l_sfr + sorted_sfr_map[j+4*display_layer][i].r_sfr)/2, (sorted_sfr_map[j+4*display_layer][i].l_sfr + sorted_sfr_map[j+4*display_layer][i].r_sfr)/2);
             }
         }
     }
@@ -2884,6 +2896,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     //emit pushDataToUnit(runningUnit, "SFR", map);
     emit postSfrDataToELK(runningUnit, map);
     data->plot(runningTestName);
+    aaTBData.plot(runningTestName);
+    aaLRData.plot(runningTestName);
     return result;
 }
 

@@ -109,6 +109,8 @@ public:
     void saveJsonConfig(QString file_name);
     AAData aaData_1;  // For Display Channel 1
     AAData aaData_2;  // For Display Channel 2
+    AAData aaTBData;  // For top and bottom
+    AAData aaLRData;  // For left and right
     AAData mtf_log;   // For Display MTF Log
     AAData intensity_profile; //For Display intensity profile
     ImageProvider * ocImageProvider_1;

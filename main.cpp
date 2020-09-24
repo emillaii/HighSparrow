@@ -161,6 +161,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dataFromCpp3", &highSprrow.baseModuleManager->aaCoreNew.mtf_log);
     engine.rootContext()->setContextProperty("dataFromCpp", &highSprrow.baseModuleManager->aaCoreNew.aaData_1);
     engine.rootContext()->setContextProperty("dataFromCpp2", &highSprrow.baseModuleManager->aaCoreNew.aaData_2);
+
+    engine.rootContext()->setContextProperty("aaTBData", &highSprrow.baseModuleManager->aaCoreNew.aaTBData);
+    engine.rootContext()->setContextProperty("aaLRData", &highSprrow.baseModuleManager->aaCoreNew.aaLRData);
+
     engine.rootContext()->setContextProperty("dataFromIntensityProfile", &highSprrow.baseModuleManager->aaCoreNew.intensity_profile);
     //Module
     engine.rootContext()->setContextProperty("sutModule", &highSprrow.baseModuleManager->sut_module);

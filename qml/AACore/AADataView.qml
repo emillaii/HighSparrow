@@ -149,6 +149,132 @@ Grid {
         }
     }
 
+    function plotTBChart() {
+//        tbsplineLabel.text = aaTBData.layer0
+//        tbline2Label2.text = aaTBData.layer1
+//        tbline2Label3.text = aaTBData.layer2
+//        tbline2Label4.text = aaTBData.layer3
+//        tbline2.title = aaTBData.chartName
+        var maxSfr = 0
+
+        if(displaytbSplineMode.checked) {
+            for (var i=0; i<aaTBData.wCCList.length; i=i+2) {
+                console.log(aaTBData.wCCList[i] + " , " + aaTBData.wCCList[i+1])
+                tbccSeries.append(aaTBData.wCCList[i], aaTBData.wCCList[i+1])
+                if (aaTBData.wCCList[i+1] > maxSfr) {
+                    maxSfr = aaTBData.wCCList[i+1]
+                }
+            }
+            for (i=0; i<aaTBData.wULList.length; i=i+2) {
+                tbulSeries.append(aaTBData.wULList[i], aaTBData.wULList[i+1])
+            }
+            for (i=0; i<aaTBData.wURList.length; i=i+2) {
+                tburSeries.append(aaTBData.wURList[i], aaTBData.wURList[i+1])
+            }
+            for (i=0; i<aaTBData.wLLList.length; i=i+2) {
+                tbllSeries.append(aaTBData.wLLList[i], aaTBData.wLLList[i+1])
+            }
+            for (i=0; i<aaTBData.wLRList.length; i=i+2) {
+                tblrSeries.append(aaTBData.wLRList[i], aaTBData.wLRList[i+1])
+            }
+        } else {
+            for (var i=0; i<aaTBData.wCCRealList.length; i=i+2) {
+                tbccSeries.append(aaTBData.wCCRealList[i], aaTBData.wCCRealList[i+1])
+                if (aaTBData.wCCRealList[i+1] > maxSfr) {
+                    maxSfr = aaTBData.wCCRealList[i+1]
+                }
+            }
+            for (i=0; i<aaTBData.wULRealList.length; i=i+2) {
+                tbulSeries.append(aaTBData.wULRealList[i], aaTBData.wULRealList[i+1])
+            }
+            for (i=0; i<aaTBData.wURRealList.length; i=i+2) {
+                tburSeries.append(aaTBData.wURRealList[i], aaTBData.wURRealList[i+1])
+            }
+            for (i=0; i<aaTBData.wLLRealList.length; i=i+2) {
+                tbllSeries.append(aaTBData.wLLRealList[i], aaTBData.wLLRealList[i+1])
+            }
+            for (i=0; i<aaTBData.wLRRealList.length; i=i+2) {
+                tblrSeries.append(aaTBData.wLRRealList[i], aaTBData.wLRRealList[i+1])
+            }
+        }
+
+        axisX4.min = tbccSeries.at(0).x
+        axisX4.max = tbccSeries.at(tbccSeries.count - 1).x
+        if (maxSfr > 80) {
+            axisY4.max = 100
+            //zPeak2.append(dataFromCpp2.zPeak,0)
+            //zPeak2.append(dataFromCpp2.zPeak,100)
+        } else if (maxSfr > 60) {
+            axisY4.max = 80
+            //zPeak2.append(dataFromCpp2.zPeak,0)
+            //zPeak2.append(dataFromCpp2.zPeak,80)
+        } else {
+            axisY4.max = 60
+            //zPeak2.append(dataFromCpp2.zPeak,0)
+            //zPeak2.append(dataFromCpp2.zPeak,60)
+        }
+    }
+
+    function plotLRChart() {
+        var maxSfr = 0
+
+        if(displaylrSplineMode.checked) {
+            for (var i=0; i<aaLRData.wCCList.length; i=i+2) {
+                lrccSeries.append(aaLRData.wCCList[i], aaLRData.wCCList[i+1])
+                if (aaLRData.wCCList[i+1] > maxSfr) {
+                    maxSfr = aaLRData.wCCList[i+1]
+                }
+            }
+            for (i=0; i<aaLRData.wULList.length; i=i+2) {
+                lrulSeries.append(aaLRData.wULList[i], aaLRData.wULList[i+1])
+            }
+            for (i=0; i<aaLRData.wURList.length; i=i+2) {
+                lrurSeries.append(aaLRData.wURList[i], aaLRData.wURList[i+1])
+            }
+            for (i=0; i<aaLRData.wLLList.length; i=i+2) {
+                lrllSeries.append(aaLRData.wLLList[i], aaLRData.wLLList[i+1])
+            }
+            for (i=0; i<aaLRData.wLRList.length; i=i+2) {
+                lrlrSeries.append(aaLRData.wLRList[i], aaLRData.wLRList[i+1])
+            }
+        } else {
+            for (var i=0; i<aaLRData.wCCRealList.length; i=i+2) {
+                lrccSeries.append(aaLRData.wCCRealList[i], aaLRData.wCCRealList[i+1])
+                if (aaLRData.wCCRealList[i+1] > maxSfr) {
+                    maxSfr = aaLRData.wCCRealList[i+1]
+                }
+            }
+            for (i=0; i<aaLRData.wULRealList.length; i=i+2) {
+                lrulSeries.append(aaLRData.wULRealList[i], aaLRData.wULRealList[i+1])
+            }
+            for (i=0; i<aaLRData.wURRealList.length; i=i+2) {
+                lrurSeries.append(aaLRData.wURRealList[i], aaLRData.wURRealList[i+1])
+            }
+            for (i=0; i<aaLRData.wLLRealList.length; i=i+2) {
+                lrllSeries.append(aaLRData.wLLRealList[i], aaLRData.wLLRealList[i+1])
+            }
+            for (i=0; i<aaLRData.wLRRealList.length; i=i+2) {
+                lrlrSeries.append(aaLRData.wLRRealList[i], aaLRData.wLRRealList[i+1])
+            }
+        }
+
+        axisX5.min = lrccSeries.at(0).x
+        axisX5.max = lrccSeries.at(lrccSeries.count - 1).x
+        if (maxSfr > 80) {
+            axisY5.max = 100
+            //zPeak2.append(dataFromCpp2.zPeak,0)
+            //zPeak2.append(dataFromCpp2.zPeak,100)
+        } else if (maxSfr > 60) {
+            axisY5.max = 80
+            //zPeak2.append(dataFromCpp2.zPeak,0)
+            //zPeak2.append(dataFromCpp2.zPeak,80)
+        } else {
+            axisY5.max = 60
+            //zPeak2.append(dataFromCpp2.zPeak,0)
+            //zPeak2.append(dataFromCpp2.zPeak,60)
+        }
+    }
+
     function clearPlot1(){
         ccSeries.clear()
         ulSeries.clear()
@@ -165,6 +291,22 @@ Grid {
         llSeries2.clear()
         lrSeries2.clear()
         zPeak2.clear()
+    }
+
+    function clearTBPlot() {
+        tbccSeries.clear()
+        tbulSeries.clear()
+        tburSeries.clear()
+        tbllSeries.clear()
+        tblrSeries.clear()
+    }
+
+    function clearLRPlot() {
+        lrccSeries.clear()
+        lrulSeries.clear()
+        lrurSeries.clear()
+        lrlrSeries.clear()
+        lrllSeries.clear()
     }
 
     Frame {
@@ -389,51 +531,144 @@ Grid {
         width: grid.width/4
         height: grid.height/2
         ChartView {
-            id: lineSeries
+            id: lrspline
             anchors.fill: parent
+            title: "Left Right - SFR Plot "
             antialiasing: true
             theme: ChartView.ChartThemeDark
+            legend.alignment: Qt.AlignBottom
+            margins.top: 50
+            RowLayout {
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                anchors.left: parent.left
+                anchors.leftMargin: 8
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                Switch {
+                    id: displaylrSplineMode
+                    font.pixelSize: 10
+                    text: qsTr("Displaying Curve Data")
+                    checked: true
+                    onCheckedChanged: {
+                        if (checked) {
+                            text = qsTr("Displaying Curve Data")
+                        } else {
+                            text = qsTr("Displaying Raw Data")
+                        }
+                        clearLRPlot()
+                        plotLRChart()
+                    }
+                }
+                ProgressBar {
+                    id: lrsplineprogressBar
+                    font.pointSize: 16
+                    Layout.rightMargin: 7
+                    Layout.fillWidth: true
+                }
+            }
 
             ValueAxis {
-                id: axisY3
-                titleText: ""
+                id: axisY5
+                titleText: "SFR"
                 min: 0
-                max: 255
+                max: 60
+                tickCount: 13
                 gridVisible: true
             }
 
             ValueAxis {
-                titleText: "pixel location "
-                id: axisX3
+                titleText: "z (um)"
+                id: axisX5
+                tickCount: 7
                 gridVisible: true
-                min: 0
-                max: dataFromIntensityProfile.valuesSize
             }
 
-            LineSeries {
-                name: "Intensity Profile "
-                id: iSeries
-                axisX: axisX3
-                axisY: axisY3
+//            LineSeries
+//            {
+//                name:"zPeak"
+//                id:zPeak
+//                axisX: axisX
+//                axisY: axisY1
+//            }
+            SplineSeries {
+                name: "CC "
+                id: lrccSeries
+                axisX: axisX5
+                axisY: axisY5
+            }
+            SplineSeries {
+                name: "UL "
+                id: lrulSeries
+                axisX: axisX5
+                axisY: axisY5
+            }
+            SplineSeries {
+                name: "UR "
+                id: lrurSeries
+                axisX: axisX5
+                axisY: axisY5
+            }
+            SplineSeries {
+                name: "LL "
+                id: lrllSeries
+                axisX: axisX5
+                axisY: axisY5
+            }
+            SplineSeries {
+                name: "LR "
+                id: lrlrSeries
+                axisX: axisX5
+                axisY: axisY5
             }
             ColumnLayout {
                 Label {
-                    id: iSeriesLabel
+                    id: lrsplineLabel1
                     background: Rectangle {
                         color: "black"
                     }
+                    font.pixelSize: 10
+                }
+                Label {
+                    id: lrsplineLabel2
+                    background: Rectangle {
+                        color: "black"
+                    }
+                    font.pixelSize: 10
+                }
+                Label {
+                    id: lrsplin1Label3
+                    background: Rectangle {
+                        color: "black"
+                    }
+                    font.pixelSize: 10
+                }
+                Label {
+                    id: lrsplineLabel4
+                    background: Rectangle {
+                        color: "black"
+                    }
+                    font.pixelSize: 10
                 }
             }
         }
+
         Connections {
-            target: dataFromIntensityProfile
+            target: aaLRData
             onWValueChanged: {
-                iSeriesLabel.text = "Min: " + dataFromIntensityProfile.minValue + " Max: " + dataFromIntensityProfile.maxValue + " -veDI: " + dataFromIntensityProfile.negativeDI.toFixed(2) + " +veDI: " + dataFromIntensityProfile.positiveDI.toFixed(2)
-                iSeries.append(dataFromIntensityProfile.wValue.x, dataFromIntensityProfile.wValue.y)
+                 //plotChart1()
+                plotLRChart()
             }
             onWValueClear: {
-                console.log("Clear")
-                iSeries.clear()
+               // clearPlot1()
+                clearLRPlot()
+            }
+            onWInProgressChanged: {
+                if (aaLRData.inProgress) {
+                    lrsplineprogressBar.indeterminate = true
+                } else {
+                    lrsplineprogressBar.indeterminate = false
+                }
             }
         }
     }
@@ -651,118 +886,263 @@ Grid {
         id: frame7
         width: grid.width/4
         height: grid.height/2
-
-        ColumnLayout {
+        ChartView {
+            id: tbspline
+            anchors.fill: parent
+            title: "Top Bottom - SFR Plot "
+            antialiasing: true
+            theme: ChartView.ChartThemeDark
+            legend.alignment: Qt.AlignBottom
+            margins.top: 50
             RowLayout {
-                Label {
-                    text: qsTr("Current Cycle Time: ")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextField {
-                    readOnly: true
-                    text: aaCoreParams.circleTime
-                    horizontalAlignment: TextInput.AlignHCenter
-                    width: 60
-                }
-
-                Button {
-                    text: qsTr("reset")
-                    onClicked: {
-                        baseModuleManager.resetUPH()
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                anchors.left: parent.left
+                anchors.leftMargin: 8
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                Switch {
+                    id: displaytbSplineMode
+                    font.pixelSize: 10
+                    text: qsTr("Displaying Curve Data")
+                    checked: true
+                    onCheckedChanged: {
+                        if (checked) {
+                            text = qsTr("Displaying Curve Data")
+                        } else {
+                            text = qsTr("Displaying Raw Data")
+                        }
+                        clearTBPlot()
+                        plotTBChart()
                     }
                 }
-            }
-
-            RowLayout {
-                Label {
-                    text: qsTr("Current UPH: ")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextField {
-                    readOnly: true
-                    text: aaCoreParams.currentUPH
-                    horizontalAlignment: TextInput.AlignHCenter
-                    width: 60
+                ProgressBar {
+                    id: tbsplineprogressBar
+                    font.pointSize: 16
+                    Layout.rightMargin: 7
+                    Layout.fillWidth: true
                 }
             }
 
-            RowLayout {
-                Label {
-                    text: qsTr("Average Cycle Time: ")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextField {
-                    readOnly: true
-                    text: aaCoreParams.circleAverageTime
-                    horizontalAlignment: TextInput.AlignHCenter
-                    width: 60
-                }
+            ValueAxis {
+                id: axisY4
+                titleText: "SFR"
+                min: 0
+                max: 60
+                tickCount: 13
+                gridVisible: true
             }
 
-            RowLayout {
-                Label {
-                    text: qsTr("Gross Cycle Count: ")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextField {
-                    readOnly: true
-                    text: aaCoreParams.circleCount
-                    horizontalAlignment: TextInput.AlignHCenter
-                    width: 60
-                }
+            ValueAxis {
+                titleText: "z (um)"
+                id: axisX4
+                tickCount: 7
+                gridVisible: true
             }
 
-            RowLayout {
-                Label {
-                    text: qsTr("Gross UPH: ")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextField {
-                    readOnly: true
-                    text: aaCoreParams.calculatedUPH
-                    horizontalAlignment: TextInput.AlignHCenter
-                    width: 60
-                }
+//            LineSeries
+//            {
+//                name:"zPeak"
+//                id:zPeak
+//                axisX: axisX
+//                axisY: axisY1
+//            }
+            SplineSeries {
+                name: "CC "
+                id: tbccSeries
+                axisX: axisX4
+                axisY: axisY4
             }
-
-            RowLayout {
+            SplineSeries {
+                name: "UL "
+                id: tbulSeries
+                axisX: axisX4
+                axisY: axisY4
+            }
+            SplineSeries {
+                name: "UR "
+                id: tburSeries
+                axisX: axisX4
+                axisY: axisY4
+            }
+            SplineSeries {
+                name: "LL "
+                id: tbllSeries
+                axisX: axisX4
+                axisY: axisY4
+            }
+            SplineSeries {
+                name: "LR "
+                id: tblrSeries
+                axisX: axisX4
+                axisY: axisY4
+            }
+            ColumnLayout {
                 Label {
-                    text: qsTr("Dispense Count: ")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextField {
-                    readOnly: true
-                    text: aaCoreParams.dispenseCount
-                    horizontalAlignment: TextInput.AlignHCenter
-                    width: 60
-                }
-                Label {
-                    text: qsTr("/")
-                    font.bold: true
-                    font.italic: true
-                }
-                TextEdit {
-                    color: "white"
-                    width :100
-                    text: aaCoreParams.dispenseCountLimit
-                    readOnly: true
-                }
-                Button {
-                    text: qsTr("Clear")
-                    onClicked: {
-                        console.log("Clear dispense count")
-                        aaNewCore.clearCurrentDispenseCount()
+                    id: tbsplineLabel1
+                    background: Rectangle {
+                        color: "black"
                     }
+                    font.pixelSize: 10
+                }
+                Label {
+                    id: tbsplineLabel2
+                    background: Rectangle {
+                        color: "black"
+                    }
+                    font.pixelSize: 10
+                }
+                Label {
+                    id: tbsplin1Label3
+                    background: Rectangle {
+                        color: "black"
+                    }
+                    font.pixelSize: 10
+                }
+                Label {
+                    id: tbsplineLabel4
+                    background: Rectangle {
+                        color: "black"
+                    }
+                    font.pixelSize: 10
+                }
+            }
+        }
+
+        Connections {
+            target: aaTBData
+            onWValueChanged: {
+                plotTBChart()
+            }
+            onWValueClear: {
+                clearTBPlot()
+            }
+            onWInProgressChanged: {
+                if (aaTBData.inProgress) {
+                    tbsplineprogressBar.indeterminate = true
+                } else {
+                    tbsplineprogressBar.indeterminate = false
                 }
             }
         }
     }
+
+//    Frame {
+//        id: frame7
+//        width: grid.width/4
+//        height: grid.height/2
+
+//        ColumnLayout {
+//            RowLayout {
+//                Label {
+//                    text: qsTr("Current Cycle Time: ")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextField {
+//                    readOnly: true
+//                    text: aaCoreParams.circleTime
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    width: 60
+//                }
+
+//                Button {
+//                    text: qsTr("reset")
+//                    onClicked: {
+//                        baseModuleManager.resetUPH()
+//                    }
+//                }
+//            }
+
+//            RowLayout {
+//                Label {
+//                    text: qsTr("Current UPH: ")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextField {
+//                    readOnly: true
+//                    text: aaCoreParams.currentUPH
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    width: 60
+//                }
+//            }
+
+//            RowLayout {
+//                Label {
+//                    text: qsTr("Average Cycle Time: ")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextField {
+//                    readOnly: true
+//                    text: aaCoreParams.circleAverageTime
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    width: 60
+//                }
+//            }
+
+//            RowLayout {
+//                Label {
+//                    text: qsTr("Gross Cycle Count: ")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextField {
+//                    readOnly: true
+//                    text: aaCoreParams.circleCount
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    width: 60
+//                }
+//            }
+
+//            RowLayout {
+//                Label {
+//                    text: qsTr("Gross UPH: ")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextField {
+//                    readOnly: true
+//                    text: aaCoreParams.calculatedUPH
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    width: 60
+//                }
+//            }
+
+//            RowLayout {
+//                Label {
+//                    text: qsTr("Dispense Count: ")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextField {
+//                    readOnly: true
+//                    text: aaCoreParams.dispenseCount
+//                    horizontalAlignment: TextInput.AlignHCenter
+//                    width: 60
+//                }
+//                Label {
+//                    text: qsTr("/")
+//                    font.bold: true
+//                    font.italic: true
+//                }
+//                TextEdit {
+//                    color: "white"
+//                    width :100
+//                    text: aaCoreParams.dispenseCountLimit
+//                    readOnly: true
+//                }
+//                Button {
+//                    text: qsTr("Clear")
+//                    onClicked: {
+//                        console.log("Clear dispense count")
+//                        aaNewCore.clearCurrentDispenseCount()
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
 
 

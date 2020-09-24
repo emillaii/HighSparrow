@@ -75,16 +75,16 @@ bool DispenseModule::getDispenseCircleProperties()
     file.close();
     QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject sett2 = d.object();
-    QJsonValue patternType = sett2.value(QString("type"));
+    QJsonValue patternType = sett2.value(QString("mode"));
     QJsonValue radius = sett2.value(QString("radius"));
     QJsonValue center_x = sett2.value(QString("center_x"));
     QJsonValue center_y = sett2.value(QString("center_y"));
     //radius_in_mm = radius.toDouble(0);
-    pattern_type = patternType.toInt(0);
+    dispense_mode = patternType.toString();
     center.setX(center_x.toDouble());
     center.setY(center_y.toDouble());
 
-    if (pattern_type == 1)  //Circle
+    if (dispense_mode == "Circle")  //Circle
     {
         QPointF pt;
         pt.setX(center_x.toDouble());
@@ -208,7 +208,7 @@ bool DispenseModule::performDispense()
        qInfo("point too small :%d",temp_path.size());
        return false;
     }
-    if (pattern_type == 0)
+    if (dispense_mode == "Line")
     {
         for (int i = 0; i < temp_path.size(); ++i)
         {
@@ -223,7 +223,7 @@ bool DispenseModule::performDispense()
            dispense_path.append(DispensePathPoint(3,pos,type));
         }
     }
-    else if (pattern_type == 1)
+    else if (dispense_mode == "Circle")
     {
         for (int i = 0; i < temp_path.size(); ++i)
         {
@@ -241,12 +241,12 @@ bool DispenseModule::performDispense()
     qInfo("Dispense start");
     lastDispenseDateTime = QDateTime::currentDateTime();
     parameters.setLastDispenseTime(lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss"));
-    if (pattern_type == 0)
+    if (dispense_mode == "Line")
     {
         if( dispenser->Dispense(dispense_path))
             return dispenser->WaitForFinish();
     }
-    else if (pattern_type == 1)
+    else if (dispense_mode == "Circle")
     {
         if( dispenser->DispenseCircle(dispense_path))
             return dispenser->WaitForFinish();

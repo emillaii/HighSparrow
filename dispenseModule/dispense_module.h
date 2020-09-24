@@ -47,7 +47,7 @@ private:
 
     QPointF center;
     QPointF mechCenter;
-    int pattern_type = 0;
+    QString dispense_mode = "Line";
 
 signals:
     void callQmlRefeshImg(int);

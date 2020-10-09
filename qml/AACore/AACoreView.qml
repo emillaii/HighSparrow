@@ -74,6 +74,56 @@ ItemDelegate {
 
                     RowLayout {
                         Label {
+                            text: qsTr("Selected Frequency Domain: ")
+                        }
+                        ComboBox {
+                            width: 200
+                            model: [ "Frequency", "lp/mm" ]
+                            currentIndex: aaCoreParams.isSelectedlpmm
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setIsSelectedlpmm(currentIndex)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Sensor Type: ")
+                        }
+                        ComboBox {
+                            width: 200
+                            model: [ "mono", "color" ]
+                            currentIndex: aaCoreParams.isSensorMonoChrome
+                            onCurrentIndexChanged: {
+                                aaCoreParams.setIsSensorMonoChrome(currentIndex)
+                            }
+                        }
+                        Label {
+                            text: qsTr("Pixel Size (um): ")
+                        }
+                        TextField {
+                            text: aaCoreParams.pixelSize
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setPixelSize(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        visible: aaCoreParams.isSelectedlpmm
+                        Label {
+                            text: qsTr("MTF Check Nyquist Frequency (lp/mm): ")
+                        }
+                        TextField {
+                            text: aaCoreParams.selectedlpmm
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setSelectedlpmm(text)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        visible: !aaCoreParams.isSelectedlpmm
+                        Label {
                             text: qsTr("MTF Check Nyquist Frequency: ")
                         }
                         ComboBox {

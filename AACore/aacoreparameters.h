@@ -115,6 +115,14 @@ class AACoreParameters : public PropertyBase
 
     int m_selectedSensorResolutionRatio = 0;
 
+    bool m_isSensorMonoChrome = false;
+
+    double m_selectedlpmm = 65;
+
+    bool m_isSelectedlpmm = false;
+
+    double m_pixelSize = 1;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*4; i++) // 4 field of view * 4 edge number
@@ -160,6 +168,12 @@ public:
     Q_PROPERTY(QString rx2 READ rx2 WRITE setRX2 NOTIFY rx2Changed)
     Q_PROPERTY(QString ry2 READ ry2 WRITE setRY2 NOTIFY ry2Changed)
     Q_PROPERTY(QString rz2 READ rz2 WRITE setRZ2 NOTIFY rz2Changed)
+
+    //Frequency Domain to lpmm domain
+    Q_PROPERTY(double pixelSize READ pixelSize WRITE setPixelSize NOTIFY pixelSizeChanged)
+    Q_PROPERTY(bool isSelectedlpmm READ isSelectedlpmm WRITE setIsSelectedlpmm NOTIFY isSelectedlpmmChanged)
+    Q_PROPERTY(bool isSensorMonoChrome READ isSensorMonoChrome WRITE setIsSensorMonoChrome NOTIFY isSensorMonoChromeChanged)
+    Q_PROPERTY(double selectedlpmm READ selectedlpmm WRITE setSelectedlpmm NOTIFY selectedlpmmChanged)
 
     //HW Image Processing 1
     Q_PROPERTY(double scanY1PixelLocation1 READ scanY1PixelLocation1 WRITE setScanY1PixelLocation1 NOTIFY scanY1PixelLocation1Changed)
@@ -450,6 +464,26 @@ public:
     int selectedSensorResolutionRatio() const
     {
         return m_selectedSensorResolutionRatio;
+    }
+
+    bool isSensorMonoChrome() const
+    {
+        return m_isSensorMonoChrome;
+    }
+
+    double selectedlpmm() const
+    {
+        return m_selectedlpmm;
+    }
+
+    bool isSelectedlpmm() const
+    {
+        return m_isSelectedlpmm;
+    }
+
+    double pixelSize() const
+    {
+        return m_pixelSize;
     }
 
 public slots:
@@ -912,6 +946,43 @@ public slots:
         emit selectedSensorResolutionRatioChanged(m_selectedSensorResolutionRatio);
     }
 
+    void setIsSensorMonoChrome(bool isSensorMonoChrome)
+    {
+        if (m_isSensorMonoChrome == isSensorMonoChrome)
+            return;
+
+        m_isSensorMonoChrome = isSensorMonoChrome;
+        emit isSensorMonoChromeChanged(m_isSensorMonoChrome);
+    }
+
+    void setSelectedlpmm(double selectedlpmm)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_selectedlpmm, selectedlpmm))
+            return;
+
+        m_selectedlpmm = selectedlpmm;
+        emit selectedlpmmChanged(m_selectedlpmm);
+    }
+
+    void setIsSelectedlpmm(bool isSelectedlpmm)
+    {
+        if (m_isSelectedlpmm == isSelectedlpmm)
+            return;
+
+        m_isSelectedlpmm = isSelectedlpmm;
+        emit isSelectedlpmmChanged(m_isSelectedlpmm);
+    }
+
+    void setPixelSize(double pixelSize)
+    {
+        if (qFuzzyCompare(m_pixelSize, pixelSize))
+            return;
+
+        m_pixelSize = pixelSize;
+        emit pixelSizeChanged(m_pixelSize);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -956,6 +1027,10 @@ signals:
     void SensorOrientationChanged(int SensorOrientation);
     void aaSelectedLayerChanged(int aaSelectedLayer);
     void selectedSensorResolutionRatioChanged(int selectedSensorResolutionRatio);
+    void isSensorMonoChromeChanged(bool isSensorMonoChrome);
+    void selectedlpmmChanged(double selectedlpmm);
+    void isSelectedlpmmChanged(bool isSelectedlpmm);
+    void pixelSizeChanged(double pixelSize);
 };
 class AACoreStates: public PropertyBase
 {

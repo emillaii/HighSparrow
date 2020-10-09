@@ -2896,7 +2896,20 @@ ErrorCodeStruct AACoreNew::performMTF_HW(QJsonValue params)
             double radius = sqrt(pow(patterns[i].center.x() - imageCenterX, 2) + pow(patterns[i].center.y() - imageCenterY, 2));
             double f = radius/r1;
             double t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-            bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*(parameters.mtfFrequency()+1));
+            bool isSelectedLpmm = parameters.isSelectedlpmm();
+            double freqFullRange = 1000;
+            if (parameters.pixelSize() == 0) {
+                isSelectedLpmm = false;
+            } else {
+                //Frequency calculation 1000/(pixel size * factor)
+                if (parameters.isSensorMonoChrome()) {
+                    freqFullRange = 500 / (sqrt(2) * parameters.pixelSize());
+                } else {
+                    freqFullRange = 500 / (2 * parameters.pixelSize());
+                }
+            }
+            qInfo("isSensorMonoChrome: %d isSelectedLpmm: %d freqFullRange: %f selectedLpmm: %f", parameters.isSensorMonoChrome(), isSelectedLpmm, freqFullRange, parameters.selectedlpmm());
+            bool ret = sfr::sfr_calculation_single_pattern(copped_roi, t_sfr, r_sfr, b_sfr, l_sfr, 8*(parameters.mtfFrequency()+1), isSelectedLpmm, freqFullRange, parameters.selectedlpmm());
             if (!ret) {
                 qWarning("Cannot calculate MTF in the detected pattern");
                 //return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, ""};

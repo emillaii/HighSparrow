@@ -147,6 +147,12 @@ class AACoreParameters : public PropertyBase
 
     int m_customCenterY = -1;
 
+    int m_aoaXYIterationCount = 3;
+
+    double m_aoaXStepSize = 0.01;
+
+    double m_aoaYStepSize = 0.01;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -223,6 +229,10 @@ public:
     Q_PROPERTY(QString materialId READ materialId WRITE setMaterialId NOTIFY materialIdChanged)
     Q_PROPERTY(int customCenterX READ customCenterX WRITE setCustomCenterX NOTIFY customCenterXChanged)
     Q_PROPERTY(int customCenterY READ customCenterY WRITE setCustomCenterY NOTIFY customCenterYChanged)
+
+    Q_PROPERTY(int aoaXYIterationCount READ aoaXYIterationCount WRITE setAoaXYIterationCount NOTIFY aoaXYIterationCountChanged)
+    Q_PROPERTY(double aoaXStepSize READ aoaXStepSize WRITE setAoaXStepSize NOTIFY aoaXStepSizeChanged)
+    Q_PROPERTY(double aoaYStepSize READ aoaYStepSize WRITE setAoaYStepSize NOTIFY aoaYStepSizeChanged)
 
     double EFL() const
     {
@@ -571,6 +581,21 @@ public:
     int customCenterY() const
     {
         return m_customCenterY;
+    }
+
+    int aoaXYIterationCount() const
+    {
+        return m_aoaXYIterationCount;
+    }
+
+    double aoaXStepSize() const
+    {
+        return m_aoaXStepSize;
+    }
+
+    double aoaYStepSize() const
+    {
+        return m_aoaYStepSize;
     }
 
 public slots:
@@ -1187,6 +1212,35 @@ public slots:
         emit customCenterYChanged(m_customCenterY);
     }
 
+    void setAoaXStepSize(double aoaXStepSize)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_aoaXStepSize, aoaXStepSize))
+            return;
+
+        m_aoaXStepSize = aoaXStepSize;
+        emit aoaXStepSizeChanged(m_aoaXStepSize);
+    }
+
+    void setAoaYStepSize(double aoaYStepSize)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_aoaYStepSize, aoaYStepSize))
+            return;
+
+        m_aoaYStepSize = aoaYStepSize;
+        emit aoaYStepSizeChanged(m_aoaYStepSize);
+    }
+
+    void setAoaXYIterationCount(int aoaXYIterationCount)
+    {
+        if (m_aoaXYIterationCount == aoaXYIterationCount)
+            return;
+
+        m_aoaXYIterationCount = aoaXYIterationCount;
+        emit aoaXYIterationCountChanged(m_aoaXYIterationCount);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1248,6 +1302,10 @@ signals:
     void materialIdChanged(QString materialId);
     void customCenterXChanged(int customCenterX);
     void customCenterYChanged(int customCenterY);
+    void aoaXYIterationCountChanged(int aoaXYIterationCount);
+
+    void aoaXStepSizeChanged(double aoaXStepSize);
+    void aoaYStepSizeChanged(double aoaYStepSize);
 };
 class AACoreStates: public PropertyBase
 {

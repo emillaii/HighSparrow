@@ -29,6 +29,43 @@ ScrollView {
                         }
                     }
 
+                    RowLayout{
+                        Label{
+                            text: qsTr("AOA Iteration")
+                        }
+                        TextField {
+                            text: aaCoreParams.aoaXYIterationCount
+                            horizontalAlignment: TextInput.AlignHCenter
+                            validator: IntValidator {
+                                bottom: 1
+                                top: 10
+                            }
+                            onEditingFinished: {
+                                aaCoreParams.setAoaXYIterationCount(text)
+                            }
+                        }
+                        Label{
+                            text: qsTr("X StepSize(um): ")
+                        }
+                        TextField {
+                            text: aaCoreParams.aoaXStepSize
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setAoaXStepSize(text)
+                            }
+                        }
+                        Label{
+                            text: qsTr("Y StepSize(um): ")
+                        }
+                        TextField {
+                            text: aaCoreParams.aoaYStepSize
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setAoaYStepSize(text)
+                            }
+                        }
+                    }
+
                     RowLayout {
                         Label {
                             text: qsTr("Tilt Selection")

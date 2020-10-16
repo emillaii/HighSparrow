@@ -56,7 +56,8 @@ public:
         DISPENSE_XY_OFFSET_TEST = 19,
         DISPENSE_Z_TEST = 20,
         PARTICAL_CHECK = 21,
-        AOA_SCAN
+        AOA_SCAN = 22,
+        AOA_Z_SCAN = 23
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
@@ -91,6 +92,7 @@ public:
     ErrorCodeStruct performParallelTest(vector<QString> testList1, vector<QString> testList2, QJsonValue params1, QJsonValue params2);
     ErrorCodeStruct performParticalCheck(QJsonValue params);
     ErrorCodeStruct performAOAScan(QJsonValue params);
+    ErrorCodeStruct performAOAZScan(QJsonValue params);
 
     bool calculateCCSFR(cv::Mat input, double &avg_sfr, double &t_sfr, double &r_sfr, double &b_sfr, double &l_sfr, double &pattern_x, double &pattern_y);
 

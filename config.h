@@ -233,6 +233,7 @@
 #define AA_UNLOAD_CAMERA "Unload Camera"
 #define AA_DELAY     "DELAY"
 #define AA_AOA_SCAN "AOA"
+#define AA_AOA_Z_SCAN "AOA_ZScan"
 #define AA_PIECE_END "END"
 
 #define AA_PARAM_DIRECTION "direction"

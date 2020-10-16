@@ -706,6 +706,10 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     {
         performAOAScan(params);
     }
+    else if (cmd == HandleTest::AOA_Z_SCAN)
+    {
+        performAOAZScan(params);
+    }
     emit postDataToELK(this->runningUnit, this->parameters.lotNumber(), this->parameters.materialId());
     is_handling = false;
 }
@@ -1064,9 +1068,15 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             qInfo("Performing Partical Check");
             performParticalCheck(params);
         }
+        else if (testItemName.contains(AA_AOA_Z_SCAN))
+        {
+            qInfo("Performing AOA Z Scan");
+            performAOAZScan(params);
+        }
         else if (testItemName.contains(AA_AOA_SCAN))
         {
             qInfo("Performing AOA Scan");
+            performAOAScan(params);
         }
     }
 
@@ -1375,6 +1385,179 @@ bool AACoreNew::calculateCCSFR(cv::Mat input, double &avg_sfr, double &t_sfr, do
     return true;
 }
 
+ErrorCodeStruct AACoreNew::performAOAZScan(QJsonValue params)
+{
+    qInfo("performAOAZScan");
+    QVariantMap map;
+
+    double aoa_z_positive_offset = params["aoa_z_positive_offset"].toDouble()/1000;
+    double aoa_z_negative_offset = params["aoa_z_negative_offset"].toDouble()/1000;
+    double aoa_z_scan_step_size = params["aoa_z_scan_step_size"].toDouble()/1000;
+    uint wait_delay = 500;
+    uint scan_range = 20;
+
+    qInfo("positive offset: %f negative offset: %f step_ize: %f", aoa_z_positive_offset, aoa_z_negative_offset, aoa_z_scan_step_size);
+
+    AAData *data;
+    if (currentChartDisplayChannel == 0) {
+        data = &aaData_1;
+        currentChartDisplayChannel = 1;
+    } else {
+        data = &aaData_2;
+        currentChartDisplayChannel = 0;
+    }
+    data->clear();
+
+    //Step 1 , step move +- position to decide the initial vector
+    bool grabRet = false;
+    cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+    if (!grabRet) { qWarning("grab image from grabber fail"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+    double avg_sfr[3];
+    double t_sfr[3], r_sfr[3], b_sfr[3], l_sfr[3];
+    double pattern_x = 0, pattern_y = 0;
+
+    double ori_z_pos = sut->carrier->GetFeedBackPos().Z;
+
+    //Ori SFR Measurement
+    {
+        this->calculateCCSFR(img, avg_sfr[0], t_sfr[0], r_sfr[0], b_sfr[0], l_sfr[0], pattern_x, pattern_y);
+        QVariantMap m;
+        m.insert("avg_sfr", avg_sfr[0]);
+        m.insert("t_sfr", t_sfr[0]);
+        m.insert("r_sfr", r_sfr[0]);
+        m.insert("b_sfr", b_sfr[0]);
+        m.insert("l_sfr", l_sfr[0]);
+        m.insert("pattern_x", pattern_x);
+        m.insert("pattern_y", pattern_y);
+        m.insert("aa_x", aa_head->motor_x->GetFeedbackPos());
+        m.insert("aa_y", aa_head->motor_y->GetFeedbackPos());
+        m.insert("sut_x", sut->carrier->GetFeedBackPos().X);
+        m.insert("sut_y", sut->carrier->GetFeedBackPos().Y);
+        m.insert("sut_z", sut->carrier->GetFeedBackPos().Z);
+        map.insert(QString("Origin"), m);
+    }
+    sut->moveToZPos(ori_z_pos + fabs(aoa_z_positive_offset));
+    QThread::sleep(wait_delay);
+    //Z Step +ve direction SFR Measurement
+    {
+        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        if (!grabRet) { qWarning("grab image from grabber fail"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+        this->calculateCCSFR(img, avg_sfr[1], t_sfr[1], r_sfr[1], b_sfr[1], l_sfr[1], pattern_x, pattern_y);
+        QVariantMap m;
+        m.insert("avg_sfr", avg_sfr[1]);
+        m.insert("t_sfr", t_sfr[1]);
+        m.insert("r_sfr", r_sfr[1]);
+        m.insert("b_sfr", b_sfr[1]);
+        m.insert("l_sfr", l_sfr[1]);
+        m.insert("pattern_x", pattern_x);
+        m.insert("pattern_y", pattern_y);
+        m.insert("aa_x", aa_head->motor_x->GetFeedbackPos());
+        m.insert("aa_y", aa_head->motor_y->GetFeedbackPos());
+        m.insert("sut_x", sut->carrier->GetFeedBackPos().X);
+        m.insert("sut_y", sut->carrier->GetFeedBackPos().Y);
+        m.insert("sut_z", sut->carrier->GetFeedBackPos().Z);
+        map.insert(QString("Origin_+ve"), m);
+    }
+    sut->moveToZPos(ori_z_pos - fabs(aoa_z_negative_offset));
+    QThread::sleep(wait_delay);
+    //Z Step -ve direction SFR Measurement
+    {
+        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        if (!grabRet) { qWarning("grab image from grabber fail"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
+        this->calculateCCSFR(img, avg_sfr[2], t_sfr[2], r_sfr[2], b_sfr[2], l_sfr[2], pattern_x, pattern_y);
+        QVariantMap m;
+        m.insert("avg_sfr", avg_sfr[2]);
+        m.insert("t_sfr", t_sfr[2]);
+        m.insert("r_sfr", r_sfr[2]);
+        m.insert("b_sfr", b_sfr[2]);
+        m.insert("l_sfr", l_sfr[2]);
+        m.insert("pattern_x", pattern_x);
+        m.insert("pattern_y", pattern_y);
+        m.insert("aa_x", aa_head->motor_x->GetFeedbackPos());
+        m.insert("aa_y", aa_head->motor_y->GetFeedbackPos());
+        m.insert("sut_x", sut->carrier->GetFeedBackPos().X);
+        m.insert("sut_y", sut->carrier->GetFeedBackPos().Y);
+        m.insert("sut_z", sut->carrier->GetFeedBackPos().Z);
+        map.insert(QString("Origin_-ve"), m);
+    }
+
+    //Step 2: Decide the z step move direction
+    int direction = 1; // 1 +ve , -1 -ve
+    if (avg_sfr[1] > avg_sfr[2]) {
+        if (avg_sfr[1] > avg_sfr[0]) {
+            qInfo("+Decide to go with +ve direction");
+            direction = 1;
+        } else {
+            qWarning("Cannot find SFR increase direction"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
+        }
+    } else {
+        if (avg_sfr[2] > avg_sfr[0]) {
+            qInfo("+Decide to go with -ve direction");
+            direction = -1;
+        } else {
+            qWarning("Cannot find SFR increase direction"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
+        }
+    }
+    map.insert(QString("Direction"), direction);
+
+    //Step 3: Start Z Scan
+    std::vector<double> avg_sfr_v;
+    std::vector<double> z_v;
+    for (int i = 1; i < scan_range/aoa_z_scan_step_size; i++){
+        sut->moveToZPos(ori_z_pos + direction*fabs(aoa_z_scan_step_size));
+        QThread::sleep(wait_delay);
+        cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
+        double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+        double pattern_x = 0, pattern_y = 0;
+        this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
+        z_v.push_back(i);
+        avg_sfr_v.push_back(avg_sfr);
+        data->addData(0, i, avg_sfr, avg_sfr);
+        QVariantMap m;
+        m.insert("avg_sfr", avg_sfr);
+        m.insert("t_sfr", t_sfr);
+        m.insert("r_sfr", r_sfr);
+        m.insert("b_sfr", b_sfr);
+        m.insert("l_sfr", l_sfr);
+        m.insert("pattern_x", pattern_x);
+        m.insert("pattern_y", pattern_y);
+        m.insert("aa_x", aa_head->motor_x->GetFeedbackPos());
+        m.insert("aa_y", aa_head->motor_y->GetFeedbackPos());
+        m.insert("sut_x", sut->carrier->GetFeedBackPos().X);
+        m.insert("sut_y", sut->carrier->GetFeedBackPos().Y);
+        m.insert("sut_z", sut->carrier->GetFeedBackPos().Z);
+        map.insert(QString("Scan_").append(QString::number(i)), m);
+    }
+
+    //Test Code
+//    std::vector<double> avg_sfr_v;
+//    std::vector<double> z_v;
+//    for (int i = 1; i < 10; i++){
+//        cv::Mat img = cv::imread(QString("C:\\Users\\emil\\Desktop\\AAProject\\AOA\\AAFail\\zscan_").append(QString::number(i)).append(".bmp").toStdString().c_str());
+//        double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
+//        double pattern_x = 0, pattern_y = 0;
+//        this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
+//        qInfo("avg: %f", avg_sfr);
+//        z_v.push_back(i);
+//        avg_sfr_v.push_back(avg_sfr);
+
+//        data->addData(0, i, avg_sfr, avg_sfr);
+//    }
+
+    bool detectedAbormality = false;
+    int deletedIndex = -1;
+    double peak_z, peak_sfr, error_avg, error_dev;
+    fitCurve(z_v, avg_sfr_v, 4, peak_z, peak_sfr, error_avg, error_dev, avg_sfr_v, detectedAbormality, deletedIndex, parameters.aaScanCurveFitErrorThreshold());
+    //Move sut to z peak
+    sut->moveToZPos(peak_z);
+    data->setZPeak(peak_z);
+    data->setLayer0(QString("zPeak: ").append(QString::number(peak_z)));
+    data->plot("AOA Z Scan ");
+    map.insert("Peak_Z", peak_z);
+    emit pushDataToUnit(this->runningUnit, "AOA", map);
+    return ErrorCodeStruct{ ErrorCode::OK, ""};
+}
+
 ErrorCodeStruct AACoreNew::performAOAScan(QJsonValue params)
 {
     qInfo("performAOAScan");
@@ -1478,102 +1661,6 @@ ErrorCodeStruct AACoreNew::performAOAScan(QJsonValue params)
     //sut->carrier->Move_XY_ToPos(max_pos_x, max_pos_y);
     emit pushDataToUnit(this->runningUnit, "AOA", map);
     return ErrorCodeStruct{ ErrorCode::OK, ""};
-//    QVariantMap map;
-//    map.insert("Result","OK");
-//    int mode = params["mode"].toInt();
-//    double x_step_size = params["aoa_x_step_size"].toDouble()/1000;    // To um
-//    double y_step_size = params["aoa_y_step_size"].toDouble()/1000;
-//    int count = params["aoa_count"].toInt();
-//    int delay_in_ms = params["delay_in_ms"].toInt();
-
-//    //Step 1 Run a cross to measure the CC_SFR gradient
-//    int selected_init_v = 0;  // 1 - +ve x , 2 -ve x , 3 +ve y, 4 -ve y
-//    double init_aa_x_pos = aa_head->motor_x->GetFeedbackPos();
-//    double init_aa_y_pos = aa_head->motor_y->GetFeedbackPos();
-//    map.insert("init_aa_x_pos", init_aa_x_pos);
-//    map.insert("init_aa_y_pos", init_aa_y_pos);
-//    {
-//        QList<double> avg_sfr_v;
-//        for (int i = 0; i < 5; i ++) {
-//            if (i == 1) {
-//                aa_head->motor_x->StepMoveSync(x_step_size);      //+ve x step
-//            } else if (i == 2) {
-//                aa_head->motor_x->StepMoveSync(-2*x_step_size);  // -ve y step
-//            } else if (i == 3) {
-//                aa_head->motor_x->StepMoveSync(x_step_size);     // +ve y step
-//                aa_head->motor_y->StepMoveSync(y_step_size);
-//            } else if (i == 4) {
-//                aa_head->motor_y->StepMoveSync(-2*y_step_size);  // -ve y step
-//            }
-//            double aa_x_pos = aa_head->motor_x->GetFeedbackPos();
-//            double aa_y_pos = aa_head->motor_y->GetFeedbackPos();
-
-//            QThread::msleep(delay_in_ms);
-//            bool grabRet = false;
-//            cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
-//            if (!grabRet) { qWarning("grab image from grabber fail"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
-//            double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-//            double pattern_x = 0, pattern_y = 0;
-//            this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
-//            QVariantMap m;
-//            m.insert("avg_sfr", avg_sfr);m.insert("t_sfr", t_sfr); m.insert("r_sfr", r_sfr); m.insert("b_sfr", b_sfr); m.insert("l_sfr", l_sfr);
-//            m.insert("pattern_x", pattern_x); m.insert("pattern_y", pattern_y);
-//            m.insert("aa_x_pos", aa_x_pos);
-//            m.insert("aa_y_pos", aa_y_pos);
-
-//            map.insert(QString("InitScan").append(QString::number(i)), m);
-//            avg_sfr_v.append(avg_sfr);
-//        }
-//        qInfo("Finish the initial cross scan....detecting the initial vector");
-//        double v1 = avg_sfr_v.at(1) - avg_sfr_v.at(0);
-//        double v2 = avg_sfr_v.at(2) - avg_sfr_v.at(0);
-//        double v3 = avg_sfr_v.at(3) - avg_sfr_v.at(0);
-//        double v4 = avg_sfr_v.at(4) - avg_sfr_v.at(0);
-//        qInfo("v1: %f v2: %f v3: %f v4: %f", v1, v2, v3, v4);
-
-//        map.insert("v1", v1);
-//        map.insert("v2", v2);
-//        map.insert("v3", v3);
-//        map.insert("v4", v4);
-//        if (v1 > v2 && v1 > v3 && v1 > v4) {
-//           selected_init_v = 0;
-//           if (v1 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
-//        }
-//        if (v2 > v1 && v2 > v3 && v2 > v4) {
-//           selected_init_v = 1;
-//           if (v2 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
-//        }
-//        if (v3 > v1 && v3 > v2 && v3 > v4) {
-//           selected_init_v = 2;
-//           if (v3 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
-//        }
-//        if (v4 > v1 && v4 > v2 && v4 > v3) {
-//           selected_init_v = 3;
-//           if (v4 < 0) { qWarning("sfr gradient detected to be in negative value"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""}; }
-//        }
-//        map.insert("selected_init_v", selected_init_v);
-//    }
-
-    //Testing code
-//    for (int i = 0; i < count; i++)
-//    {
-//        cv::Mat img = cv::imread(QString("C:\\Users\\emil\\Desktop\\AAProject\\AOA\\AAFail\\zscan_").append(QString::number(i+1)).append(".bmp").toStdString().c_str());
-//        double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
-//        double pattern_x = 0, pattern_y = 0;
-//        this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
-//        QVariantMap m;
-//        m.insert("avg_sfr", avg_sfr);m.insert("t_sfr", t_sfr);m.insert("r_sfr", r_sfr);
-//        m.insert("b_sfr", b_sfr);
-//        m.insert("l_sfr", l_sfr);
-//        m.insert("pattern_x", pattern_x);
-//        m.insert("pattern_y", pattern_y);
-//        map.insert(QString("Scan").append(QString::number(i)), m);
-//        qInfo("avg_sfr: %f t_sfr: %f r_sfr: %f b_sfr: %f l_sfr: %f", avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr);
-//    }
-
-//    map.insert("params", params);
-//    emit pushDataToUnit(this->runningUnit, "AOA", map);
-//    return ErrorCodeStruct{ ErrorCode::OK, ""};
 }
 
 ErrorCodeStruct AACoreNew::performAA(QJsonValue params)

@@ -390,6 +390,9 @@ ApplicationWindow {
                     }else if (aaCoreTestItemName.indexOf("Partical Check") !== -1) {
                         console.log("Perform Partical Check")
                         aaNewCore.performHandling(AACoreNew.PARTICAL_CHECK, aaCoreTestParams)
+                    }else if (aaCoreTestItemName.indexOf("AOA_ZScan") !== -1) {
+                        console.log("Perform AOA Z Scan")
+                        aaNewCore.performHandling(AACoreNew.AOA_Z_SCAN, aaCoreTestParams)
                     }else if (aaCoreTestItemName.indexOf("AOA") !== -1) {
                         console.log("Perform AOA Scan")
                         aaNewCore.performHandling(AACoreNew.AOA_SCAN, aaCoreTestParams)

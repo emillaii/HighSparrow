@@ -3160,6 +3160,10 @@ bool AACoreNew::aoaMTF(bool saveImage, bool isLoopTest)
        processList.at(i)->waitForFinished();
    }
 
+   for (int i = 0; i < processList.size(); i++){
+       processList.at(i)->terminate();
+   }
+
    for (int i = 0; i < filenameList.size(); i++) {
        QString filename = filenameList.at(i);
        qInfo(filename.toStdString().c_str());

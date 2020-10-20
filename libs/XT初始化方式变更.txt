@@ -1,0 +1,13 @@
+1. 中控机软件代码中取消IP设置，去掉InitDevice_PC_Local_Controler，ConnectControlServer
+2. 初始化直接从Profile_Init_Controller开始，IP（gzxt-netmotion）定义在XT motion config
+3. 中控机和小电脑网络连接方式都设置为自动获取IP（这种方式建立网络连接时间长，造成初始化时间>100s）
+4. 中控机软件EXE边上必须存在xt相关的dll及控制服务端（重要！）
+5. 小电脑开机自动运行GZXT_PC_loader_server，这个小程序的作用是把中控机软件边上的xt相关的dll及控制服务端拷贝到小电脑并自动运行，保证两边的运控版本一致，拷贝到小电脑路径为D:\gzxt\
+6. GZXT_PC_loader_server小程序不能关闭（重要！），否则需要重启小电脑或手动打开
+7. 以后更新XT软件包，只需要更新中控机软件路径下的相关文件即可
+
+
+
+问题：
+1. 小电脑每次开机会重置IP成自动获取，不能用固定的IP地址连接
+2. pc loader最好改成后台运行

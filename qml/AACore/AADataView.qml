@@ -150,11 +150,11 @@ Grid {
     }
 
     function plotTBChart() {
-//        tbsplineLabel.text = aaTBData.layer0
-//        tbline2Label2.text = aaTBData.layer1
-//        tbline2Label3.text = aaTBData.layer2
-//        tbline2Label4.text = aaTBData.layer3
-//        tbline2.title = aaTBData.chartName
+        tbsplineLabel1.text = aaTBData.layer0
+        tbsplineLabel2.text = aaTBData.layer1
+        tbsplineLabel3.text = aaTBData.layer2
+        tbsplineLabel4.text = aaTBData.layer3
+        //tbline2.title = aaTBData.chartName
         var maxSfr = 0
 
         if(displaytbSplineMode.checked) {
@@ -202,20 +202,24 @@ Grid {
         axisX4.max = tbccSeries.at(tbccSeries.count - 1).x
         if (maxSfr > 80) {
             axisY4.max = 100
-            //zPeak2.append(dataFromCpp2.zPeak,0)
-            //zPeak2.append(dataFromCpp2.zPeak,100)
+            zPeak4.append(aaTBData.zPeak,0)
+            zPeak4.append(aaTBData.zPeak,100)
         } else if (maxSfr > 60) {
             axisY4.max = 80
-            //zPeak2.append(dataFromCpp2.zPeak,0)
-            //zPeak2.append(dataFromCpp2.zPeak,80)
+            zPeak4.append(aaTBData.zPeak,0)
+            zPeak4.append(aaTBData.zPeak,80)
         } else {
             axisY4.max = 60
-            //zPeak2.append(dataFromCpp2.zPeak,0)
-            //zPeak2.append(dataFromCpp2.zPeak,60)
+            zPeak4.append(aaTBData.zPeak,0)
+            zPeak4.append(aaTBData.zPeak,60)
         }
     }
 
     function plotLRChart() {
+        lrsplineLabel1.text = aaLRData.layer0
+        lrsplineLabel2.text = aaLRData.layer1
+        lrsplineLabel3.text = aaLRData.layer2
+        lrsplineLabel4.text = aaLRData.layer3
         var maxSfr = 0
 
         if(displaylrSplineMode.checked) {
@@ -262,16 +266,16 @@ Grid {
         axisX5.max = lrccSeries.at(lrccSeries.count - 1).x
         if (maxSfr > 80) {
             axisY5.max = 100
-            //zPeak2.append(dataFromCpp2.zPeak,0)
-            //zPeak2.append(dataFromCpp2.zPeak,100)
+            zPeak5.append(aaLRData.zPeak,0)
+            zPeak5.append(aaLRData.zPeak,100)
         } else if (maxSfr > 60) {
             axisY5.max = 80
-            //zPeak2.append(dataFromCpp2.zPeak,0)
-            //zPeak2.append(dataFromCpp2.zPeak,80)
+            zPeak5.append(aaLRData.zPeak,0)
+            zPeak5.append(aaLRData.zPeak,80)
         } else {
             axisY5.max = 60
-            //zPeak2.append(dataFromCpp2.zPeak,0)
-            //zPeak2.append(dataFromCpp2.zPeak,60)
+            zPeak5.append(aaLRData.zPeak,0)
+            zPeak5.append(aaLRData.zPeak,60)
         }
     }
 
@@ -299,6 +303,7 @@ Grid {
         tburSeries.clear()
         tbllSeries.clear()
         tblrSeries.clear()
+        zPeak4.clear()
     }
 
     function clearLRPlot() {
@@ -307,6 +312,7 @@ Grid {
         lrurSeries.clear()
         lrlrSeries.clear()
         lrllSeries.clear()
+        zPeak5.clear()
     }
 
     Frame {
@@ -584,13 +590,13 @@ Grid {
                 gridVisible: true
             }
 
-//            LineSeries
-//            {
-//                name:"zPeak"
-//                id:zPeak
-//                axisX: axisX
-//                axisY: axisY1
-//            }
+            LineSeries
+            {
+                name:"zPeak"
+                id:zPeak5
+                axisX: axisX5
+                axisY: axisY5
+            }
             SplineSeries {
                 name: "CC "
                 id: lrccSeries
@@ -637,7 +643,7 @@ Grid {
                     font.pixelSize: 10
                 }
                 Label {
-                    id: lrsplin1Label3
+                    id: lrsplineLabel3
                     background: Rectangle {
                         color: "black"
                     }
@@ -940,13 +946,14 @@ Grid {
                 gridVisible: true
             }
 
-//            LineSeries
-//            {
-//                name:"zPeak"
-//                id:zPeak
-//                axisX: axisX
-//                axisY: axisY1
-//            }
+            LineSeries
+            {
+                name:"zPeak"
+                id:zPeak4
+                axisX: axisX4
+                axisY: axisY4
+            }
+
             SplineSeries {
                 name: "CC "
                 id: tbccSeries
@@ -993,7 +1000,7 @@ Grid {
                     font.pixelSize: 10
                 }
                 Label {
-                    id: tbsplin1Label3
+                    id: tbsplineLabel3
                     background: Rectangle {
                         color: "black"
                     }

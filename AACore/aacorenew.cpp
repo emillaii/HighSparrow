@@ -640,6 +640,7 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
             aaData_2.setInProgress(true);
         }
         //performAAOffline();
+
         performAA(params);
         //performAAOfflineCCOnly();
         aaData_1.setInProgress(false);
@@ -1394,9 +1395,9 @@ ErrorCodeStruct AACoreNew::performAOAZScan(QJsonValue params)
     double aoa_z_negative_offset = params["aoa_z_negative_offset"].toDouble()/1000;
     double aoa_z_scan_step_size = params["aoa_z_scan_step_size"].toDouble()/1000;
     uint wait_delay = 500;
-    uint scan_range = 20;
+    double scan_range = 20/1000;
 
-    qInfo("positive offset: %f negative offset: %f step_ize: %f", aoa_z_positive_offset, aoa_z_negative_offset, aoa_z_scan_step_size);
+    qInfo("positive offset: %f negative offset: %f step_size: %f", aoa_z_positive_offset, aoa_z_negative_offset, aoa_z_scan_step_size);
 
     AAData *data;
     if (currentChartDisplayChannel == 0) {
@@ -1437,7 +1438,7 @@ ErrorCodeStruct AACoreNew::performAOAZScan(QJsonValue params)
         map.insert(QString("Origin"), m);
     }
     sut->moveToZPos(ori_z_pos + fabs(aoa_z_positive_offset));
-    QThread::sleep(wait_delay);
+    QThread::msleep(wait_delay);
     //Z Step +ve direction SFR Measurement
     {
         cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
@@ -1459,7 +1460,7 @@ ErrorCodeStruct AACoreNew::performAOAZScan(QJsonValue params)
         map.insert(QString("Origin_+ve"), m);
     }
     sut->moveToZPos(ori_z_pos - fabs(aoa_z_negative_offset));
-    QThread::sleep(wait_delay);
+    QThread::msleep(wait_delay);
     //Z Step -ve direction SFR Measurement
     {
         cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
@@ -1482,37 +1483,46 @@ ErrorCodeStruct AACoreNew::performAOAZScan(QJsonValue params)
     }
 
     //Step 2: Decide the z step move direction
+    bool foundTrend = true;
     int direction = 1; // 1 +ve , -1 -ve
     if (avg_sfr[1] > avg_sfr[2]) {
         if (avg_sfr[1] > avg_sfr[0]) {
             qInfo("+Decide to go with +ve direction");
             direction = 1;
         } else {
-            qWarning("Cannot find SFR increase direction"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
+            qWarning("Cannot find SFR increase direction");
+            foundTrend = false;
         }
     } else {
         if (avg_sfr[2] > avg_sfr[0]) {
             qInfo("+Decide to go with -ve direction");
             direction = -1;
         } else {
-            qWarning("Cannot find SFR increase direction"); return ErrorCodeStruct{ ErrorCode::GENERIC_ERROR, ""};
+            qWarning("Cannot find SFR increase direction");
+            foundTrend = false;
         }
     }
     map.insert(QString("Direction"), direction);
+    map.insert(QString("FoundTrend"), foundTrend);
+
+    if (!foundTrend) {
+        ori_z_pos = ori_z_pos - 0.01;
+    }
 
     //Step 3: Start Z Scan
     std::vector<double> avg_sfr_v;
     std::vector<double> z_v;
-    for (int i = 1; i < scan_range/aoa_z_scan_step_size; i++){
-        sut->moveToZPos(ori_z_pos + direction*fabs(aoa_z_scan_step_size));
-        QThread::sleep(wait_delay);
+    for (int i = 1; i < 20; i++){
+        double targetPos = ori_z_pos + i*direction*fabs(aoa_z_scan_step_size);
+        sut->moveToZPos(targetPos);
+        QThread::msleep(wait_delay);
         cv::Mat img = dk->DothinkeyGrabImageCV(0, grabRet);
         double avg_sfr = 0, t_sfr = 0, r_sfr = 0, b_sfr = 0, l_sfr = 0;
         double pattern_x = 0, pattern_y = 0;
         this->calculateCCSFR(img, avg_sfr, t_sfr, r_sfr, b_sfr, l_sfr, pattern_x, pattern_y);
-        z_v.push_back(i);
+        z_v.push_back(targetPos);
         avg_sfr_v.push_back(avg_sfr);
-        data->addData(0, i, avg_sfr, avg_sfr);
+        data->addData(0, targetPos, avg_sfr, avg_sfr);
         QVariantMap m;
         m.insert("avg_sfr", avg_sfr);
         m.insert("t_sfr", t_sfr);
@@ -2587,14 +2597,15 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         return result;
     }
     int fitOrder = parameters.aaScanCurveFitOrder();
-    threeDPoint point_0;
-    vector<threeDPoint> points_1, points_11;
-    vector<threeDPoint> points_2, points_22;
-    vector<threeDPoint> points_3, points_33;
+    threeDPoint point_0, point_0_top_bottom, point_0_left_right;
+    vector<threeDPoint> points_1, points_11, points_1_top_bottom, points_1_left_right;
+    vector<threeDPoint> points_2, points_22, points_2_top_bottom, points_2_left_right;
+    vector<threeDPoint> points_3, points_33, points_3_top_bottom, points_3_left_right;
     double maxPeakZ = -99999;
     int deletedIndex = -1;
     for (size_t i = 0; i < sorted_sfr_map.size(); i++) {
         vector<double> sfr,b_sfr,t_sfr,l_sfr,r_sfr, z;
+        vector<double> sfr_top_bottom, sfr_left_right;
         vector<double> sfr_fit, b_sfr_fit, t_sfr_fit, l_sfr_fit, r_sfr_fit;
         double ex = 0; double ey = 0;
         for (size_t ii=0; ii < sorted_sfr_map[i].size(); ii++) {
@@ -2625,6 +2636,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
                 avg_sfr = (sorted_sfr_map[i][ii].t_sfr + sorted_sfr_map[i][ii].r_sfr + sorted_sfr_map[i][ii].b_sfr + sorted_sfr_map[i][ii].l_sfr)/4;
             }
             sfr.push_back(avg_sfr);
+            sfr_top_bottom.push_back((sorted_sfr_map[i][ii].b_sfr+sorted_sfr_map[i][ii].t_sfr)/2);
+            sfr_left_right.push_back((sorted_sfr_map[i][ii].l_sfr+sorted_sfr_map[i][ii].r_sfr)/2);
             b_sfr.push_back(sorted_sfr_map[i][ii].b_sfr);
             t_sfr.push_back(sorted_sfr_map[i][ii].t_sfr);
             l_sfr.push_back(sorted_sfr_map[i][ii].l_sfr);
@@ -2717,19 +2730,42 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
         bool detectedAbnormality = false;
         int temp_index = -1;
         fitCurve(z, sfr, fitOrder, peak_z, peak_sfr,error_avg,error_dev, sfr_fit, detectedAbnormality, temp_index, parameters.aaScanCurveFitErrorThreshold());
+
+        double peak_top_bottom_z;
+        double peak_top_bottom_sfr;
+        {
+            vector<double> sfr_top_bottom_fit;
+            fitCurve(z, sfr_top_bottom, fitOrder, peak_top_bottom_z, peak_top_bottom_sfr,error_avg,error_dev, sfr_top_bottom_fit, detectedAbnormality, temp_index, parameters.aaScanCurveFitErrorThreshold());
+        }
+
+        double peak_left_right_z;
+        double peak_left_right_sfr;
+        {
+            vector<double> sfr_left_right_fit;
+            fitCurve(z, sfr_left_right, fitOrder, peak_left_right_z, peak_left_right_sfr,error_avg,error_dev, sfr_left_right_fit, detectedAbnormality, temp_index, parameters.aaScanCurveFitErrorThreshold());
+        }
+
         sorted_sfr_fit_map.push_back(sfr_fit); //Used to display the curve with fitting result
         if (i==0) {
             deletedIndex = temp_index;
             point_0.x = ex; point_0.y = ey; point_0.z = peak_z + start_pos;
+            point_0_top_bottom.x = ex; point_0_top_bottom.y = ey; point_0_top_bottom.z = peak_top_bottom_z + start_pos;
+            point_0_left_right.x = ex; point_0_left_right.y = ey; point_0_left_right.z = peak_left_right_z + start_pos;
         } else if ( i >= 1 && i <= 4) {
             points_1.emplace_back(ex, ey, peak_z + start_pos);
-            points_11.emplace_back(ex, ey, peak_z + start_pos);
+            points_11.emplace_back(ex, ey, peak_z + start_pos);     
+            points_1_top_bottom.emplace_back(ex, ey, peak_top_bottom_z + start_pos);
+            points_1_left_right.emplace_back(ex, ey, peak_left_right_z + start_pos);
         } else if ( i >= 5 && i <= 8) {
             points_2.emplace_back(ex, ey, peak_z + start_pos);
             points_22.emplace_back(ex, ey, peak_z + start_pos);
+            points_2_top_bottom.emplace_back(ex, ey, peak_top_bottom_z + start_pos);
+            points_2_left_right.emplace_back(ex, ey, peak_left_right_z + start_pos);
         } else if ( i >= 9 && i <= 12) {
             points_3.emplace_back(ex, ey, peak_z + start_pos);
             points_33.emplace_back(ex, ey, peak_z + start_pos);
+            points_3_top_bottom.emplace_back(ex, ey, peak_top_bottom_z + start_pos);
+            points_3_left_right.emplace_back(ex, ey, peak_left_right_z + start_pos);
         }
     }
     sort(points_11.begin(), points_11.end(), zPeakComp);
@@ -2780,6 +2816,12 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     threeDPoint weighted_vector_1 = planeFitting(points_1);
     threeDPoint weighted_vector_2 = planeFitting(points_2);
     threeDPoint weighted_vector_3 = planeFitting(points_3);
+    threeDPoint weighted_vector_tb_1 = planeFitting(points_1_top_bottom);
+    threeDPoint weighted_vector_tb_2 = planeFitting(points_2_top_bottom);
+    threeDPoint weighted_vector_tb_3 = planeFitting(points_3_top_bottom);
+    threeDPoint weighted_vector_lr_1 = planeFitting(points_1_left_right);
+    threeDPoint weighted_vector_lr_2 = planeFitting(points_2_left_right);
+    threeDPoint weighted_vector_lr_3 = planeFitting(points_3_left_right);
     double dev_1 = 0, dev_2 = 0, dev_3 =0;
     if (points_11.size()>0) dev_1 = fabs(points_11[0].z - points_11[points_11.size()-1].z)*1000;
     if (points_22.size()>0) dev_2 = fabs(points_22[0].z - points_22[points_22.size()-1].z)*1000;
@@ -2791,6 +2833,20 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     double xTilt_3 = weighted_vector_3.z * weighted_vector_3.x;
     double yTilt_3 = weighted_vector_3.z * weighted_vector_3.y;
 
+    double xTilt_1_tb = weighted_vector_tb_1.z * weighted_vector_tb_1.x;
+    double yTilt_1_tb = weighted_vector_tb_1.z * weighted_vector_tb_1.y;
+    double xTilt_2_tb = weighted_vector_tb_2.z * weighted_vector_tb_2.x;
+    double yTilt_2_tb = weighted_vector_tb_2.z * weighted_vector_tb_2.y;
+    double xTilt_3_tb = weighted_vector_tb_3.z * weighted_vector_tb_3.x;
+    double yTilt_3_tb = weighted_vector_tb_3.z * weighted_vector_tb_3.y;
+
+    double xTilt_1_lr = weighted_vector_lr_1.z * weighted_vector_lr_1.x;
+    double yTilt_1_lr = weighted_vector_lr_1.z * weighted_vector_lr_1.y;
+    double xTilt_2_lr = weighted_vector_lr_2.z * weighted_vector_lr_2.x;
+    double yTilt_2_lr = weighted_vector_lr_2.z * weighted_vector_lr_2.y;
+    double xTilt_3_lr = weighted_vector_lr_3.z * weighted_vector_lr_3.x;
+    double yTilt_3_lr = weighted_vector_lr_3.z * weighted_vector_lr_3.y;
+
     qInfo("Layer 1: xTilt: %f yTilt: %f dev: %f", xTilt_1, yTilt_1, dev_1);
     qInfo("Layer 2: xTilt: %f yTilt: %f dev: %f", xTilt_2, yTilt_2, dev_2);
     qInfo("Layer 3: xTilt: %f yTilt: %f dev: %f", xTilt_3, yTilt_3, dev_3);
@@ -2800,7 +2856,24 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     result.insert("yTilt_2", yTilt_2); map.insert("yTilt_2", yTilt_2);
     result.insert("xTilt_3", xTilt_3); map.insert("xTilt_3", xTilt_3);
     result.insert("yTilt_3", yTilt_3); map.insert("yTilt_3", yTilt_3);
+
+    result.insert("xTilt_1_tb", xTilt_1_tb); map.insert("xTilt_1_tb", xTilt_1_tb);
+    result.insert("yTilt_1_tb", yTilt_1_tb); map.insert("yTilt_1_tb", yTilt_1_tb);
+    result.insert("xTilt_2_tb", xTilt_2_tb); map.insert("xTilt_2_tb", xTilt_2_tb);
+    result.insert("yTilt_2_tb", yTilt_2_tb); map.insert("yTilt_2_tb", yTilt_2_tb);
+    result.insert("xTilt_3_tb", xTilt_3_tb); map.insert("xTilt_3_tb", xTilt_3_tb);
+    result.insert("yTilt_3_tb", yTilt_3_tb); map.insert("yTilt_3_tb", yTilt_3_tb);
+
+    result.insert("xTilt_1_lr", xTilt_1_lr); map.insert("xTilt_1_lr", xTilt_1_lr);
+    result.insert("yTilt_1_lr", yTilt_1_lr); map.insert("yTilt_1_lr", yTilt_1_lr);
+    result.insert("xTilt_2_lr", xTilt_2_lr); map.insert("xTilt_2_lr", xTilt_2_lr);
+    result.insert("yTilt_2_lr", yTilt_2_lr); map.insert("yTilt_2_lr", yTilt_2_lr);
+    result.insert("xTilt_3_lr", xTilt_3_lr); map.insert("xTilt_3_lr", xTilt_3_lr);
+    result.insert("yTilt_3_lr", yTilt_3_lr); map.insert("yTilt_3_lr", yTilt_3_lr);
+
     map.insert("cczPeak", point_0.z);
+    map.insert("cczPeak_tb", point_0_top_bottom.z);
+    map.insert("cczPeak_lr", point_0_left_right.z);
 
     result.insert("zPeak_03", peak_03); map.insert("zPeak_03", peak_03);
     result.insert("zPeak_05", peak_05); map.insert("zPeak_05", peak_05);
@@ -3085,6 +3158,103 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     //emit pushDataToUnit(runningUnit, "SFR", map);
     emit postSfrDataToELK(runningUnit, map);
     data->plot(runningTestName);
+
+    //Layer 0:
+    aaTBData.setZPeak(point_0_top_bottom.z*1000);
+    aaTBData.setLayer0(QString("L0 -- CC:")
+                    .append(QString::number(point_0_top_bottom.z, 'g', 6))
+                    );
+    aaLRData.setZPeak(point_0_left_right.z*1000);
+    aaLRData.setLayer0(QString("L0 -- CC:")
+                    .append(QString::number(point_0_left_right.z, 'g', 6))
+                    );
+    //Layer 1
+    if (points_1.size() > 0) {
+        aaTBData.setLayer1(QString("L1- XT:")
+                        .append(QString::number(xTilt_1_tb,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_1_tb,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_1_top_bottom[0].z,'g',6))
+                        .append(" UR:")
+                        .append(QString::number(points_1_top_bottom[3].z,'g',6))
+                        .append(" LL:")
+                        .append(QString::number(points_1_top_bottom[1].z,'g',6))
+                        .append(" LR:")
+                        .append(QString::number(points_1_top_bottom[2].z,'g',6))
+                        );
+        aaLRData.setLayer1(QString("L1- XT:")
+                        .append(QString::number(xTilt_1_lr,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_1_lr,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_1_left_right[0].z,'g',6))
+                        .append(" UR:")
+                        .append(QString::number(points_1_left_right[3].z,'g',6))
+                        .append(" LL:")
+                        .append(QString::number(points_1_left_right[1].z,'g',6))
+                        .append(" LR:")
+                        .append(QString::number(points_1_left_right[2].z,'g',6))
+                        );
+    }
+    //Layer 2
+    if (points_2.size() > 0) {
+        aaTBData.setLayer2(QString("L2- XT:")
+                        .append(QString::number(xTilt_2_tb,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_2_tb,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_2_top_bottom[0].z,'g',6))
+                        .append(" UR:")
+                        .append(QString::number(points_2_top_bottom[3].z,'g',6))
+                        .append(" LL:")
+                        .append(QString::number(points_2_top_bottom[1].z,'g',6))
+                        .append(" LR:")
+                        .append(QString::number(points_2_top_bottom[2].z,'g',6))
+                        );
+        aaLRData.setLayer2(QString("L2- XT:")
+                        .append(QString::number(xTilt_2_lr,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_2_lr,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_2_left_right[0].z,'g',6))
+                        .append(" UR:")
+                        .append(QString::number(points_2_left_right[3].z,'g',6))
+                        .append(" LL:")
+                        .append(QString::number(points_2_left_right[1].z,'g',6))
+                        .append(" LR:")
+                        .append(QString::number(points_2_left_right[2].z,'g',6))
+                        );
+    }
+    //Layer 3
+    if (points_3.size() > 0) {
+        aaTBData.setLayer3(QString("L3- XT:")
+                        .append(QString::number(xTilt_3_tb,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_3_tb,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_3_top_bottom[0].z,'g',6))
+                        .append(" UR:")
+                        .append(QString::number(points_3_top_bottom[3].z,'g',6))
+                        .append(" LL:")
+                        .append(QString::number(points_3_top_bottom[1].z,'g',6))
+                        .append(" LR:")
+                        .append(QString::number(points_3_top_bottom[2].z,'g',6))
+                        );
+        aaLRData.setLayer3(QString("L3- XT:")
+                        .append(QString::number(xTilt_3_lr,'g',3))
+                        .append(" YT:")
+                        .append(QString::number(yTilt_3_lr,'g',3))
+                        .append(" UL:")
+                        .append(QString::number(points_3_left_right[0].z,'g',6))
+                        .append(" UR:")
+                        .append(QString::number(points_3_left_right[3].z,'g',6))
+                        .append(" LL:")
+                        .append(QString::number(points_3_left_right[1].z,'g',6))
+                        .append(" LR:")
+                        .append(QString::number(points_3_left_right[2].z,'g',6))
+                        );
+    }
     aaTBData.plot(runningTestName);
     aaLRData.plot(runningTestName);
     return result;

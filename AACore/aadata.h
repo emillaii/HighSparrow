@@ -67,6 +67,23 @@ public:
     void plotIntensityProfile(float minI, float maxI, std::vector<float> values, int detectedNumberOfError, double negativeDI, double positiveDI);
     void clear();
     void plot(QString chartName = "Silicool AA");
+
+    QList<QPointF> getCCPointsList() {
+        return m_CCPointsList;
+    }
+    QList<QPointF> getLRPointsList() {
+        return m_LRPointsList;
+    }
+    QList<QPointF> getLLPointsList() {
+        return m_LLPointsList;
+    }
+    QList<QPointF> getULPointsList() {
+        return m_ULPointsList;
+    }
+    QList<QPointF> getURPointsList() {
+        return m_URPointsList;
+    }
+
     QPointF wValue() const{
         return m_wValue;
     }

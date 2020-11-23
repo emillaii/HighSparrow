@@ -68,6 +68,8 @@ public:
         float m_fFrameFps;
         int m_iFrameErr;
         int m_iFrameCnt;
+        int m_iPhyType;
+        int m_iLanes;
     };
 
     QString IniFilename() const

@@ -119,6 +119,8 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
         m_CameraChannels[channel].m_fAvdd = (float)iniParser_->ReadIniData("Sensor", "avdd", 0x00) / 1000;
         m_CameraChannels[channel].m_fDovdd = (float)iniParser_->ReadIniData("Sensor", "dovdd", 0x00) / 1000;
         m_CameraChannels[channel].m_fDvdd = (float)iniParser_->ReadIniData("Sensor", "dvdd", 0x00) / 1000;
+        m_CameraChannels[channel].m_iPhyType = iniParser_->ReadIniData("Sensor", "PhyType", 0);
+        m_CameraChannels[channel].m_iLanes = iniParser_->ReadIniData("Sensor", "LANES", 0);
     }
     pCurrentSensor->width = iniParser_->ReadIniData("Sensor", "width", 0);
     pCurrentSensor->height = iniParser_->ReadIniData("Sensor", "height", 0);
@@ -138,6 +140,7 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     pCurrentSensor->avdd = iniParser_->ReadIniData("Sensor", "avdd", 0x00);
     pCurrentSensor->dovdd = iniParser_->ReadIniData("Sensor", "dovdd", 0x00);
     pCurrentSensor->dvdd = iniParser_->ReadIniData("Sensor", "dvdd", 0x00);
+
     pCurrentSensor->ParaList = new USHORT[8192 * 4];
     pCurrentSensor->ParaListSize = 0;
     pCurrentSensor->SleepParaList = new USHORT[8192 * 4];
@@ -177,6 +180,18 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
         fDovdd = m_CameraChannels[channel].m_fDovdd;
         fAfvcc = m_CameraChannels[channel].m_fAfvcc;
         vpp = m_CameraChannels[channel].m_vpp;
+    }
+    {
+        MipiCtrlEx_t sMipiCtrlEx;
+        int iRet = GetMipiCtrlEx(&sMipiCtrlEx, iDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qCritical("[DothinkeyStartCamera] GetMipiCtrlEx Fail!");
+        }
+        qInfo("[DothinkeyStartCamera] Set LaneCnt: %d Set PhyType: %d", m_CameraChannels[channel].m_iLanes, m_CameraChannels[channel].m_iPhyType);
+        sMipiCtrlEx.byLaneCnt = m_CameraChannels[channel].m_iLanes;
+        sMipiCtrlEx.byPhyType = m_CameraChannels[channel].m_iPhyType;
+        SetMipiCtrlEx(&sMipiCtrlEx, iDevID);
     }
     SetSoftPinPullUp(IO_NOPULL, 0);
     if (SetSensorClock(false, (USHORT)(0 * 10), iDevID) != DT_ERROR_OK)

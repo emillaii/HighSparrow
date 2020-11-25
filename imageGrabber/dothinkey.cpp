@@ -152,6 +152,549 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     return DT_ERROR_OK;
 }
 
+int Dothinkey::DothinkeySetSensorEnable(int channel, BYTE &pin, bool bEna)
+{
+    int iRet;
+    int m_nDevID = 0;
+    if (bEna)
+    {
+        // 设置reset pin, pwdn pin
+        BYTE Pwdn2=0;
+        BYTE Pwdn1=0;
+        BYTE Reset=0;
+
+        SensorEnable(pin^RESET_H, TRUE, m_nDevID);
+        Sleep(50);
+        SensorEnable(pin, TRUE, m_nDevID);
+        Sleep(50);
+
+        Pwdn2 = pin & PWDN_H ?  PWDN2_L : PWDN2_H;   //pwdn2 neg to pwdn1
+        Pwdn1 = pin & PWDN_H ?  PWDN_H : PWDN_L;     //pwdn1
+        Reset = pin & RESET_H ?  RESET_H : RESET_L;  //reset
+
+        pin = Pwdn2 | Pwdn1 | Reset;
+        iRet = SensorEnable(pin, 1, m_nDevID); //reset
+    }
+    else
+    {
+        iRet = SensorEnable(pin, FALSE, m_nDevID);
+    }
+
+    return iRet;
+}
+
+int Dothinkey::DothinkeySetSensorPower(int channel, bool bOnOff)
+{
+    int iRet = DT_ERROR_OK;
+    int m_nDevID = 0;
+
+    SENSOR_POWER Power[7];
+    int Volt[7];
+    int Rise[7];
+    BOOL OnOff[7];
+    int Current[7];
+    CURRENT_RANGE Range[7];
+    int SampleSpeed[7];
+
+    DWORD dwDevKit = GetKitType(m_nDevID);
+    if (bOnOff)
+    {
+        Power[0] = POWER_AVDD;
+        Volt[0] = (int)(this->m_CameraChannels[channel].m_fAvdd*1000); // 2.8V
+        Current[0] = 600; // 500mA
+        Rise[0] = 100;
+        OnOff[0] = TRUE;
+        Range[0] = CURRENT_RANGE_MA;
+        SampleSpeed[0] = 200;
+
+        Power[1] = POWER_DOVDD;
+        Volt[1] = (int)(this->m_CameraChannels[channel].m_fDovdd*1000); // 1.8V
+        Current[1] = 600; // 500mA
+        Rise[1] = 100;
+        OnOff[1] = TRUE;
+        Range[1] = CURRENT_RANGE_MA;
+        SampleSpeed[1] = 200;
+
+        Power[2] = POWER_DVDD;
+        Volt[2] = (int)(this->m_CameraChannels[channel].m_fDvdd*1000);// 1.8V
+        Current[2] =  600;// 600mA
+        Rise[2] = 100;
+        OnOff[2] = TRUE;
+        Range[2] = CURRENT_RANGE_MA;
+        SampleSpeed[2] = 200;
+
+        Power[3] = POWER_AFVCC;
+        Volt[3] = (int)(2800*100); // 2.8V
+        Current[3] = 600; // 600mA
+        Rise[3] = 100;
+        OnOff[3] = TRUE;
+        Range[3] = CURRENT_RANGE_MA;
+        SampleSpeed[3] = 200;
+
+        // MU950-TOF机型支持AUX电压
+        if (dwDevKit == MU950_TOF)
+        {
+            Power[4] = POWER_AUX1;
+        }
+        else if(dwDevKit == G40 || dwDevKit == G41 || dwDevKit == G42 || dwDevKit == G42|| dwDevKit == G22|| dwDevKit == G22L)
+        {
+            Power[4] = POWER_VPP2;
+        }
+        else
+        {
+            Power[4] = POWER_VPP;
+        }
+        Volt[4] = (int)(this->m_CameraChannels[channel].m_vpp*1000); // 2.8V
+        Current[4] = 600; // 600mA
+        Rise[4] = 100;
+        OnOff[4] = TRUE;
+        Range[4] = CURRENT_RANGE_MA;
+        SampleSpeed[4] = 200;
+
+        if (dwDevKit == G40 || dwDevKit == G41 || dwDevKit == G42 || dwDevKit == G42|| dwDevKit == G22|| dwDevKit == G22L)
+        {
+            Power[5] = POWER_AUX1;
+        }
+        else
+        {
+            Power[5] = POWER_OISVDD;
+        }
+//        Volt[5] = (int)(m_fOisvdd * 1000);
+//        Current[5] = 600;
+//        Rise[5] = 100;
+//        OnOff[5] = FALSE;               // 根据需要开启
+//        Range[5] = CURRENT_RANGE_MA;
+//        SampleSpeed[5] = 200;
+
+//        Power[6] = POWER_AVDD2;
+//        Volt[6] = (int)(m_fAvdd2 * 1000);;
+//        Current[6] = 600;
+//        Rise[6] = 100;
+//        OnOff[6] = FALSE;               // 根据需要开启
+//        Range[6] = CURRENT_RANGE_MA;
+//        SampleSpeed[6] = 200;
+
+        // 设置电压斜率
+        iRet = PmuSetRise(Power, Rise, 5, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetRise failed with err:%d\r\n", iRet);
+        }
+
+        iRet = PmuSetSampleSpeed(Power, SampleSpeed, 5, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetSampleSpeed failed with err:%d\r\n", iRet);
+        }
+
+        // 先设置电压值为0
+        Volt[0] = 0;
+        Volt[1] = 0;
+        Volt[2] = 0;
+        Volt[3] = 0;
+        Volt[4] = 0;
+        Volt[5] = 0;
+        Volt[6] = 0;
+
+        // 设置电压值
+        iRet = PmuSetVoltage(Power, Volt, 5, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetVoltage failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+
+        Sleep(10);
+
+        // 设置电压值
+        Volt[0] = (int)(this->m_CameraChannels[channel].m_fAvdd*1000);
+        Volt[1] = (int)(this->m_CameraChannels[channel].m_fDovdd*1000);
+        Volt[2] = (int)(this->m_CameraChannels[channel].m_fDvdd*1000);
+        Volt[3] = 1800;
+        Volt[4] = 1800;
+        Volt[5] = 0; //(int)(m_fOisvdd*1000);
+        Volt[6] = 0; //(int)(m_fAvdd2*1000);
+        iRet = PmuSetVoltage(Power, Volt, 5, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetVoltage failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+
+        OnOff[0] = TRUE;
+        OnOff[1] = TRUE;
+        OnOff[2] = TRUE;
+        OnOff[3] = TRUE;
+        OnOff[4] = TRUE;
+
+        iRet = PmuSetOnOff(Power, OnOff, 5, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetOnOff failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+
+        // 设置限流
+        iRet = PmuSetOcpCurrentLimit(Power, Current, 5,m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetOcpCurrentLimit failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+
+        // 设置量程
+        iRet = PmuSetCurrentRange(Power,Range,5,m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetCurrentRange failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+
+        // 设置电流采集触发点（MU950(TOF)机型支持，当高于设置的触发点电流时，启动电流采集）
+        // 设置AUX路电源电流触发点
+        PmuCurrentMeasurement_t sPmuCurrentMeasurementAux1;
+
+        // (2019/6/6 MU950(TOF)机型AUX,DVDD,AFVCC路支持电流采集触发点)
+        sPmuCurrentMeasurementAux1.PowerType = POWER_AUX1;
+        sPmuCurrentMeasurementAux1.bPosEn = TRUE;
+        sPmuCurrentMeasurementAux1.lfTriggerPoint = 0;              //当电流大于TriggerPoint后，启动电流采集
+        memset(sPmuCurrentMeasurementAux1.Rsv, 0x00, sizeof(sPmuCurrentMeasurementAux1.Rsv));
+
+        iRet = PmuSetCurrentMeasurement(&sPmuCurrentMeasurementAux1, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetCurrentMeasurement failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+
+        // 设置DVDD路电源电流触发点
+        PmuCurrentMeasurement_t sPmuCurrentMeasurementDvdd;
+
+        // (2019/6/6 MU950(TOF)机型AUX,DVDD,AFVCC路支持电流采集触发点)
+        sPmuCurrentMeasurementDvdd.PowerType = POWER_DVDD;
+        sPmuCurrentMeasurementDvdd.bPosEn = TRUE;
+        sPmuCurrentMeasurementDvdd.lfTriggerPoint = 0;              //当电流大于TriggerPoint后，启动电流采集
+        memset(sPmuCurrentMeasurementDvdd.Rsv, 0x00, sizeof(sPmuCurrentMeasurementDvdd.Rsv));
+
+        iRet = PmuSetCurrentMeasurement(&sPmuCurrentMeasurementDvdd, m_nDevID);
+        if (iRet != DT_ERROR_OK)
+        {
+            qWarning("PmuSetCurrentMeasurement failed with err:%d\r\n", iRet);
+            return iRet;
+        }
+    }
+    else
+    {
+       // 关闭电源
+       Power[0] = POWER_AVDD;
+       Volt[0] = 0;
+       OnOff[0] = FALSE;
+
+       Power[1] = POWER_DOVDD;
+       Volt[1] = 0;
+       OnOff[1] = FALSE;
+
+       Power[2] = POWER_DVDD;
+       Volt[2] = 0;
+       OnOff[2] = FALSE;
+
+       Power[3] = POWER_AFVCC;
+       Volt[3] = 0;
+       OnOff[3] = FALSE;
+
+       // MU950-TOF机型支持AUX电压
+       if (dwDevKit == MU950_TOF)
+       {
+           Power[4] = POWER_AUX1;
+       }
+       else if (dwDevKit == G40 || dwDevKit == G41 || dwDevKit == G42 || dwDevKit == G42)
+       {
+           Power[4] = POWER_VPP2;
+       }
+       else
+       {
+           Power[4] = POWER_VPP;
+       }
+       Volt[4] = 0;
+       OnOff[4] = FALSE;
+
+       if (dwDevKit == G40 || dwDevKit == G41 || dwDevKit == G42)
+       {
+           Power[5] = POWER_AUX1;
+       }
+       else
+       {
+           Power[5] = POWER_OISVDD;
+       }
+       Volt[5] = 0;
+       OnOff[5] = FALSE;
+
+       Power[6] = POWER_AVDD2;
+       Volt[6] = 0;
+       OnOff[6] = FALSE;
+
+       /* 先设置电压为0 */
+       iRet = PmuSetVoltage(Power, Volt, 7, m_nDevID);
+       if (iRet != DT_ERROR_OK)
+       {
+           qWarning("PmuSetVoltage failed with err:%d\r\n", iRet);
+           return iRet;
+       }
+       Sleep(150);
+
+       /* 关闭电源 */
+       iRet = PmuSetOnOff(Power, OnOff, 7, m_nDevID);
+       if (iRet != DT_ERROR_OK)
+       {
+           qWarning("PmuSetOnOff failed with err:%d\r\n", iRet);
+           return iRet;
+       }
+    }
+
+    return iRet;
+}
+
+int Dothinkey::DothinkeyInitSoftPin(int channel, BYTE byPort)
+{
+    int iRet = DT_ERROR_OK;
+    int m_nDevID = 0;
+
+    // 初始化柔性IO
+    UCHAR PinDef[26] = {PIN_NC};
+    if (byPort == PORT_SONY_LVDS || byPort == PORT_PANASONIC)					// ULM928 spi定义
+    {
+        PinDef[0] = PIN_NC;
+        PinDef[1] = PIN_NC;
+        PinDef[2] = PIN_NC;
+        PinDef[3] = PIN_NC;
+        PinDef[4] = PIN_NC;
+        PinDef[5] = PIN_NC;
+        PinDef[6] = PIN_NC;
+        PinDef[7] = PIN_NC;
+        PinDef[8] = PIN_NC;
+        PinDef[9] = PIN_NC;
+        PinDef[10] = PIN_NC;
+        PinDef[11] = PIN_NC;
+        PinDef[12] = PIN_NC;
+        PinDef[13] = PIN_NC;
+        PinDef[14] = PIN_NC;
+        PinDef[15] = PIN_NC;
+        PinDef[16] = PIN_NC;
+        PinDef[17] = PIN_NC;
+        PinDef[18] = PIN_NC;				//PIN_PWDN PIN_SPI_CS 15
+        PinDef[19] = PIN_NC;
+        PinDef[20] = PIN_SPI_SCK;		//19 //PIN_SPI_SCK
+        PinDef[21] = PIN_SPI_SDO;		//PIN_SPI_SDO 18
+        PinDef[22] = PIN_SPI_CS;
+        PinDef[23] = PIN_NC;		    //PIN_SPI_SDO
+        PinDef[24] = PIN_GPIO3;			//PIN_SPI_SDI/PIN_SPI_SDA //hs
+        PinDef[25] = PIN_GPIO4;
+        //vs
+    }
+    else if (byPort == PORT_MIPI || byPort == PORT_HISPI)
+    {
+        PinDef[0] = PIN_NC;
+        PinDef[1] = PIN_NC;
+        PinDef[2] = PIN_NC;
+        PinDef[3] = PIN_NC;
+        PinDef[4] = PIN_NC;
+        PinDef[5] = PIN_NC;
+        PinDef[6] = PIN_NC;
+        PinDef[7] = PIN_NC;
+        PinDef[8] = PIN_NC;
+        PinDef[9] = PIN_NC;
+        PinDef[10] = PIN_NC;
+        PinDef[11] = PIN_NC;
+        PinDef[12] = PIN_NC;
+        PinDef[13] = PIN_NC;
+        PinDef[14] = PIN_NC;
+        PinDef[15] = PIN_NC;
+        PinDef[16] = PIN_NC;		// CS
+        PinDef[17] = PIN_MCLK;		// MCLK
+        PinDef[18] = PIN_PWDN;		// PWDN
+        PinDef[19] = PIN_RESET;		// RST
+        PinDef[20] = PIN_SCL;       // SCL
+        PinDef[21] = PIN_SDA;		// SDA
+        PinDef[22] = PIN_SPI_SCK;		// PO2
+        PinDef[23] = PIN_SPI_CS;     // PO1
+        PinDef[24] = PIN_SPI_SDI;     // PO3
+        PinDef[25] = PIN_SPI_SDO;		// PO4
+    }
+    else
+    {
+        PinDef[0] = PIN_D10;			//
+        PinDef[1] = PIN_D0;
+        PinDef[2] = PIN_D2;
+        PinDef[3] = PIN_D1;
+        PinDef[4] = PIN_D3;
+        PinDef[5] = PIN_D4;
+        PinDef[6] = PIN_D5;
+        PinDef[7] = PIN_D6;
+        PinDef[8] = PIN_D7;
+        PinDef[9] = PIN_D8;
+        PinDef[10] = PIN_D9;
+        PinDef[11] = PIN_NC;
+        PinDef[12] = PIN_PCLK;
+        PinDef[13] = PIN_HSYNC;
+        PinDef[14] = PIN_VSYNC;
+        PinDef[15] = PIN_NC;
+        PinDef[16] = PIN_NC;
+        PinDef[17] = PIN_NC;
+        PinDef[18] = PIN_NC;
+        PinDef[19] = PIN_NC;
+        PinDef[20] = PIN_MCLK;
+        PinDef[21] = PIN_D11;
+        PinDef[22] = PIN_RESET;
+        PinDef[23] = PIN_PWDN;
+        PinDef[24] = PIN_SDA;
+        PinDef[25] = PIN_SCL;
+    }
+
+    iRet = SetSoftPin(PinDef,m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetSoftPin failed with err:%d\r\n", iRet);
+        return iRet;
+    }
+
+    iRet = EnableSoftPin(TRUE,m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("EnableSoftPin failed with err:%d\r\n", iRet);
+        return iRet;
+    }
+
+    iRet = SetSoftPinPullUp(TRUE,m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetSoftPinPullUp failed with err:%d\r\n", iRet);
+        return iRet;
+    }
+
+    iRet = EnableGpio(TRUE,m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("EnableGpio failed with err:%d\r\n", iRet);
+        return iRet;
+    }
+
+    return iRet;
+}
+
+BOOL Dothinkey::DothinkeyStartCameraEx(int channel)
+{
+    int iRet;
+    int m_nDevID = 0;
+    SensorTab *pSensor = nullptr;
+    pSensor = &(m_CameraChannels[channel].current_sensor);
+//    iRet = SetSensorPowerOnOff(true, m_nDevID);
+    iRet = DothinkeySetSensorPower(channel, true);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetSensorPower failed with err:%d\n", iRet);
+    }
+    /* 初始化柔性接口 */
+    iRet = DothinkeyInitSoftPin(channel, pSensor->port);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("InitSoftPin failed with err:%d\n", iRet);
+    }
+    /* Mipi Port,Lane个数设置 */
+    MipiCtrlEx_t sMipiCtrlEx;
+    iRet = GetMipiCtrlEx(&sMipiCtrlEx, m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("GetMipiCtrlEx failed with err:%d\n", iRet);
+    }
+
+    sMipiCtrlEx.bVCFilterEn = true;
+    sMipiCtrlEx.byPhyType = m_CameraChannels[channel].m_iPhyType;
+    sMipiCtrlEx.byLaneCnt = m_CameraChannels[channel].m_iLanes;;
+
+    // 启用MIPI LP-10状态检查
+    // 注意MIPI_CTRL_CLK_LP10_CHK要求CLK Lane使用非连续时钟，并且同时启用了MIPI_CTRL_NON_CONT
+    //sMipiCtrlEx.dwCtrl |= MIPI_CTRL_CLK_LP01_CHK | MIPI_CTRL_DAT_LP01_CHK | MIPI_CTRL_NON_CONT;
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetMipiCtrlEx failed with err:%d\n", iRet);
+    }
+
+    iRet = GetMipiCtrlEx(&sMipiCtrlEx, m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("GetMipiCtrlEx failed with err:%d\n", iRet);
+    }
+
+    /* 初始化sensor时钟 */
+    iRet = SetSensorClock(TRUE,(USHORT)(m_CameraChannels[channel].m_fMclk*10), m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetSensorClock failed with err:%d\n", iRet);
+    }
+
+    /* 等待时钟或PLL稳定 */
+    Sleep(50);
+
+    /* 使能Sensor， Sensor进入工作状态，一般是使复位管脚设为高电平 */
+    iRet = DothinkeySetSensorEnable(channel, pSensor->pin, TRUE);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetSensorEnable failed with err:%d\n", iRet);
+    }
+
+    /* sensorisme */
+//    iRet = SensorIsMe(pSensor,CHANNEL_A,FALSE,m_nDevID);
+//    if (iRet != DT_ERROR_OK)
+//    {
+//        qWarning("SensorIsMe failed with err:%d\n", iRet);
+//    }
+    SetI2CInterval(0, m_nDevID);
+    SetSensorI2cRate(TRUE);
+
+    SetMipiImageVC(0,TRUE,CHANNEL_A,m_nDevID);
+    UCHAR uPort=1;//目前只有为2的端口
+    MasterSpiConfig_t spiconfig;
+    spiconfig.byCtrl=0x00;
+    spiconfig.byWordLen=0;
+    spiconfig.fMhz=5;
+    int rect=MasterSpiConfig(uPort,&spiconfig,m_nDevID);
+    /* 初始化 sensor参数 */
+    iRet = InitSensor(pSensor->SlaveID, pSensor->ParaList, pSensor->ParaListSize, pSensor->mode, m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+       qWarning("InitSensor failed with err:%d\n", iRet);
+    }
+    /* 初始化设备，主要是采集功能相关 */
+    iRet = InitDevice(nullptr, pSensor->width, pSensor->height, pSensor->port, pSensor->type, CHANNEL_A, NULL, m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("InitDevice failed with err:%d\n", iRet);
+    }
+
+    /* 由INI文件中的outformat设置BAYER格式 */
+    iRet = SetRawFormat(pSensor->outformat,m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetRawFormat failed with err:%d\n", iRet);
+    }
+    int m_uWidth = pSensor->width;
+    int m_uHeight = pSensor->height;
+    UINT uSize = m_uWidth*m_uHeight;
+    iRet = SetRoiEx(0, 0, pSensor->width, pSensor->height, 0, 0 , 1, 1, TRUE,m_nDevID);
+    if (iRet != DT_ERROR_OK)
+    {
+        qWarning("SetRoiEx failed with err:%d\n", iRet);
+    }
+
+    /*
+      开启视频流，同时指定目标图像缓存区大小，缓存区大小应该考虑最大分辨率情况；
+      如果图像处理中，中间图像使用了BRG32格式(使用SSE指令做色彩处理时)，应该是4倍像素量的关系；
+      */
+    //SetTargetFormatSel(m_iFormatSel);
+    iRet = OpenVideo(uSize * 3, m_nDevID);
+    return iRet;
+}
+
 /*
  * Dothinkey Start Camera Funcion
  * params: int channel : Select camera channel
@@ -159,6 +702,7 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
  */
 BOOL Dothinkey::DothinkeyStartCamera(int channel)
 {
+    return DothinkeyStartCameraEx(channel);
     int res;
     SensorTab *pSensor = nullptr;
     ULONG *grabSize = nullptr;
@@ -663,7 +1207,7 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
 {
     SensorTab *pSensor = nullptr;
     ULONG retSize = 0;
-    int iDevID = -1;
+    int iDevID = 0;
     UINT crcCount = 0;
     int grabSize;
     if (channel == 0 || channel == 1) {
@@ -686,10 +1230,20 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
         return false;
     }
     memset(CameraBuffer, 0, nSize);
-    int ret = GrabFrame(CameraBuffer, grabSize, &retSize, &frameInfo, iDevID);
+
+    SetGrabTimeout(8000, iDevID);
+
+    if ((CalibrateSensorPort(8000, iDevID)) == DT_ERROR_TIME_OUT)
+    {
+        qWarning("Calibrate timeout");
+    }
+
+    int ret = GrabFrame(CameraBuffer, nSize, &retSize, &frameInfo, iDevID);
     if (ret == DT_ERROR_OK)
     {
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
+    } else {
+        qWarning("Fail....");
     }
     ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
     CvSize mSize;

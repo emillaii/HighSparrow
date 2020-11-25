@@ -32,6 +32,10 @@ public:
     BOOL DothinkeyClose();  //Close Camera Devices
     BOOL DothinkeyLoadIniFile(int channel);   // 0 is camera channel 0, 1 is camera channel 1
     BOOL DothinkeyStartCamera(int channel);
+    BOOL DothinkeyStartCameraEx(int channel);
+    int DothinkeySetSensorEnable(int channel, BYTE &pin, bool bEna);
+    int DothinkeySetSensorPower(int channel, bool bOnOff);
+    int DothinkeyInitSoftPin(int channel, BYTE byPort);
     // Hardcore OTP in UV, temp solution, move to ini file later
     BOOL DothinkeyOTP(int serverMode);
     BOOL DothinkeyOTPEx();

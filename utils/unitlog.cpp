@@ -6,9 +6,14 @@
 #include <qfileinfo.h>
 #include "config.h"
 #include "utils/commonutils.h"
+#include <QNetworkInterface>
+
 Unitlog::Unitlog(QObject * parent) : QObject(parent)
 {
     nam = new QNetworkAccessManager();
+#ifdef SunnyPrism
+    this->sunny_prism_hDll = nullptr;
+#endif
 }
 
 Unitlog::~Unitlog() {}
@@ -19,6 +24,21 @@ void Unitlog::setServerAddress(QString address)
 }
 
 QString Unitlog::createUnit() {
+    if (sunny_prism_hDll == nullptr) {
+        this->sunny_prism_hDll = LoadLibrary(L"SFC_Control.dll");
+        if (sunny_prism_hDll != nullptr){
+            qInfo("SFC_Control.dll load success");
+            CreateAndInsertTestDataForPrism = nullptr;
+            CreateAndInsertTestDataForPrism=(CREATEANDINSERTTESTDATAFORPRISM)GetProcAddress(sunny_prism_hDll,"CreateAndInsertTestDataForPrism");
+            if (CreateAndInsertTestDataForPrism != nullptr){
+                qInfo("CreateAndInsertTestDataForPrism ok");
+            } else {
+                qInfo("CreateAndInsertTestDataForPrism fail");
+            }
+        } else {
+            qCritical("SFC_Control.dll load fail");
+        }
+    }
     QString uuid = QUuid::createUuid().toString().mid(1,32).toUpper();
     QVariantMap map;
     std::vector<QString> nameList;
@@ -26,6 +46,17 @@ QString Unitlog::createUnit() {
     this->unit_log_test_name_list.insert(uuid, nameList);
     qInfo("UUID : %s is created", uuid.toStdString().c_str());
     return uuid;
+}
+
+QString getMacAddress()
+{
+    foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
+    {
+        // Return only the first non-loopback MAC Address
+        if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
+            return netInterface.hardwareAddress();
+    }
+    return QString();
 }
 
 bool Unitlog::pushDataToUnit(QString uuid, QString test_name, QVariantMap map)
@@ -75,6 +106,36 @@ bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
          json["lotNumber"] = lotNumber;
          QJsonDocument doc(json);
          QUrl unitLogEndpoint = QString("http://192.168.0.250:5044");
+#ifdef SunnyPrism
+         qInfo("Post Data to ELK. isSendDataToMES: %d", isSendDataToMES);
+         if (isSendDataToMES) {
+             qInfo("user: %s mac: %s fuseId: %s sensorName: %s Module: %s testResult: %d",
+                   userManagement->currentUserName().toStdString().c_str(),
+                   getMacAddress().toStdString().c_str(),
+                   this->fuseID.toStdString().c_str(),
+                   this->sensorName.toStdString().c_str(),
+                   this->moduleName.toStdString().c_str(),
+                   this->currentTestResultOK);
+             QString resultString = "OK";
+             if (!currentTestResultOK) {
+                 resultString = "NG";
+             }
+             int ret = this->CreateAndInsertTestDataForPrism(userManagement->currentUserName().toStdString().c_str(),
+                                                               getMacAddress().toStdString().c_str(),
+                                                               fuseID.toStdString().c_str(),
+                                                               sensorName.toStdString().c_str(),
+                                                               moduleName.toStdString().c_str(),
+                                                               "",
+                                                               doc.toJson(),
+                                                               "AA",
+                                                               resultString.toStdString().c_str());
+             if (ret == 0) {
+                 qInfo("CreateAndInsertTestDataForPrism success");
+             } else {
+                 qCritical("CreateAndInsertTestDataForPrism fail. ret = %d", ret);
+             }
+         }
+#endif
          // QString unitLogEndpoint = serverAddress;
          //unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
          QNetworkRequest request(unitLogEndpoint);

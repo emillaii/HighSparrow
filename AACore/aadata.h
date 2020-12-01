@@ -313,9 +313,6 @@ public slots:
 
     void setZPeak(double zPeak)
     {
-        if (qFuzzyCompare(m_zPeak, zPeak))
-            return;
-
         m_zPeak = zPeak;
         emit zPeakChanged(m_zPeak);
     }

@@ -69,6 +69,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
+    connect(&this->parameters, &ModuleManagerParameter::sendDataToMESChanged, &unitlog, &Unitlog::setSendDataToMES);
     connect(&aaCoreNew, &AACoreNew::needUpdateParameterInTcpModule, this, &BaseModuleManager::receiveNeedUpdateTcpParameter);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::pushNgDataToCSV, &unitlog, &Unitlog::pushNgDataToCSV);
@@ -127,6 +128,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     // Todo
     //timer.start(5000);
     userManagement.init();
+    unitlog.setUserManagement(&userManagement);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -790,6 +792,7 @@ bool BaseModuleManager::loadParameters()
 //    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->parameters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
+    unitlog.moduleName = parameters.materialType();
 
     loadVcmFile(getSystermParameterDir().append(VCM_PARAMETER_FILE));
     loadMotorFile(getSystermParameterDir().append(MOTOR_PARAMETER_FILE));

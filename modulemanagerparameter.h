@@ -66,6 +66,8 @@ public:
     Q_PROPERTY(QVariantList cmsMessageerNames READ cmsMessageerNames WRITE setCmsMessageerNames NOTIFY cmsMessageerNamesChanged)
     Q_PROPERTY(QString flowChartURL READ flowChartURL WRITE setFlowChartURL NOTIFY flowChartURLChanged)
     Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
+    Q_PROPERTY(bool sendDataToMES READ sendDataToMES WRITE setSendDataToMES NOTIFY sendDataToMESChanged)
+
     int runMode() const
     {
         return m_runMode;
@@ -118,6 +120,11 @@ public:
     bool handlyChangeSensorTray() const
     {
         return m_handlyChangeSensorTray;
+    }
+
+    bool sendDataToMES() const
+    {
+        return m_sendDataToMES;
     }
 
 public slots:
@@ -219,6 +226,16 @@ public slots:
         emit handlyChangeSensorTrayChanged(m_handlyChangeSensorTray);
     }
 
+    void setSendDataToMES(bool sendDataToMES)
+    {
+        qInfo("setSendDataToMES : %d", sendDataToMES);
+        if (m_sendDataToMES == sendDataToMES)
+            return;
+
+        m_sendDataToMES = sendDataToMES;
+        emit sendDataToMESChanged(m_sendDataToMES);
+    }
+
 signals:
     void runModeChanged(int runMode);
     void materialTypeChanged(QString materialType);
@@ -241,6 +258,8 @@ signals:
 
     void handlyChangeSensorTrayChanged(bool handlyChangeSensorTray);
 
+    void sendDataToMESChanged(bool sendDataToMES);
+
 private:
     int m_runMode = 0;
     QString m_materialType = "TESTTYPE";
@@ -253,6 +272,7 @@ private:
     bool m_handlyChangeSensor = false;
     bool m_handlyChangeLensTray = false;
     bool m_handlyChangeSensorTray = false;
+    bool m_sendDataToMES = false;
 };
 class ModuleManagerState:public PropertyBase
 {

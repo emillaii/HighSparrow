@@ -48,6 +48,13 @@ ItemDelegate {
                                 aaCoreParams.setLotNumber(text)
                             }
                         }
+                        CheckBox {
+                            text: qsTr("Send data to MES")
+                            checked: moduleManagerParam.sendDataToMES
+                            onCheckedChanged: {
+                                moduleManagerParam.setSendDataToMES(checked)
+                            }
+                        }
                     }
                 }
             }

@@ -221,7 +221,8 @@ void AACoreNew::run(bool has_material)
         oc_fov = -1;
         hasDispense = false;
         runFlowchartTest();
-        emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
+        if (has_material)
+            emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
         QThread::msleep(100);
         double temp_time = timer.elapsed();
         temp_time/=1000;
@@ -686,7 +687,13 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
     {
         performParticalCheck(params);
     }
-    emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
+//Offline test only
+//#ifdef SunnyPrism
+//    unitlog->fuseID = dk->currentSensorID();
+//    unitlog->sensorName = dk->IniFilename();
+//    unitlog->currentTestResultOK = true;
+//#endif
+//    emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
     is_handling = false;
 }
 
@@ -1080,7 +1087,14 @@ ErrorCodeStruct AACoreNew::performTest(QString testItemName, QJsonValue properti
             performParticalCheck(params);
         }
     }
-
+#ifdef SunnyPrism
+    unitlog->fuseID = dk->currentSensorID();
+    unitlog->sensorName = dk->IniFilename();
+    if (ret.code == ErrorCode::OK)
+        unitlog->currentTestResultOK = true;
+    else
+        unitlog->currentTestResultOK = false;
+#endif
     if (ret.code != ErrorCode::OK) {
         emit pushNgDataToCSV(this->runningUnit, parameters.lotNumber(), dk->readSensorID(), testItemName, ret.errorMessage);
     }

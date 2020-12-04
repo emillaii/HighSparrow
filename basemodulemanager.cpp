@@ -76,6 +76,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aaCoreNew, &AACoreNew::pushNgDataToCSV, &unitlog, &Unitlog::pushNgDataToCSV);
     connect(&aaCoreNew, &AACoreNew::clearHeaders, &unitlog, &Unitlog::clearHeaders,Qt::DirectConnection);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
+    connect(&aaCoreNew, &AACoreNew::postDataToELKInternal, &unitlog, &Unitlog::postDataToELKInternal, Qt::DirectConnection);
     connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
     connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);

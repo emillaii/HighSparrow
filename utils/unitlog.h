@@ -60,7 +60,8 @@ public slots:
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     bool pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage);
     void clearHeaders();
-    bool postDataToELK(QString uuid, QString lotNumber);
+    bool postDataToELK(QString uuid, QString lotNumber);    // send data to mes in sunny
+    bool postDataToELKInternal(QString uuid, QString lotNumber);    // only send data to elk
     bool postUnitDataToCSV(QString uuid);
     bool postSfrDataToELK(QString uuid, QVariantMap data);
     QString getCSVString(QString data_name,QVariantMap map);

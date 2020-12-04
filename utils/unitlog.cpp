@@ -170,6 +170,50 @@ bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
     return true;
 }
 
+bool Unitlog::postDataToELKInternal(QString uuid, QString lotNumber)
+{
+    if (unit_log_list.contains(uuid))
+    {
+         QJsonObject json = QJsonObject::fromVariantMap(unit_log_list[uuid]);
+         json["uuid"] = uuid;
+         json["lotNumber"] = lotNumber;
+         QJsonDocument doc(json);
+         QUrl unitLogEndpoint = QString("http://192.168.0.250:5044");
+
+         // QString unitLogEndpoint = serverAddress;
+         //unitLogEndpoint.append(":").append(QString::number(UNIT_LOG_PORT));
+         QNetworkRequest request(unitLogEndpoint);
+         request.setHeader(QNetworkRequest::ContentTypeHeader,
+                           QVariant(QString("application/json")));
+         //json log
+         QString filename = "";
+         filename.append(getUnitLogDir())
+                         .append(getCurrentTimeString())
+                         .append("_")
+                         .append(lotNumber)
+                         .append("_")
+                         .append(uuid)
+                         .append(".json");
+         QFile file(filename);
+         file.open(QIODevice::WriteOnly | QIODevice::Text);
+         file.write(doc.toJson());
+         file.close();
+         //csv
+         postUnitDataToCSV(uuid);
+         //elk
+         if (nam) {
+             nam->post(request, doc.toJson());
+             qDebug("Push data to ELK success: %s", uuid.toStdString().c_str());
+         } else {
+             qDebug("Post data to ELK fail");
+         }
+         unit_log_list.remove(uuid);
+    } else {
+        qInfo("Cannot find the unit: %s", uuid.toStdString().c_str());
+    }
+    return true;
+}
+
 bool Unitlog::pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage)
 {
     QString ngMessage = getCurrentDateString().append("-")

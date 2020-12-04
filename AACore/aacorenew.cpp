@@ -693,7 +693,7 @@ void AACoreNew::performHandlingOperation(int cmd,QVariant param)
 //    unitlog->sensorName = dk->IniFilename();
 //    unitlog->currentTestResultOK = true;
 //#endif
-//    emit postDataToELK(this->runningUnit, this->parameters.lotNumber());
+    emit postDataToELKInternal(this->runningUnit, this->parameters.lotNumber());
     is_handling = false;
 }
 

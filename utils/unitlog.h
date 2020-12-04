@@ -26,6 +26,7 @@ public:
     void setUserManagement(UserManagement *userManagement){ this->userManagement = userManagement; }
     bool sendToMES = false;
     bool isSendDataToMES = false;
+    QString opType = "";
 #ifdef SunnyPrism
     QString fuseID = "";
     QString sensorName = "";
@@ -50,6 +51,11 @@ public slots:
     void setSendDataToMES(bool isSendDataToMES) {
         qInfo("isSendDataToMES: %d", isSendDataToMES);
         this->isSendDataToMES = isSendDataToMES;
+    }
+    void setOpType(QString operationType)
+    {
+        qInfo("opType: %s", operationType.toStdString().c_str());
+        this->opType = operationType;
     }
     bool pushDataToUnit(QString uuid, QString name, QVariantMap map);
     bool pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage);

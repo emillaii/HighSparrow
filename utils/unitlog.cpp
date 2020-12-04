@@ -125,9 +125,9 @@ bool Unitlog::postDataToELK(QString uuid, QString lotNumber)
                                                                fuseID.toStdString().c_str(),
                                                                sensorName.toStdString().c_str(),
                                                                moduleName.toStdString().c_str(),
-                                                               "",
+                                                               getCurrentTimeString().toStdString().c_str(),
                                                                doc.toJson(),
-                                                               "AA",
+                                                               opType.toStdString().c_str(),
                                                                resultString.toStdString().c_str());
              if (ret == 0) {
                  qInfo("CreateAndInsertTestDataForPrism success");

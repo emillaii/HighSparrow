@@ -48,11 +48,22 @@ ItemDelegate {
                                 aaCoreParams.setLotNumber(text)
                             }
                         }
+                    }
+                    RowLayout {
                         CheckBox {
-                            text: qsTr("Send data to MES")
+                            text: qsTr("上传MES")
                             checked: moduleManagerParam.sendDataToMES
                             onCheckedChanged: {
                                 moduleManagerParam.setSendDataToMES(checked)
+                            }
+                        }
+                        Label {
+                            text: qsTr("工序名称:")
+                        }
+                        TextField {
+                            text: moduleManagerParam.opType
+                            onEditingFinished: {
+                                moduleManagerParam.setOpType(text)
                             }
                         }
                     }

@@ -70,6 +70,7 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
     connect(&this->parameters, &ModuleManagerParameter::sendDataToMESChanged, &unitlog, &Unitlog::setSendDataToMES);
+    connect(&this->parameters, &ModuleManagerParameter::opTypeChanged, &unitlog, &Unitlog::setOpType);
     connect(&aaCoreNew, &AACoreNew::needUpdateParameterInTcpModule, this, &BaseModuleManager::receiveNeedUpdateTcpParameter);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::pushNgDataToCSV, &unitlog, &Unitlog::pushNgDataToCSV);

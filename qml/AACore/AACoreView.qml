@@ -78,6 +78,26 @@ ScrollView {
                                 aaCoreParams.setTiltSelection(currentIndex)
                             }
                         }
+                        Label{
+                            text: qsTr("Draw Font Size: ")
+                        }
+                        TextField {
+                            text: aaCoreParams.fontSize
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setFontSize(text)
+                            }
+                        }
+                        Label{
+                            text: qsTr("Font Padding: ")
+                        }
+                        TextField {
+                            text: aaCoreParams.fontPadding
+                            horizontalAlignment: TextInput.AlignHCenter
+                            onEditingFinished: {
+                                aaCoreParams.setFontPadding(text)
+                            }
+                        }
                     }
 
                     RowLayout {

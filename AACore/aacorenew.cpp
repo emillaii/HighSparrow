@@ -3378,7 +3378,7 @@ bool AACoreNew::aoaMTF(bool saveImage, bool isLoopTest)
    QImage qImage = ImageGrabbingWorkerThread::cvMat2QImage(input_img);
    QPainter qPainter(&qImage);
    qPainter.setBrush(Qt::NoBrush);
-   qPainter.setFont(QFont("Times",75, QFont::Light));
+   qPainter.setFont(QFont("Times",this->parameters.fontSize(), QFont::Light));
    int max_layer = 0;
    for (unsigned int i = 0; i < vec.size(); i++)
    {
@@ -3393,10 +3393,10 @@ bool AACoreNew::aoaMTF(bool saveImage, bool isLoopTest)
    }
    for (size_t i = 0; i < vec.size(); i++) {
        qPainter.setPen(QPen(Qt::blue, 4.0));
-       qPainter.drawText(vec[i].x - rect_width/2, vec[i].y - rect_width*2, QString::number(vec[i].t_sfr, 'g', 4));
-       qPainter.drawText(vec[i].x + 150, vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
-       qPainter.drawText(vec[i].x - 50, vec[i].y+ 120,  QString::number(vec[i].b_sfr, 'g', 4));
-       qPainter.drawText(vec[i].x - 250, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x - parameters.fontPadding(), vec[i].y - parameters.fontPadding(), QString::number(vec[i].t_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x + parameters.fontPadding(), vec[i].y,  QString::number(vec[i].r_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x - parameters.fontPadding(), vec[i].y + parameters.fontPadding(),  QString::number(vec[i].b_sfr, 'g', 4));
+       qPainter.drawText(vec[i].x - parameters.fontPadding()*2, vec[i].y,  QString::number(vec[i].l_sfr, 'g', 4));
    }
    qPainter.end();
 

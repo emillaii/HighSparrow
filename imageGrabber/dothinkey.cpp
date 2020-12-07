@@ -692,6 +692,7 @@ BOOL Dothinkey::DothinkeyStartCameraEx(int channel)
       */
     //SetTargetFormatSel(m_iFormatSel);
     iRet = OpenVideo(uSize * 3, m_nDevID);
+    isGrabbing = true;
     return iRet;
 }
 
@@ -1155,10 +1156,10 @@ BOOL Dothinkey::SetVoltageMclk(SensorTab CurrentSensor, int iDevID, float Mclk, 
 
 cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
 {
-    grabRet = true;
+    grabLock.lock();
     SensorTab *pSensor = nullptr;
     ULONG retSize = 0;
-    int iDevID = -1;
+    int iDevID = 0;
     UINT crcCount = 0;
     int grabSize;
     if (channel == 0 || channel == 1) {
@@ -1178,21 +1179,28 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
     CameraBuffer = (LPBYTE)malloc(nSize);
     if ((CameraBuffer == NULL))
     {
-        qInfo("CameraBuffer is Null");
         cv::Mat img;
-        grabRet = false;
         return img;
     }
     memset(CameraBuffer, 0, nSize);
-    int ret = GrabFrame(CameraBuffer, grabSize, &retSize, &frameInfo, iDevID);
+
+    SetGrabTimeout(8000, iDevID);
+
+    if ((CalibrateSensorPort(8000, iDevID)) == DT_ERROR_TIME_OUT)
+    {
+        qWarning("Calibrate timeout");
+    }
+
+    int ret = GrabFrame(CameraBuffer, nSize, &retSize, &frameInfo, iDevID);
     if (ret == DT_ERROR_OK)
     {
         GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
+        grabRet = true;
     } else {
-        qInfo("Camera Grab Frame Fail, GrabFrame() returned error code: %d", ret);
-        cv::Mat img;
+        qWarning("Fail....");
         grabRet = false;
     }
+    grabLock.unlock();
     ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
     CvSize mSize;
     mSize.height = height;
@@ -1200,11 +1208,13 @@ cv::Mat Dothinkey::DothinkeyGrabImageCV(int channel, bool &grabRet)
     cv::Mat img(height, width, CV_8UC3, bmpBuffer);
     delete(CameraBuffer);
     CameraBuffer = NULL;
+
     return img;
 }
 
 QImage* Dothinkey::DothinkeyGrabImage(int channel)
 {
+    grabLock.lock();
     SensorTab *pSensor = nullptr;
     ULONG retSize = 0;
     int iDevID = 0;
@@ -1245,6 +1255,7 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     } else {
         qWarning("Fail....");
     }
+    grabLock.unlock();
     ImageProcess(CameraBuffer, bmpBuffer, width, height, &frameInfo, iDevID);
     CvSize mSize;
     mSize.height = height;

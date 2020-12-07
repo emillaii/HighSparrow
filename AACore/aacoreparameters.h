@@ -153,6 +153,10 @@ class AACoreParameters : public PropertyBase
 
     double m_aoaYStepSize = 0.01;
 
+    int m_fontSize = 75;
+
+    int m_fontPadding = 120;
+
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -233,6 +237,9 @@ public:
     Q_PROPERTY(int aoaXYIterationCount READ aoaXYIterationCount WRITE setAoaXYIterationCount NOTIFY aoaXYIterationCountChanged)
     Q_PROPERTY(double aoaXStepSize READ aoaXStepSize WRITE setAoaXStepSize NOTIFY aoaXStepSizeChanged)
     Q_PROPERTY(double aoaYStepSize READ aoaYStepSize WRITE setAoaYStepSize NOTIFY aoaYStepSizeChanged)
+
+    Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
+    Q_PROPERTY(int fontPadding READ fontPadding WRITE setFontPadding NOTIFY fontPaddingChanged)
 
     double EFL() const
     {
@@ -596,6 +603,16 @@ public:
     double aoaYStepSize() const
     {
         return m_aoaYStepSize;
+    }
+
+    int fontSize() const
+    {
+        return m_fontSize;
+    }
+
+    int fontPadding() const
+    {
+        return m_fontPadding;
     }
 
 public slots:
@@ -1241,6 +1258,24 @@ public slots:
         emit aoaXYIterationCountChanged(m_aoaXYIterationCount);
     }
 
+    void setFontSize(int fontSize)
+    {
+        if (m_fontSize == fontSize)
+            return;
+
+        m_fontSize = fontSize;
+        emit fontSizeChanged(m_fontSize);
+    }
+
+    void setFontPadding(int fontPadding)
+    {
+        if (m_fontPadding == fontPadding)
+            return;
+
+        m_fontPadding = fontPadding;
+        emit fontPaddingChanged(m_fontPadding);
+    }
+
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1306,6 +1341,8 @@ signals:
 
     void aoaXStepSizeChanged(double aoaXStepSize);
     void aoaYStepSizeChanged(double aoaYStepSize);
+    void fontSizeChanged(int fontSize);
+    void fontPaddingChanged(int fontPadding);
 };
 class AACoreStates: public PropertyBase
 {

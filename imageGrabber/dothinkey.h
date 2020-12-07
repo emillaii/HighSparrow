@@ -39,6 +39,7 @@ public:
     // Hardcore OTP in UV, temp solution, move to ini file later
     BOOL DothinkeyOTP(int serverMode);
     BOOL DothinkeyOTPEx();
+    QMutex grabLock;
     QImage* DothinkeyGrabImage(int channel);
     cv::Mat DothinkeyGrabImageCV(int channel, bool &ret);
     void DothinkeySetConfigFile(std::string filename);

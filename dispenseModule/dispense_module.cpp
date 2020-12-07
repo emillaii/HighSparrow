@@ -172,6 +172,19 @@ void DispenseModule::moveToDispenseDot(bool record_z)
     carrier->Move_SZ_XY_Z_Sync(start_pos.X,start_pos.Y,start_pos.Z);
 }
 
+void DispenseModule::purge()
+{
+    qInfo("Purge...");
+    if(dispense_io != nullptr)
+    {
+        dispense_io->Set(true);
+        Sleep(parameters.openTime());
+        dispense_io->Set(false);
+    }
+    else
+        qInfo("dispense_io is null");
+}
+
 void DispenseModule::calulateOffset(int digit)
 {
     if(!cancalculation)return;

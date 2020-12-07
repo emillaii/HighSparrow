@@ -86,6 +86,8 @@ int main(int argc, char *argv[])
     QtWebEngine::initialize();
     QQmlApplicationEngine engine;
 
+    app.setApplicationVersion("1.20.2");
+
     qmlRegisterType<ConfigElementInfo>("ConfigElementType", 1, 0, "ConfigElementType");
     qmlRegisterType<ConfigObject>("ConfigObject", 1, 0, "ConfigObject");
     qRegisterMetaType<ConfigElementInfo::Type>();

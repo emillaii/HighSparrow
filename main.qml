@@ -111,6 +111,11 @@ ApplicationWindow {
         visible: false
     }
 
+    IdleDispenseDialog {
+        id: idleDispenseDialog
+        visible: false
+    }
+
     AlarmDialog {
         id: alarmDialog
         visible: false
@@ -327,6 +332,21 @@ ApplicationWindow {
                     onTriggered:{
                         initButton.icon.color = baseModuleManager.InitState?"deepskyblue":"red"
                     }
+                }
+            }
+
+            ToolButton {
+                text: qsTr("Dispense")
+                transformOrigin: Item.Center
+                display: Button.TextUnderIcon
+                icon.width: 30
+                icon.height: 30
+                icon.source: "icons/undo.png"
+                onClicked: {
+                    console.log("Dispense ")
+                    idleDispenseDialog.visible = true
+                    //idleDispenseDialog.open()
+                    //idleDispenseTimer.start()
                 }
             }
 

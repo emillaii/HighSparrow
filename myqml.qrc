@@ -240,5 +240,6 @@
         <file>qml/MarcoControl/SystemConfiguration/SystemConfiguration.qml</file>
         <file>qml/DispenseModule/DispenseSpeedPopup.qml</file>
         <file>qml/SUTModule/SUTParticalCheckPositionView.qml</file>
+        <file>qml/IdleDispenseDialog.qml</file>
     </qresource>
 </RCC>

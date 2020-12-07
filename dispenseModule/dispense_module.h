@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE void calulateOffset(int digit = 4);
     Q_INVOKABLE bool performDispense();
     Q_INVOKABLE bool getDispenseCircleProperties();
+    Q_INVOKABLE void purge();
     Dispenser* dispenser = Q_NULLPTR;
 private:
     QVector<mPoint3D> getDispensePath();

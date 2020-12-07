@@ -2080,21 +2080,21 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
 //    if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
 //        return false;
     GetMotorByName(sut_module.parameters.motorZName())->SeekOrigin();
-    GetMotorByName(sensor_pickarm.parameters.motorZName())->SeekOrigin();
-    GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
+    //GetMotorByName(sensor_pickarm.parameters.motorZName())->SeekOrigin();
+    //GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->SeekOrigin();
     result = GetMotorByName(sut_module.parameters.motorZName())->WaitSeekDone();
     if(!result) return false;
     sut_module.moveZToSafety();
     if(!result) return false;
     GetMotorByName(sut_module.parameters.motorXName())->SeekOrigin();
 
-    result = GetMotorByName(sensor_pickarm.parameters.motorZName())->WaitSeekDone();
-    result &= GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->WaitSeekDone();
+    //result = GetMotorByName(sensor_pickarm.parameters.motorZName())->WaitSeekDone();
+    //result &= GetMotorByName(sensor_pickarm.parameters.motorZ2Name())->WaitSeekDone();
     if(!result) return false;
 //    //KicK復位
-    GetMotorByName(this->sensor_pickarm.parameters.motorXName())->SeekOrigin();
-    GetMotorByName(this->sensor_pickarm.parameters.motorTName())->SeekOrigin();
-    GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
+    //GetMotorByName(this->sensor_pickarm.parameters.motorXName())->SeekOrigin();
+    //GetMotorByName(this->sensor_pickarm.parameters.motorTName())->SeekOrigin();
+    //GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->SeekOrigin();
 
     result &= GetMotorByName(sut_module.parameters.motorXName())->WaitSeekDone();
     if(!result)return false;
@@ -2108,14 +2108,14 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     //GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();
     GetMotorByName(this->sut_module.parameters.motorYName())->SeekOrigin();
     if(!result)return false;
-    GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
+//    GetMotorByName(this->sensor_pickarm.parameters.motorYName())->SeekOrigin();
 //    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->SeekOrigin();
 //    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSPOName())->WaitSeekDone();
 //    if(!result)return false;
 //    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->SeekOrigin();
 //    GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->SeekOrigin();
 
-    result &= GetMotorByName(this->sensor_pickarm.parameters.motorYName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_pickarm.parameters.motorYName())->WaitSeekDone();
 //    if(!result)return false;
 //    //升起氣缸
 //    GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->SeekOrigin();
@@ -2129,9 +2129,9 @@ bool BaseModuleManager::allMotorsSeekOriginal2()
     result &= GetMotorByName(this->aa_head_module.parameters.motorZName())->WaitSeekDone();
 //    result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();
     result &= GetMotorByName(this->sut_module.parameters.motorYName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
-    result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_pickarm.parameters.motorXName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_pickarm.parameters.motorTName())->WaitSeekDone();
+//    result &= GetMotorByName(this->sensor_pickarm.parameters.motorT2Name())->WaitSeekDone();
 //    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTIEName())->WaitSeekDone();
 //    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorSTOEName())->WaitSeekDone();
 //    result &= GetMotorByName(this->sensor_tray_loder_module.parameters.motorTrayName())->WaitSeekDone();

@@ -27,9 +27,9 @@ ItemDelegate {
                 modelData:"STL"
             }
         }
-        MotionPopup{
-            id:sensor_tray_loader_module_motions
-        }
+//        MotionPopup{
+//            id:sensor_tray_loader_module_motions
+//        }
 
         ColumnLayout{
             RowLayout {

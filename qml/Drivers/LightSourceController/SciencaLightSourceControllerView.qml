@@ -12,9 +12,9 @@ Popup{
                 TextField {
                     id: txtPortName
                     readOnly: true
-                    text: sciencaLightSourceController.portName
+                    text: lightPanelController.portName
                     onTextChanged: {
-                        sciencaLightSourceController.setPortName(text)
+                        lightPanelController.setPortName(text)
                     }
                     MouseArea{
                         anchors.fill: parent
@@ -48,58 +48,34 @@ Popup{
             Button{
                 text: qsTr("Open")
                 onClicked: {
-                    sciencaLightSourceController.open()
+                    lightPanelController.open()
                 }
             }
             Button{
                 text: qsTr("Close")
                 onClicked: {
-                    sciencaLightSourceController.close()
+                    lightPanelController.close()
                 }
             }
         }
 
         RowLayout{
             Label{
-                text: qsTr("CTChannelIntensity:")
+                text: qsTr("Brightness:")
             }
             TextField {
-                text: sciencaLightSourceController.colorTemperatureIntensity
+                text: lightPanelController.brightness
                 validator: IntValidator{}
                 onEditingFinished: {
-                    sciencaLightSourceController.setColorTemperatureIntensity(text)
+                    lightPanelController.setBrightness(text)
                 }
             }
             Button{
                 text: qsTr("Set")
                 onClicked: {
-                    sciencaLightSourceController.setIntensity(sciencaLightSourceController.ColorTemperature)
-                }
-            }
-        }
-
-        RowLayout{
-            Label{
-                text: qsTr("WLChannelIntensity:")
-            }
-            TextField {
-                text: sciencaLightSourceController.waveLengthIntensity
-                validator: IntValidator{}
-                onEditingFinished: {
-                    sciencaLightSourceController.setWaveLengthIntensity(text)
-                }
-            }
-            Button{
-                text: qsTr("Set")
-                onClicked: {
-                    sciencaLightSourceController.setIntensity(sciencaLightSourceController.WaveLength)
+                    lightPanelController.setIntensity(lightPanelController.brightness)
                 }
             }
         }
     }
 }
-
-/*##^## Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
- ##^##*/

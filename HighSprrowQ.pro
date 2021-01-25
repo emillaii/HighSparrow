@@ -27,7 +27,7 @@ TRANSLATIONS = languagePackage/chinese.ts languagePackage/english.ts
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Drivers/LightSourceController/sciencalightsourcecontroller.cpp \
+    Drivers/LightSourceController/seenolightsourcecontroller.cpp \
     devicestatesgeter.cpp \
     i2cControl/i2ccontrol.cpp \
     main.cpp \
@@ -169,7 +169,7 @@ INCLUDEPATH += $$PWD/../libs/SunnyImageAbnormalityDetection/include
 DEPENDPATH += $$PWD/../libs/SunnyImageAbnormalityDetection/include
 
 HEADERS += \
-    Drivers/LightSourceController/sciencalightsourcecontroller.h \
+    Drivers/LightSourceController/seenolightsourcecontroller.h \
     UnitTest/SilicolMsgBoxTest.h \
     basicconfig.h \
     i2cControl/i2ccontrol.h \

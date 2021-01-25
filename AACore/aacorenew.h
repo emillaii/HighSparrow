@@ -27,6 +27,7 @@
 #include "imageGrabber/imagegrabbingworkerthread.h"
 #include "utils/unitlog.h"
 #include "i2cControl/i2ccontrol.h"
+#include "Drivers/LightSourceController/seenolightsourcecontroller.h"
 #include <QProcess>
 
 // Comment this define if sunny image abnormality detection is not used
@@ -250,6 +251,8 @@ public:
     void receivceModuleMessage(QVariantMap module_message);
     QMap<QString, PropertyBase *> getModuleParameter();
     void setModuleParameter(QMap<QString, PropertyBase *>);
+
+    SeenoLightSourceController lightPanelController;
 };
 
 #endif // AACORENEW_H

@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sensorPickarmCamera", highSprrow.baseModuleManager->pylonSensorPickarmCamera);
     engine.rootContext()->setContextProperty("pickarmULCamera", highSprrow.baseModuleManager->pylonPickarmULCamera);
     engine.rootContext()->setContextProperty("pickarmBarcodeCamera", highSprrow.baseModuleManager->pylonBarcodeCamera);
-    engine.rootContext()->setContextProperty("sciencaLightSourceController", &highSprrow.baseModuleManager->chartBackgroundLightSourceController);
+    engine.rootContext()->setContextProperty("lightPanelController", &highSprrow.baseModuleManager->aaCoreNew.lightPanelController);
     QStringList workerNameList;
     for(QString output:highSprrow.worker_manager->getWorkersNames()){
         workerNameList<<output;

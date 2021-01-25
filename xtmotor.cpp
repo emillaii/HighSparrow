@@ -7,7 +7,7 @@
 
 using namespace XT_Controler_Extend;
 int XtMotor::curve_resource = 0;
-int XtMotor::thread_resource = 0;
+int XtMotor::thread_resource = 1;
 int XtMotor::axis_id_resource = 0;
 XtMotor::XtMotor()
 {

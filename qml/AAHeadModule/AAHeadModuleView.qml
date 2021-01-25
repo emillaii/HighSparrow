@@ -73,6 +73,11 @@ ItemDelegate {
                 AAHeadPickLensPosition {}
             }
 
+            GroupBox{
+                title: qsTr("Light Panel Position")
+                AAHeadLightPanelPosition {}
+            }
+
 //            // Comment out, not used
 //            GroupBox{
 //                title: qsTr("OC Position")

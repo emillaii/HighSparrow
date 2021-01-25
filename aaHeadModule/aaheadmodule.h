@@ -26,7 +26,7 @@ public:
     };
 
     AAHeadModule();
-    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtGeneralOutput * gripper,
+    void Init(QString name,XtMotor* motor_x,XtMotor* motor_y,XtMotor* motor_z,XtMotor* motor_a,XtMotor* motor_b,XtMotor* motor_c,XtMotor* motor_lightPanel,XtGeneralOutput * gripper,
               XtGeneralOutput * uv1,
               XtGeneralOutput * uv2,
               XtGeneralOutput * uv3,
@@ -59,6 +59,9 @@ public:
     bool moveToSZ_XYC_Z_Sync(double x, double y, double z,double c);
     bool moveToSZ_XYSC_Z_Sync(double x, double y, double z,double c);
     bool homeTilt();
+
+    bool lightPanelOpen();
+    bool lightPanelClose();
 
     // ThreadWorkerBase interface
 public:
@@ -104,6 +107,7 @@ public:
     XtMotor* motor_a = Q_NULLPTR;
     XtMotor* motor_b = Q_NULLPTR;
     XtMotor* motor_c = Q_NULLPTR;
+    XtMotor* motor_lightPanel = Q_NULLPTR;
 private:
     XtGeneralOutput * gripper = Q_NULLPTR;
     XtGeneralOutput * uv1 = Q_NULLPTR;

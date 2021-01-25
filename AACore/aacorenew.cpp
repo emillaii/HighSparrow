@@ -3955,6 +3955,9 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     int oc_intensity_threshold = params["oc_intensity_threshold"].toInt(0);
     ErrorCodeStruct ret = { ErrorCode::OK, "" };
 
+    // Open light panel first
+    aa_head->lightPanelOpen();
+
     QVariantMap map;
     QElapsedTimer timer;
     timer.start();
@@ -3966,12 +3969,14 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         map["Result"] = "OC Cannot grab image.";
         emit pushDataToUnit(runningUnit, "OC", map);
         NgSensor();
+        aa_head->lightPanelClose();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Cannot Grab Image"};
     }
     if (!blackScreenCheck(img)) {
         NgSensor();
         map["Result"] = "OC Detect black screen";
         emit pushDataToUnit(runningUnit, "OC", map);
+        aa_head->lightPanelClose();
         return ErrorCodeStruct{ErrorCode::GENERIC_ERROR, "OC Detect BlackScreen"};
     }
     QString imageName;
@@ -3995,6 +4000,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
             map.insert("result", "OC Cannot find enough pattern");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
+            aa_head->lightPanelClose();
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot find enough pattern" };
         }
         offsetX = vector[ccIndex].center.x() - (vector[ccIndex].width/2);
@@ -4010,6 +4016,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
             map.insert("result", "OC Cannot calculate OC");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
+            aa_head->lightPanelClose();
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
         ocImageProvider_1->setImage(outImage);
@@ -4035,6 +4042,7 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
             map.insert("result", "OC result too big");
             map.insert("timeElapsed", timer.elapsed());
             emit pushDataToUnit(this->runningUnit, "OC", map);
+            aa_head->lightPanelClose();
             return ErrorCodeStruct {ErrorCode::GENERIC_ERROR, "OC result too big" };
         }
         this->sut->stepMove_XY_Sync(-stepX, -stepY);
@@ -4045,6 +4053,9 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
     map.insert("timeElapsed", timer.elapsed());
     emit pushDataToUnit(this->runningUnit, "OC", map);
     qInfo("Finish OC");
+
+    // Close light panel
+    aa_head->lightPanelClose();
     return ret;
 }
 

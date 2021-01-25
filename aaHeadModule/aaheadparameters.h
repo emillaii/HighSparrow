@@ -19,6 +19,9 @@ public:
     Q_PROPERTY(QString motorAName READ motorAName WRITE setMotorAName NOTIFY motorANameChanged)
     Q_PROPERTY(QString motorBName READ motorBName WRITE setMotorBName NOTIFY motorBNameChanged)
     Q_PROPERTY(QString motorCName READ motorCName WRITE setMotorCName NOTIFY motorCNameChanged)
+    Q_PROPERTY(QString motorLightPanelName READ motorLightPanelName WRITE setMotorLightPanelName NOTIFY motorLightPanelNameChanged)
+    Q_PROPERTY(double lightPanelOpenPos READ lightPanelOpenPos WRITE setLightPanelOpenPos NOTIFY lightPanelOpenPosChanged)
+    Q_PROPERTY(double lightPanelClosePos READ lightPanelClosePos WRITE setLightPanelClosePos NOTIFY lightPanelClosePosChanged)
     Q_PROPERTY(QString gripperName READ gripperName WRITE setGripperName NOTIFY gripperNameChanged)
     Q_PROPERTY(QString uv1Name READ uv1Name WRITE setUv1Name NOTIFY uv1NameChanged)
     Q_PROPERTY(QString uv2Name READ uv2Name WRITE setUv2Name NOTIFY uv2NameChanged)
@@ -72,6 +75,21 @@ QString motorBName() const
 QString motorCName() const
 {
     return m_motorCName;
+}
+
+QString motorLightPanelName() const
+{
+    return m_motorLightPanelName;
+}
+
+double lightPanelOpenPos() const
+{
+    return m_lightPanelOpenPos;
+}
+
+double lightPanelClosePos() const
+{
+    return m_lightPanelClosePos;
 }
 
 QString gripperName() const
@@ -195,6 +213,33 @@ void setMotorCName(QString motorCName)
     emit motorCNameChanged(m_motorCName);
 }
 
+void setMotorLightPanelName(QString motorLightPanelName)
+{
+    if (m_motorLightPanelName == motorLightPanelName)
+        return;
+
+    m_motorLightPanelName = motorLightPanelName;
+    emit motorLightPanelNameChanged(m_motorLightPanelName);
+}
+
+void setLightPanelOpenPos(double lightPanelOpenPos)
+{
+    if (qFuzzyCompare(m_lightPanelOpenPos, lightPanelOpenPos))
+        return;
+
+    m_lightPanelOpenPos = lightPanelOpenPos;
+    emit lightPanelOpenPosChanged(m_lightPanelOpenPos);
+}
+
+void setLightPanelClosePos(double lightPanelClosePos)
+{
+    if (qFuzzyCompare(m_lightPanelClosePos, lightPanelClosePos))
+        return;
+
+    m_lightPanelClosePos = lightPanelClosePos;
+    emit lightPanelClosePosChanged(m_lightPanelClosePos);
+}
+
 void setGripperName(QString gripperName)
 {
     if (m_gripperName == gripperName)
@@ -292,6 +337,12 @@ void motorBNameChanged(QString motorBName);
 
 void motorCNameChanged(QString motorCName);
 
+void motorLightPanelNameChanged(QString motorLightPanelName);
+
+void lightPanelOpenPosChanged(double lightPanelOpenPos);
+
+void lightPanelClosePosChanged(double lightPanelClosePos);
+
 void gripperNameChanged(QString gripperName);
 
 void uv1NameChanged(QString uv1Name);
@@ -311,24 +362,27 @@ void pr2Bond_offsetYChanged(double pr2Bond_offsetY);
 void pr2Bond_offsetThetaChanged(double pr2Bond_offsetTheta);
 
 private:
-double m_PickLensPositionZ = 0;
-double m_OCPositionZ = 0;
-double m_rotateZOffset = 31.5;
-QString m_motorXName = "AA_X";
-QString m_motorYName = "AA_Y";
-QString m_motorZName = "AA_Z";
-QString m_motorAName = "AA_A";
-QString m_motorBName = "AA_B";
-QString m_motorCName = "AA_C";
-QString m_gripperName = "AA_Gripper";
-QString m_uv1Name = "AA_UV1";
-QString m_uv2Name = "AA_UV2";
-QString m_uv3Name = "AA_UV3";
-QString m_uv4Name = "AA_UV4";
-QString m_moduleName = "AA1Head";
-double m_pr2Bond_offsetX = 0;
-double m_pr2Bond_offsetY = 0;
-double m_pr2Bond_offsetTheta = 0;
+    double m_PickLensPositionZ = 0;
+    double m_OCPositionZ = 0;
+    double m_rotateZOffset = 31.5;
+    QString m_motorXName = "AA_X";
+    QString m_motorYName = "AA_Y";
+    QString m_motorZName = "AA_Z";
+    QString m_motorAName = "AA_A";
+    QString m_motorBName = "AA_B";
+    QString m_motorCName = "AA_C";
+    QString m_motorLightPanelName = "AA_LightPanel";
+    double m_lightPanelOpenPos = 0;
+    double m_lightPanelClosePos = 0;
+    QString m_gripperName = "AA_Gripper";
+    QString m_uv1Name = "AA_UV1";
+    QString m_uv2Name = "AA_UV2";
+    QString m_uv3Name = "AA_UV3";
+    QString m_uv4Name = "AA_UV4";
+    QString m_moduleName = "AA1Head";
+    double m_pr2Bond_offsetX = 0;
+    double m_pr2Bond_offsetY = 0;
+    double m_pr2Bond_offsetTheta = 0;
 };
 
 #endif // AAHEADPARAMETERS_H

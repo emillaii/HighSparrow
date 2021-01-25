@@ -1289,7 +1289,10 @@ void SensorLoaderModule::run()
         }
 
         //SUT操作
-        if((states.picker2MaterialState() == MaterialState::IsEmpty)&&(((states.busyState() == BusyState::SUT1)&&states.sut1Ready())||((states.busyState() == BusyState::SUT2)&&states.sut2Ready())))
+        if((states.picker1MaterialState() != MaterialState::IsEmpty || states.isLastTray() == true)
+                &&(states.picker2MaterialState() == MaterialState::IsEmpty)
+                &&(((states.busyState() == BusyState::SUT1)&&states.sut1Ready())
+         ||((states.busyState() == BusyState::SUT2)&&states.sut2Ready())))
         {
             bool is_local = states.busyState() == BusyState::SUT2;
             //取成品/NG成品

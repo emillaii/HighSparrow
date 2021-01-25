@@ -28,7 +28,7 @@ void AAHeadModule::saveJsonConfig(QString file_name)
     PropertyBase::saveJsonConfig(file_name,temp_map);
 }
 
-void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtGeneralOutput *gripper,
+void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMotor *motor_z, XtMotor *motor_a, XtMotor *motor_b, XtMotor *motor_c, XtMotor *motor_lightPanel, XtGeneralOutput *gripper,
                         XtGeneralOutput * uv1,
                         XtGeneralOutput * uv2,
                         XtGeneralOutput * uv3,
@@ -45,6 +45,7 @@ void AAHeadModule::Init(QString name, XtMotor *motor_x, XtMotor *motor_y, XtMoto
     this->motor_a = motor_a;
     this->motor_b = motor_b;
     this->motor_c = motor_c;
+    this->motor_lightPanel = motor_lightPanel;
     this->gripper = gripper;
     this->uv1 = uv1;
     this->uv2 = uv2;
@@ -285,6 +286,16 @@ bool AAHeadModule::homeTilt()
     motor_b->Home();
     motor_c->Home();
     return true;
+}
+
+bool AAHeadModule::lightPanelOpen()
+{
+    return motor_lightPanel->MoveToPos(parameters.lightPanelOpenPos());
+}
+
+bool AAHeadModule::lightPanelClose()
+{
+    return motor_lightPanel->MoveToPos(parameters.lightPanelClosePos());
 }
 
 void AAHeadModule::receiveLensFromLut(double offset_x, double offset_y, double offset_theta)

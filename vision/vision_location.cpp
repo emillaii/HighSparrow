@@ -210,10 +210,11 @@ bool VisionLocation::performNoMaterialPR()
     imageName.append(getVisionLogDir())
             .append(getCurrentTimeString())
             .append(".jpg");
-    bool result = saveImage(imageName);
+    //bool result = saveImage(imageName);
     if(parameters.performTime()>0)
         QThread::msleep(parameters.performTime());
-    return result;
+    return true;
+    //return result;
 }
 
 bool VisionLocation::performPR(PRResultStruct &pr_result)

@@ -78,11 +78,14 @@ void XtVcMotor::Init()
     vcm_resource.CanID = parameters.canId();
     vcm_resource.iAxis = axis_id;
     vcm_resource.IO_ID = origin.ID();
+    vcm_resource.IO_CAN_ID = parameters.canId();
     vcm_resource.Z_Index_ID = origin2.ID();
-    vcm_resource.iThread = default_using_thread;
+//    vcm_resource.iThread = default_using_thread;
+    vcm_resource.iThread = GetThreadResource();
     vcm_resource.iThread_Curve = GetThreadResource();
     vcm_resource.Connet_Rebuild = 0;
     all_parameter.append(vcm_resource);
+    qInfo("%s, CanID:%d, iAxis:%d, iThread:%d, iThread_Curve:%d", name.toStdString().c_str(), vcm_resource.CanID, vcm_resource.iAxis, vcm_resource.iThread, vcm_resource.iThread_Curve);
 }
 
 void XtVcMotor::InitAllVCM()

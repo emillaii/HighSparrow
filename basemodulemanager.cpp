@@ -1591,6 +1591,7 @@ bool BaseModuleManager::InitStruct()
                         GetMotorByName(aa_head_module.parameters.motorAName()),
                         GetMotorByName(aa_head_module.parameters.motorBName()),
                         GetMotorByName(aa_head_module.parameters.motorCName()),
+                        GetMotorByName(aa_head_module.parameters.motorLightPanelName()),
                         GetOutputIoByName(aa_head_module.parameters.gripperName()),
                         GetOutputIoByName(aa_head_module.parameters.uv1Name()),
                         GetOutputIoByName(aa_head_module.parameters.uv2Name()),
@@ -1879,40 +1880,40 @@ bool BaseModuleManager::initialDevice()
     if(!profile_loaded)
         return false;
     qInfo("Init module manager");
-    LPWSTR pTarget = ip;
-    XT_Controler::InitDevice_PC_Local_Controler(0);
-    int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
-    if (1 != res) {
-        res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
-        if (1 != res)
-        {
-            qInfo("Motion control server cannot connect");
-            return false;
-        }
-    }
+//    LPWSTR pTarget = ip;
+//    XT_Controler::InitDevice_PC_Local_Controler(0);
+//    int res = XT_Controler::beCurConnectServerAndInterfaceBoard();
+//    if (1 != res) {
+//        res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+//        if (1 != res)
+//        {
+//            qInfo("Motion control server cannot connect");
+//            return false;
+//        }
+//    }
 
-    XT_Controler::ReBuildSystem();
+//    XT_Controler::ReBuildSystem();
 
-    QTime tic;
-    tic.start();
-    while(tic.elapsed()<300);
+//    QTime tic;
+//    tic.start();
+//    while(tic.elapsed()<300);
 
-    res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+//    res = XT_Controler::ConnectControlServer(pTarget, 0, 0);
+
+//    if (1 != res)
+//    {
+//        qInfo("Motion control server cannot connect");
+//        return false;
+//    }
+
+    int res = XT_Controler_Extend::Profile_Init_Controller(1);
 
     if (1 != res)
     {
         qInfo("Motion control server cannot connect");
         return false;
     }
-
-    res = XT_Controler_Extend::Profile_Init_Controller(1);
-
-    if (1 != res)
-    {
-        qInfo("Motion control server cannot connect");
-        return false;
-    }
-    XT_Controler_Extend::Stop_Buffer_Sync();
+//    XT_Controler_Extend::Stop_Buffer_Sync();
 
     XtVcMotor::InitAllVCM();
     XtVcMotor* temp_motor;
@@ -1921,7 +1922,7 @@ bool BaseModuleManager::initialDevice()
         if(temp_motor!= nullptr)
             temp_motor->ConfigVCM();
     }
-    XT_Controler_Extend::Start_Buffer_Sync(-1);
+//    XT_Controler_Extend::Start_Buffer_Sync(-1);
 
     setInitState(true);
     //this must after "setInitState(true);!!!"
@@ -2035,6 +2036,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     GetMotorByName(this->lens_pick_arm.parameters.motorYName())->SeekOrigin();//LPA_Y
     GetMotorByName(this->lens_pick_arm.parameters.motorTName())->SeekOrigin();//LPA_R
 
+    GetMotorByName(this->aa_head_module.parameters.motorLightPanelName())->SeekOrigin();//AA_LightPanel
     GetMotorByName(this->aa_head_module.parameters.motorAName())->SeekOrigin();//AA_A
     GetMotorByName(this->aa_head_module.parameters.motorBName())->SeekOrigin();//AA_B
     GetMotorByName(this->aa_head_module.parameters.motorCName())->SeekOrigin();//AA_C
@@ -2071,6 +2073,7 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     result &= GetVcMotorByName(this->lens_pick_arm.parameters.motorXName())->WaitSeekDone();
     result &= GetMotorByName(this->lens_pick_arm.parameters.motorTName())->WaitSeekDone();
 
+    result &= GetMotorByName(this->aa_head_module.parameters.motorLightPanelName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorAName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorBName())->WaitSeekDone();
     result &= GetMotorByName(this->aa_head_module.parameters.motorCName())->WaitSeekDone();

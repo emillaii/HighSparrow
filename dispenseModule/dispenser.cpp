@@ -126,7 +126,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
                 qInfo("%f Too SMALL, set to %f",parameters.openOffset(),-half_len);
                 parameters.setOpenOffset(-half_len);
             }
-            res = XT_Controler_Extend::Set_Cur_Trig_Output(curve_id, 0, first_line_len/2+parameters.openOffset(), 0, output_io->GetID(), 1);
+            res = XT_Controler_Extend::Curve_Set_Cur_Trig_Output(curve_id, 0, first_line_len/2+parameters.openOffset(), 0, output_io->GetID(), 1);
             qInfo("point:%d length:%f offset:%f",i,first_line_len, first_line_len/2+parameters.openOffset());
             if(1!=res)
             {
@@ -171,7 +171,7 @@ bool Dispenser::Dispense(QVector<DispensePathPoint> &dispense_path)
                 parameters.setCloseOffset(-half_len);
             }
 
-            res = XT_Controler_Extend::Set_Cur_Trig_Output(curve_id, 0, first_line_len/2+parameters.closeOffset(), 0, output_io->GetID(), 0);
+            res = XT_Controler_Extend::Curve_Set_Cur_Trig_Output(curve_id, 0, first_line_len/2+parameters.closeOffset(), 0, output_io->GetID(), 0);
             qInfo("point:%d length:%f offset:%f",i,first_line_len, first_line_len/2+parameters.closeOffset());
             if(1!=res)
             {
@@ -255,7 +255,7 @@ bool Dispenser::DispenseCircle(QVector<DispensePathPoint> &dispense_path, QPoint
     }
 
     // Config open offset
-    res = XT_Controler_Extend::Set_Trig_Output(curve_id, nPoint_Index, parameters.openOffset(), 0, output_io->GetID(), 1);
+    res = XT_Controler_Extend::Curve_Set_Trig_Output(curve_id, nPoint_Index, parameters.openOffset(), 0, output_io->GetID(), 1);
     qInfo("point:0 open offset:%f", parameters.openOffset());
     if(1!=res)
     {
@@ -284,7 +284,7 @@ bool Dispenser::DispenseCircle(QVector<DispensePathPoint> &dispense_path, QPoint
     }
 
     // Config close offset
-    res = XT_Controler_Extend::Set_Trig_Output(curve_id, nPoint_Index, parameters.closeOffset(), 0, output_io->GetID(), 0);
+    res = XT_Controler_Extend::Curve_Set_Trig_Output(curve_id, nPoint_Index, parameters.closeOffset(), 0, output_io->GetID(), 0);
     qInfo("Last point close offset:%f", parameters.closeOffset());
     if(1!=res)
     {

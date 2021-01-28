@@ -66,9 +66,6 @@ public:
     Q_PROPERTY(QVariantList cmsMessageerNames READ cmsMessageerNames WRITE setCmsMessageerNames NOTIFY cmsMessageerNamesChanged)
     Q_PROPERTY(QString flowChartURL READ flowChartURL WRITE setFlowChartURL NOTIFY flowChartURLChanged)
     Q_PROPERTY(bool disableStation READ disableStation WRITE setDisableStation NOTIFY disableStationChanged)
-    Q_PROPERTY(bool sendDataToMES READ sendDataToMES WRITE setSendDataToMES NOTIFY sendDataToMESChanged)
-    Q_PROPERTY(QString opType READ opType WRITE setOpType NOTIFY opTypeChanged)
-
     int runMode() const
     {
         return m_runMode;
@@ -121,16 +118,6 @@ public:
     bool handlyChangeSensorTray() const
     {
         return m_handlyChangeSensorTray;
-    }
-
-    bool sendDataToMES() const
-    {
-        return m_sendDataToMES;
-    }
-
-    QString opType() const
-    {
-        return m_opType;
     }
 
 public slots:
@@ -232,25 +219,6 @@ public slots:
         emit handlyChangeSensorTrayChanged(m_handlyChangeSensorTray);
     }
 
-    void setSendDataToMES(bool sendDataToMES)
-    {
-        qInfo("setSendDataToMES : %d", sendDataToMES);
-        if (m_sendDataToMES == sendDataToMES)
-            return;
-
-        m_sendDataToMES = sendDataToMES;
-        emit sendDataToMESChanged(m_sendDataToMES);
-    }
-
-    void setOpType(QString opType)
-    {
-        if (m_opType == opType)
-            return;
-
-        m_opType = opType;
-        emit opTypeChanged(m_opType);
-    }
-
 signals:
     void runModeChanged(int runMode);
     void materialTypeChanged(QString materialType);
@@ -273,10 +241,6 @@ signals:
 
     void handlyChangeSensorTrayChanged(bool handlyChangeSensorTray);
 
-    void sendDataToMESChanged(bool sendDataToMES);
-
-    void opTypeChanged(QString opType);
-
 private:
     int m_runMode = 0;
     QString m_materialType = "TESTTYPE";
@@ -289,8 +253,6 @@ private:
     bool m_handlyChangeSensor = false;
     bool m_handlyChangeLensTray = false;
     bool m_handlyChangeSensorTray = false;
-    bool m_sendDataToMES = false;
-    QString m_opType = "AA:SCAA";
 };
 class ModuleManagerState:public PropertyBase
 {

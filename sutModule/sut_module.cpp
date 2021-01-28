@@ -52,29 +52,40 @@ void SutModule::saveJsonConfig(QString file_name)
 
 bool SutModule::checkSutHasMaterialSynic()
 {
+    QElapsedTimer timer; timer.start();
     bool result;
     result = vacuum->checkHasMaterielSync();
     if(result||RunMode::NoMaterial == states.runMode())
+    {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString error = QString(u8"sut上应有料，但真空检测到无料。");
     AppendError(error);
     qInfo(error.toStdString().c_str());
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SutModule::checkSutHasMaterial()
 {
+    QElapsedTimer timer; timer.start();
     bool result;
     result = vacuum->checkHasMateriel(thread_id);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SutModule::waitSutCheckResult(bool check_state)
 {
+    QElapsedTimer timer; timer.start();
     bool result;
     result = vacuum->getHasMateriel(thread_id);
     if(result == check_state||RunMode::NoMaterial == states.runMode())
+    {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString error;
     if(check_state)
         error = QString(u8"sut上应有料，但真空检测到无料。");
@@ -82,6 +93,7 @@ bool SutModule::waitSutCheckResult(bool check_state)
         error = QString(u8"sut上应无料，但真空检测到有料。");
     AppendError(error);
     qInfo(error.toStdString().c_str());
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
@@ -100,20 +112,29 @@ void SutModule::loadParams(QString file_name)
 
 bool SutModule::moveToDownlookPR(PrOffset &offset,bool close_lighting,bool check_autochthonous)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     vision_downlook_location->OpenLight();
     bool result = moveToDownlookPos(check_autochthonous);
+    temp.append(" moveToDownlookPos ").append(QString::number(smallTimer.elapsed()));
     if(result)
     {
+        smallTimer.restart();
         result = performDownLookPR();
+        temp.append(" performDownLookPR ").append(QString::number(smallTimer.elapsed()));
         offset = vision_downlook_location->getCurrentResult();
     }
     if(close_lighting)
     {
-        qInfo("close lighting");
         vision_downlook_location->CloseLight();
     }
     if(!result)
         AppendError(u8"执行downlook pr 失败");
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                      .append(QString::number(timer.elapsed()))
+                                      .append(temp);
+    qInfo(log.toStdString().c_str());
     return result;
 }
 
@@ -144,21 +165,59 @@ bool SutModule::moveToDownlookSaveImage(QString imageName,bool close_lighting,bo
 
 bool SutModule::moveToLoadPos(bool check_autochthonous)
 {
-    qInfo("moveToLoadPos");
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer;
+
+    double dist_x = fabs(carrier->motor_x->GetFeedbackPos() - load_position.X());
+    double dist_y = fabs(carrier->motor_y->GetFeedbackPos() - load_position.Y());
+
+    smallTimer.start();
+    carrier->setCallerFunctionName(__FUNCTION__);
     bool result = carrier->Move_SZ_SX_Y_X_Sync(load_position.X(),load_position.Y(),parameters.loadPosArrivedY(),check_autochthonous);
+    double dist_z = fabs(carrier->motor_z->GetFeedbackPos() - load_position.Z());
+    int t1 = smallTimer.elapsed();
     //result &= popgpin->Set(false,false);
     if(result)
     {
+        smallTimer.restart();
         result &= popgpin->Set(false,false);
-        qInfo("moveToLoadPos z");
+        int t2 = smallTimer.elapsed();
+        smallTimer.restart();
         result &= carrier->motor_z->MoveToPosSync(load_position.Z(),0.1);
-        qInfo("WaitArrivedTargetPos y");
+        int t3 = smallTimer.elapsed();
+        smallTimer.restart();
         result &= carrier->motor_y->WaitArrivedTargetPos(load_position.Y());
-        qInfo("delayBeforeVaccum %d", parameters.delayBeforeVaccum());
+        int t4 = smallTimer.elapsed();
+        smallTimer.restart();
         QThread::msleep(parameters.delayBeforeVaccum());
+        int t5 = smallTimer.elapsed();
+        smallTimer.restart();
         result &= vacuum->Set(false,false,false);
+        int t6 = smallTimer.elapsed();
+        QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                           .append(QString::number(timer.elapsed()))
+                                           .append(" dist_x ")
+                                           .append(QString::number(dist_x))
+                                           .append(" dist_y ")
+                                           .append(QString::number(dist_y))
+                                           .append(" dist_z ")
+                                           .append(QString::number(dist_z))
+                                           .append(" move_x_y_z ")
+                                           .append(QString::number(t1))
+                                           .append(" pogo ")
+                                           .append(QString::number(t2))
+                                           .append(" z ")
+                                           .append(QString::number(t3))
+                                           .append(" y ")
+                                           .append(QString::number(t4))
+                                           .append(" delayBeforeVaccum ")
+                                           .append(QString::number(t5))
+                                           .append(" vaccumSet ")
+                                           .append(QString::number(t6));
+
+        qWarning(log.toStdString().c_str());
     }
-    qInfo("moveToLoadPos");
+    carrier->setCallerFunctionName("");
     return result;
 }
 

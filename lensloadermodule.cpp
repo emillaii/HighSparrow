@@ -486,13 +486,17 @@ void LensLoaderModule::run(bool has_material)
 
 bool LensLoaderModule::moveToNextTrayPos(int tray_index)
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToNextTrayPos:%d",tray_index);
     bool result = false;
+    pick_arm->setCallerName(__FUNCTION__);
     if(tray->findNextPositionOfInitState(tray_index))
         result = pick_arm->move_XtXYT_Synic(tray->getCurrentPosition(tray_index),parameters.visonPositionX(),parameters.pickTheta());
+    pick_arm->setCallerName("");
     if(!result)
         AppendError(QString(u8"移动到%1号盘下一个位置失败").arg(tray_index));
     qInfo(u8"移动到%d号盘下一个位置,返回值%d",tray_index,result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return  result;
 }
 
@@ -507,25 +511,39 @@ bool LensLoaderModule::moveToLUTPRPos1(bool check_softlanding)
 
 bool LensLoaderModule::movePickerToLUTPos1(bool check_arrived,bool check_softlanding)
 {
-//    if(parameters.openTimeLog())
-//        qInfo("movePickerToLUTPos1 check_arrived %d check_softlanding %d",check_arrived,check_softlanding);
+    QElapsedTimer timer; timer.start();
+    QString temp;
+    pick_arm->setCallerName(__FUNCTION__);
     bool result =  pick_arm->move_XYT_Synic(lut_pr_position1.X() + camera_to_picker_offset.X(),lut_pr_position1.Y() + camera_to_picker_offset.Y(),parameters.placeTheta(),check_arrived,check_softlanding);
+    pick_arm->setCallerName("");
+    temp.append(" move_XYT_Synic ").append(QString::number(timer.elapsed()));
     if(!result)
         AppendError(QString(u8"移动吸头到LUT放Lens位置失败"));
-//    if(parameters.openTimeLog())
-//        qInfo("movePickerToLUTPos1 result %d",result);
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool LensLoaderModule::moveToLUTPRPos2(bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QString temp;
     if(parameters.openTimeLog())
         qInfo("moveToLUTPRPos2 check_softlanding %d",check_softlanding);
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = pick_arm->move_XYT_Synic(lut_pr_position2.X(),lut_pr_position2.Y(),parameters.placeTheta(),false,check_softlanding);
+    temp.append(" move_XYT_Synic ").append(QString::number(timer.elapsed()));
+    pick_arm->setCallerName("");
     if(!result)
         AppendError(QString(u8"移动到相机LUT取NgLens位置失败"));
     if(parameters.openTimeLog())
         qInfo(u8"移动相机到LUT取NgLens位置 result  %d",result);
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -550,6 +568,7 @@ bool LensLoaderModule::checkNeedChangeTray()
 
 bool LensLoaderModule::performLensPR()
 {
+    QElapsedTimer timer; timer.start();
     qInfo("performLensPR");
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
@@ -560,11 +579,13 @@ bool LensLoaderModule::performLensPR()
     if(!result)
         AppendError(QString(u8"执行lens视觉失败"));
     qInfo(u8"执行lens视觉,返回值%d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool LensLoaderModule::performVacancyPR()
 {
+    QElapsedTimer timer; timer.start();
     qInfo("performVacancyPR");
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
@@ -575,6 +596,7 @@ bool LensLoaderModule::performVacancyPR()
     if(!result)
         AppendError(QString(u8"执行lens料盘空位视觉失败"));
     qInfo(u8"执行lens料盘空位视觉,返回值%d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -612,6 +634,7 @@ bool LensLoaderModule::performLUTNGSlotPR()
 
 bool LensLoaderModule::performLUTLensPR()
 {
+    QElapsedTimer timer; timer.start();
     qInfo("performLUTLensPR");
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
@@ -622,6 +645,7 @@ bool LensLoaderModule::performLUTLensPR()
     if(!result)
         AppendError(QString(u8"执行LUT上Lens视觉失败"));
     qInfo(u8"执行LUT上Lens视觉,返回值%d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -655,14 +679,27 @@ bool LensLoaderModule::performUpdowlookUpPR(PrOffset &offset)
 
 bool LensLoaderModule:: moveToWorkPos(bool check_state)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer step_timer; step_timer.start();
+
+    QString temp_log = "";
     PrOffset temp(camera_to_picker_offset.X() - pr_offset.X,camera_to_picker_offset.Y() - pr_offset.Y,-pr_offset.Theta);
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = pick_arm->stepMove_XYTp_Pos(temp,false);
-    bool check_result = checkPickedLensOrNg(check_state);
-    result &= pick_arm->waitStepMove_XYTp();
+    pick_arm->setCallerName("");
+    temp_log.append(" stepMove_XYTp_Pos ").append(QString::number(step_timer.elapsed()));
+    step_timer.restart();
+    bool check_result = checkPickedLensOrNg(check_state);    
+    temp_log.append(" checkPickedLensOrNg ").append(QString::number(step_timer.elapsed()));
+    //result &= pick_arm->waitStepMove_XYTp();
     if(!result)
         AppendError(QString(u8"移动吸头和视觉偏移失败"));
     qInfo(u8"移动吸头和视觉偏移,返回值%d",result);
     result &= check_result;
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp_log);
+    qWarning(log.toStdString().c_str());
     return  result;
 }
 
@@ -743,27 +780,54 @@ bool LensLoaderModule::vcmSearchReturn()
 
 bool LensLoaderModule::pickTrayLens()
 {
+    QElapsedTimer timer; timer.start();
+    QString temp;
     qInfo("pickTrayLens");
+    double dist_z = fabs(pick_arm->picker->motor_z->GetFeedbackPos() - parameters.pickLensZ());
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = vcmSearchZ(parameters.pickLensZ(),true);
+    pick_arm->setCallerName("");
+    temp.append(" dist_z ").append(QString::number(dist_z))
+        .append(" vcmSearchZ ").append(QString::number(timer.elapsed()));
     if(!result)
         AppendError(QString(u8"从lens料盘当前位置取lens失败"));
     qInfo(u8"从lens料盘当前位置取lens,返回值%d",result);
     if(result)
         result &= checkPickedLensOrNg(true);
+    //qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool LensLoaderModule::placeLensToLUT()
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if(parameters.openTimeLog())
         qInfo(u8"从当前位置放lens到LUT");
+    double dist_z = fabs(pick_arm->picker->motor_z->GetFeedbackPos() - parameters.placeLensZ());
     bool result = vcmSearchLUTZ(parameters.placeLensZ(), false);
+    temp.append(" dist_z ").append(QString::number(dist_z))
+        .append(" vcmSearchLUTZ ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
     result &= openLoadVacuum();
-    result &= vcmSearchReturn();
+    temp.append(" openLoadVacuum ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
+    result &= vcmSearchReturn();    
+    temp.append(" vcmSearchReturn ").append(QString::number(smallTimer.elapsed()));
     if(!result)
         AppendError(QString(u8"从当前位置放lens到LUT失败"));
     if(parameters.openTimeLog())
         qInfo(u8"从当前位置放lens到LUT result %d ",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -796,23 +860,45 @@ bool LensLoaderModule::pickLUT1Lens()
 
 bool LensLoaderModule::pickLUTLens()
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     bool result = vcmSearchLUTZ(parameters.placeLensZ(), true);
+    temp.append(" vcmSearchLUTZ ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
     result &= closeUnloadVacuum();
+    temp.append(" closeUnloadVacuum ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
     result &= vcmSearchReturn();
+    temp.append(" vcmSearchReturn ").append(QString::number(smallTimer.elapsed()));
     if(!result)
         AppendError(QString(u8"从LUT当前位置取NgLens失败"));
     qInfo(u8"从LUT当前位置取NgLens,返回值%d",result);
     if(result)
         result &= checkPickedLensOrNg(true);
+    //qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool LensLoaderModule::placeLensToTray()
 {
+    QElapsedTimer timer; timer.start();
+    QString temp;
+    pick_arm->setCallerName(__FUNCTION__);
     bool result =  vcmSearchZ(parameters.pickLensZ(),false);
+    temp.append(" vcmSearchZ ").append(QString::number(timer.elapsed()));
+    pick_arm->setCallerName("");
     if(!result)
         AppendError(QString(u8"从当前位置放NgLens到Lens料盘失败"));
     qInfo(u8"从当前位置放NgLens到Lens料盘,返回值%d",result);
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -837,13 +923,17 @@ bool LensLoaderModule::measureHight(bool is_tray)
 
 bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index,int& result_tray)
 {
+    QElapsedTimer timer; timer.start();
+    QString temp;
     qInfo("moveToTrayEmptyPos index %d tray_index %d",index,tray_index);
     result_tray = tray_index;
     if(index < 0 ||tray_index < 0)
     {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return false;
     }
     bool result = false;
+    pick_arm->setCallerName(__FUNCTION__);
     if(index >= 0 && tray_index >= 0 && tray->getMaterialState(index,tray_index) == MaterialState::IsEmpty)
     {
         tray->setTrayCurrent(index,tray_index);
@@ -856,9 +946,15 @@ bool LensLoaderModule::moveToTrayEmptyPos(int index, int tray_index,int& result_
         result_tray = tray_index == 0?1:0;
         result = moveToTrayPos(result_tray);
     }
+    pick_arm->setCallerName("");
+    temp.append(" moveToTrayPos ").append(QString::number(timer.elapsed()));
     if(!result)
         AppendError(QString(u8"移动到lens料盘空位失败,起始位置:%1,lens料盘:%2").arg(index).arg(tray_index));
     qInfo(u8"移动到lens料盘空位,起始位置:%d,lens料盘:%d,返回值:%d",index,tray_index,result);
+    QString log = QString("[Timelog] ").append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 

@@ -1,6 +1,6 @@
 ﻿#include "sensortrayloadermodule.h"
 #include "tcpmessager.h"
-
+#include <QElapsedTimer>
 SensorTrayLoaderModule::SensorTrayLoaderModule():ThreadWorkerBase ("SensorTrayLoaderModule")
 {
 
@@ -606,7 +606,7 @@ bool SensorTrayLoaderModule:: moveToDownTrayAndReadyToPush()
     {
         check_result &= checkSensorTray(true);
     }
-    check_result &= checkKickTray(false);
+    //check_result &= checkKickTray(false);
     if(result)
         result &= motor_tray->WaitArrivedTargetPos(parameters.downTrayPosition());
     if(result)
@@ -704,6 +704,7 @@ bool SensorTrayLoaderModule::moveToChangeVacancyTrayAndUpReadyTray(bool has_vaca
 
 bool SensorTrayLoaderModule::moveToUpReadyTray(bool has_tray)
 {
+    QElapsedTimer timer; timer.start();
     bool result =checkEntanceTray(false);
     result &= gripper->Set(true);
     if(result)
@@ -716,6 +717,7 @@ bool SensorTrayLoaderModule::moveToUpReadyTray(bool has_tray)
     if((result&&has_tray)&&(!states.isLastTray()))
         result &= checkSensorTray(true);
     qInfo(u8"去取备用盘，返回值%d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -733,6 +735,7 @@ bool SensorTrayLoaderModule::moveToWaitHandleTray()
 
 bool SensorTrayLoaderModule::moveToPullNextTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result_push = true;
     bool result_return = true;
     if(!states.isLastTray())
@@ -756,6 +759,7 @@ bool SensorTrayLoaderModule::moveToPullNextTray()
         result &= checkEntanceTray(false);
     result = result&&result_push&&result_return;
     qInfo(u8"送出新盘，返回值%d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -820,11 +824,13 @@ bool SensorTrayLoaderModule::moveToWorkPos(bool has_tray)
 
 bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToEntranceClipNextPos");
     if(motor_push->GetFeedbackPos() > parameters.pushMotorSafePosition())
     {
         qInfo("motor_push %f",motor_push->GetFeedbackPos());
         AppendError(u8"推出sensor盘的轴(STPO)不在安全位置");
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return false;
     }
     if(!checkEntanceTray(false))
@@ -867,6 +873,7 @@ bool SensorTrayLoaderModule::moveToEntranceClipNextPos()
     if(result)
         entrance_clip->finishCurrentPosition();
 //    retryTime = parameters.checkEntranceTrayRetryTimes();
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -1040,4 +1047,5 @@ QMap<QString, PropertyBase *> SensorTrayLoaderModule::getModuleParameter()
 
 void SensorTrayLoaderModule::setModuleParameter(QMap<QString, PropertyBase *>)
 {
+
 }

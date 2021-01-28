@@ -69,14 +69,11 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
 
     connect(&aa_head_module,&AAHeadModule::sendSensrRequestToSut,&sut_module,&SutModule::receiveLoadSensorRequst,Qt::DirectConnection);
 
-    connect(&this->parameters, &ModuleManagerParameter::sendDataToMESChanged, &unitlog, &Unitlog::setSendDataToMES);
-    connect(&this->parameters, &ModuleManagerParameter::opTypeChanged, &unitlog, &Unitlog::setOpType);
     connect(&aaCoreNew, &AACoreNew::needUpdateParameterInTcpModule, this, &BaseModuleManager::receiveNeedUpdateTcpParameter);
     connect(&aaCoreNew, &AACoreNew::pushDataToUnit, &unitlog, &Unitlog::pushDataToUnit);
     connect(&aaCoreNew, &AACoreNew::pushNgDataToCSV, &unitlog, &Unitlog::pushNgDataToCSV);
     connect(&aaCoreNew, &AACoreNew::clearHeaders, &unitlog, &Unitlog::clearHeaders,Qt::DirectConnection);
     connect(&aaCoreNew, &AACoreNew::postDataToELK, &unitlog, &Unitlog::postDataToELK);
-    connect(&aaCoreNew, &AACoreNew::postDataToELKInternal, &unitlog, &Unitlog::postDataToELKInternal, Qt::DirectConnection);
     connect(&aaCoreNew, &AACoreNew::postSfrDataToELK, &unitlog, &Unitlog::postSfrDataToELK);
     connect(&lut_module, &LutModule::postCSVDataToUnit, &unitlog, &Unitlog::pushCSVDataToUnit);
     connect(&sensor_loader_module,&SensorLoaderModule::sendChangeTrayRequst,&sensor_tray_loder_module,&SensorTrayLoaderModule::receiveChangeTray,Qt::DirectConnection);
@@ -130,7 +127,6 @@ BaseModuleManager::BaseModuleManager(QObject *parent)
     // Todo
     //timer.start(5000);
     userManagement.init();
-    unitlog.setUserManagement(&userManagement);
 }
 
 BaseModuleManager::~BaseModuleManager()
@@ -744,7 +740,7 @@ void BaseModuleManager::receiveMessageFromWorkerManger(QVariantMap message)
         QVariantMap temp_param;
         if(getServerMode() == 1)
         {
-            temp_param.insert("AAFlowchart", aaCoreNew.flowchartJsonString);
+            //temp_param.insert("AAFlowchart", aaCoreNew.flowchartJsonString);
             temp_param.insert("LotNumber", aaCoreNew.parameters.lotNumber());
             temp_param.insert("RunMode",parameters.runMode());
             temp_param.insert("HandlyChangeSensor",sensor_loader_module.parameters.handlyChangeSensor());
@@ -794,11 +790,6 @@ bool BaseModuleManager::loadParameters()
 //    configs.loadJsonConfig(QString(SYSTERM_PARAM_DIR).append(SYSTERM_CONGIF_FILE),"systermConfig");
     if(!this->parameters.loadJsonConfig(QString(CONFIG_DIR).append(SYSTERM_PARAM_FILE),SYSTERM_PARAMETER))
         return false;
-    unitlog.moduleName = parameters.materialType();
-
-    loadVcmFile(getSystermParameterDir().append(VCM_PARAMETER_FILE));
-    loadMotorFile(getSystermParameterDir().append(MOTOR_PARAMETER_FILE));
-    loadMotorLimitFiles(getSystermParameterDir().append(LIMIT_PARAMETER_FILE));
 
     tcp_manager.loadJsonConfig(getSystermParameterDir().append(TCP_CONFIG_FILE));
     material_tray.loadJsonConfig(getCurrentParameterDir().append(MATERIAL_TRAY_FILE));
@@ -812,7 +803,6 @@ bool BaseModuleManager::loadParameters()
     {
         sensor_loader_module.loadJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
         sensor_pickarm.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
-        sensor_tray_loder_module.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE),SENSOR_TRAY_LOADER_PARAMETER);
 
         QMap<QString,PropertyBase*> temp_map;
         temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
@@ -832,22 +822,20 @@ bool BaseModuleManager::loadParameters()
         trayClipOut.standards_parameters.loadJsonConfig(getCurrentParameterDir().append(TRAY_CLIPOUT_FILE),TRAY_CLIPOUT_PARAMETER);
      }
     aaCoreNew.loadJsonConfig(getCurrentParameterDir().append(AA_CORE_MODULE_FILE));
-    //loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
-    //loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
+    loadVcmFile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
+    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
-    //loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
     return true;
 }
 
 bool BaseModuleManager::loadconfig()
 {
-    //loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
-    //loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
-    dispenser.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSER_FILE),DISPENSER_PARAMETER);
-    dispense_module.parameters.loadJsonConfig(getCurrentParameterDir().append(DISPENSE_MODULE_FILE),DISPENSER_MODULE_PARAMETER);
+    loadMotorLimitFiles(getCurrentParameterDir().append(LIMIT_PARAMETER_FILE));
+    loadMotorFile(getCurrentParameterDir().append(MOTOR_PARAMETER_FILE));
     loadCylinderFiles(getCurrentParameterDir().append(CYLINDER_PARAMETER_FILE));
     loadVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
     loadVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
@@ -871,7 +859,6 @@ bool BaseModuleManager::saveParameters()
     {
         sensor_loader_module.saveJsonConfig(getCurrentParameterDir().append(SENSOR_LOADER_FILE));
         sensor_pickarm.parameters.saveJsonConfig(getCurrentParameterDir().append(SENSOR_PICKARM_FILE),SENSOR_PICKARM_PARAMETER);
-        sensor_tray_loder_module.parameters.saveJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE),SENSOR_TRAY_LOADER_PARAMETER);
 
         QMap<QString,PropertyBase*> temp_map;
         temp_map.insert("sensor_tray_loader", &sensor_tray_loder_module.parameters);
@@ -896,7 +883,6 @@ bool BaseModuleManager::saveParameters()
     saveCalibrationFiles(getCurrentParameterDir().append(CALIBRATION_PARAMETER_FILE));
     saveVisionLoactionFiles(getCurrentParameterDir().append(VISION_LOCATION_PARAMETER_FILE));
     saveVacuumFiles(getCurrentParameterDir().append(VACUUM_PARAMETER_FILE));
-    //saveVcmfile(getCurrentParameterDir().append(VCM_PARAMETER_FILE));
     return true;
 }
 
@@ -939,13 +925,7 @@ void BaseModuleManager::showMachineMap()
 void BaseModuleManager::loadModuleParameter(QString module_name)
 {
     if(module_name == sut_module.parameters.moduleName())
-    {
-        sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
-    }
-    else if(module_name == sensor_tray_loder_module.parameters.moduleName())
-    {
-        sensor_tray_loder_module.parameters.loadJsonConfig(getCurrentParameterDir().append(SENSOR_TRAY_LOADER_FILE),SENSOR_TRAY_LOADER_PARAMETER);
-    }
+          sut_module.loadParams(getCurrentParameterDir().append(SUT_FILE));
 }
 
 bool BaseModuleManager::registerWorkers(WorkersManager *manager)
@@ -1913,7 +1893,7 @@ bool BaseModuleManager::initialDevice()
         qInfo("Motion control server cannot connect");
         return false;
     }
-//    XT_Controler_Extend::Stop_Buffer_Sync();
+    XT_Controler_Extend::Stop_Buffer_Sync();
 
     XtVcMotor::InitAllVCM();
     XtVcMotor* temp_motor;
@@ -1922,7 +1902,7 @@ bool BaseModuleManager::initialDevice()
         if(temp_motor!= nullptr)
             temp_motor->ConfigVCM();
     }
-//    XT_Controler_Extend::Start_Buffer_Sync(-1);
+    XT_Controler_Extend::Start_Buffer_Sync(-1);
 
     setInitState(true);
     //this must after "setInitState(true);!!!"
@@ -2014,7 +1994,10 @@ bool BaseModuleManager::allMotorsSeekOriginal1()
     if(!GetCylinderByName(this->sut_module.parameters.cylinderName())->Set(true))
         return false;
     if(!GetCylinderByName(this->tray_loader_module.parameters.cylinderLTK2Name())->Set(1))
+    {
+        qWarning("%s cannot set. Home fail.", tray_loader_module.parameters.cylinderLTK2Name().toStdString().c_str());
         return false;
+    }
     GetMotorByName(this->lut_module.parameters.motorZName())->SeekOrigin();//LUT_Z
     GetVcMotorByName(this->sut_module.parameters.motorZName())->SeekOrigin();//SUT_Z
     GetVcMotorByName(this->lens_pick_arm.parameters.motorZName())->SeekOrigin();//LPA_Z

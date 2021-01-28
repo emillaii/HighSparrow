@@ -75,6 +75,8 @@ public:
     void saveJsonConfig(QString file_name);
     bool performUpDownlookDownPR(PrOffset &offset);
     bool performUpdowlookUpPR(PrOffset &offset);
+    void setCallerName(QString name){ this->callerName = name; }
+    QString callerName = "";
 //    void calculateCameraToPickerOffset();
 signals:
     void sendChangeTrayRequst();

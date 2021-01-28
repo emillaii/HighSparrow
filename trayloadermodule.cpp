@@ -3,6 +3,7 @@
 #include "config.h"
 #include <QDebug>
 #include <QObject>
+#include <QElapsedTimer>
 
 TrayLoaderModule::TrayLoaderModule(QString name):ThreadWorkerBase(name)
 {
@@ -106,6 +107,7 @@ void TrayLoaderModule::resetLogic()
 
 bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result = cylinder_ltk2->Set(false);
     if(!result)return false;
     result &= motor_work->MoveToPos(parameters.ltlReleasePos());
@@ -123,11 +125,13 @@ bool TrayLoaderModule::sendoutAndReayPushOutEmptyTray()
         AppendError(QString(u8"放出空盘并准备推空盘失败"));
     if(parameters.openQinfo())
         qInfo(u8"放出空盘并准备推空盘 %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool TrayLoaderModule::moveToGetAndPushInNewTrayAndPushOutTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result = cylinder_tray->Set(true);
     bool out_result = false;
     if(result)
@@ -153,11 +157,13 @@ bool TrayLoaderModule::moveToGetAndPushInNewTrayAndPushOutTray()
         AppendError(QString(u8"去拿新盘、推入新盘并推出空盘失败"));
     if(parameters.openQinfo())
         qInfo(u8"去拿新盘、推入新盘并推出空盘 %d",result&&out_result&&in_result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result&&out_result&&in_result;
 }
 
 bool TrayLoaderModule::moveToGetAndPushInNewTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result = cylinder_tray->Set(true);
     if(result)
         result &= motor_work->MoveToPos(parameters.ltlPressPos());
@@ -172,11 +178,13 @@ bool TrayLoaderModule::moveToGetAndPushInNewTray()
         AppendError(QString(u8"去拿新盘并推入新盘失败"));
     if(parameters.openQinfo())
         qInfo(u8"去拿新盘并推入新盘 %d",result&&in_result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result&&in_result;
 }
 
 bool TrayLoaderModule::moveToPushOutTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result = cylinder_ltk2->Set(true);
     if(result)
         result &= motor_out->SlowMoveToPosSync(parameters.ltkx2ReleasePos(),parameters.pushVelocity());
@@ -189,11 +197,13 @@ bool TrayLoaderModule::moveToPushOutTray()
         AppendError(QString(u8"推出空盘失败"));
     if(parameters.openQinfo())
         qInfo(u8"推出空盘失败 %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool TrayLoaderModule::moveToWorkPosAndReayPullNewTray()
 {
+    QElapsedTimer timer; timer.start();
     bool in_result = cylinder_ltk1->Set(false);
     bool result = true;
     if(in_result)
@@ -209,21 +219,25 @@ bool TrayLoaderModule::moveToWorkPosAndReayPullNewTray()
         AppendError(QString(u8"去工作位置并去拉盘准备位置失败"));
     if(parameters.openQinfo())
         qInfo(u8"去工作位置并去拉盘准备位置 %d",result&&in_result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result&&in_result;
 }
 
 bool TrayLoaderModule::entranceClipMoveToNextPos()
 {
+    QElapsedTimer timer; timer.start();
     bool result = motor_clip_in->MoveToPosSync(tray_clip_in->getCurrentPosition());
     if(!result)
         AppendError(QString(u8"移动进料弹夹失败"));
     if(parameters.openQinfo())
         qInfo(u8"移动进料弹夹 %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool TrayLoaderModule::moveToReayPullNewTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result = cylinder_ltk1->Set(false);
     if(result)
         result &= motor_in->MoveToPosSync(parameters.ltkx1PressPos());
@@ -231,6 +245,7 @@ bool TrayLoaderModule::moveToReayPullNewTray()
         AppendError(QString(u8"去拉盘准备位置失败"));
     if(parameters.openQinfo())
         qInfo(u8"去拉盘准备位置 %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -250,6 +265,7 @@ bool TrayLoaderModule::moveToPushReadyTray()
 
 bool TrayLoaderModule::clipPushoutTray()
 {
+    QElapsedTimer timer; timer.start();
     bool result = cylinder_ltk1->Set(false);
     if(result)
         result &= cylinder_clip->Set(true);
@@ -269,16 +285,19 @@ bool TrayLoaderModule::clipPushoutTray()
         AppendError(QString(u8"进料弹夹出盘失败"));
     if(parameters.openQinfo())
         qInfo(u8"进料弹夹出盘 %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool TrayLoaderModule::existClipMoveToNextPos()
 {
+    QElapsedTimer timer; timer.start();
     bool result = motor_clip_out->MoveToPosSync(tray_clip_out->getCurrentPosition());
     if(!result)
         AppendError(QString(u8"移动出料弹夹失败"));
     if(parameters.openQinfo())
         qInfo(u8"移动出料弹夹 %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -312,6 +331,7 @@ bool TrayLoaderModule::moveToWorkPos()
 
 bool TrayLoaderModule::moveToChangeClipPos()
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToChangeClipPos");
     motor_clip_in->MoveToPos(tray_clip_in->standards_parameters.changeClipPos());
     bool result = motor_clip_in->WaitArrivedTargetPos(tray_clip_in->standards_parameters.changeClipPos());
@@ -319,6 +339,7 @@ bool TrayLoaderModule::moveToChangeClipPos()
     {
         AppendError(tr(u8"移动到换料位置失败！"));
     }
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 void TrayLoaderModule::startWork(int run_mode)

@@ -1,4 +1,5 @@
 #include "material_carrier.h"
+#include <QElapsedTimer>
 
 MaterialCarrier::MaterialCarrier():ErrorBase ()
 {
@@ -43,6 +44,9 @@ bool MaterialCarrier::Move_SZ_XY_Z_Sync(double x, double y, double z, int timeou
 
 bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool check_autochthonous,bool check_softlanding,double check_distance, int timeout)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if (check_softlanding)
     {
         if (!motor_z->resetSoftLanding(timeout)) return false;
@@ -53,26 +57,52 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Z_Sync(double x, double y, double z,bool ch
     bool result;
     if(CheckXYDistanceBigger(x,y,check_distance))
     {
+        double dist_z = fabs( motor_z->GetFeedbackPos() - parameters.SafetyZ());
+        smallTimer.restart();
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" move_safety_z ").append(QString::number(smallTimer.elapsed()));
         if(!result) return false;
         if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
         {
+            double dist_x = fabs( motor_x->GetFeedbackPos() - parameters.SafetyX());
+            smallTimer.restart();
             result = motor_x->MoveToPosSync(parameters.SafetyX());
+            temp.append(" dist_x ").append(QString::number(dist_x))
+                .append(" move_safety_x ").append(QString::number(smallTimer.elapsed()));
             if(!result) return false;
         }
     }
+
+    double dist_y = fabs( motor_y->GetFeedbackPos() - y);
+    smallTimer.restart();
     result = motor_y->MoveToPosSync(y);
+    temp.append(" dist_y ").append(QString::number(dist_y))
+        .append(" move_y ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    double dist_x = fabs( motor_x->GetFeedbackPos() - x);
+    smallTimer.restart();
     result = motor_x->MoveToPosSync(x);
+    temp.append(" dist_x ").append(QString::number(dist_x))
+        .append(" move_x ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    double dist_z = fabs( motor_z->GetFeedbackPos() - z);
+    smallTimer.restart();
     result = motor_z->MoveToPosSync(z);
-    //    QThread::msleep(300);
+    temp.append(" dist_z ").append(QString::number(dist_z))
+        .append(" move_z ").append(QString::number(smallTimer.elapsed()));
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qInfo(log.toStdString().c_str());
     return result;
 }
 
 bool MaterialCarrier::Move_SZ_SX_Y_X_Sync(double x, double y, double y_error, bool check_autochthonous, bool check_softlanding, double check_distance, int timeout)
 {
-
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if (check_softlanding)
     {
         if (!motor_z->resetSoftLanding(timeout)) return false;
@@ -83,17 +113,40 @@ bool MaterialCarrier::Move_SZ_SX_Y_X_Sync(double x, double y, double y_error, bo
     bool result;
     if(CheckXYDistanceBigger(x,y,check_distance))
     {
+        double dist_z = fabs(motor_z->GetFeedbackPos() - parameters.SafetyZ());
+        smallTimer.start();
         result = motor_z->MoveToPosSync(parameters.SafetyZ(),0.1);
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" move_z_safety ").append(QString::number(smallTimer.elapsed()));
         if(!result) return false;
         if(fabs(y - motor_y->GetFeedbackPos()) > check_distance)
         {
+            smallTimer.restart();
+            double dist_x = fabs(motor_x->GetFeedbackPos() - parameters.SafetyX());
             result = motor_x->MoveToPosSync(parameters.SafetyX());
+            temp.append(" dist_x ").append(QString::number(dist_x))
+                .append(" move_x_safety ").append(QString::number(smallTimer.elapsed()));
             if(!result) return false;
         }
     }
+    QElapsedTimer t; t.start();
+    double dist_y = fabs(motor_y->GetFeedbackPos() - y);
+    smallTimer.restart();
     result = motor_y->MoveToPosSync(y,y_error);
+    temp.append(" dist_y ").append(QString::number(dist_y))
+        .append(" move_y ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    t.restart();
+    double dist_x = fabs(motor_x->GetFeedbackPos() - x);
+    smallTimer.restart();
     result = motor_x->MoveToPosSync(x);
+    temp.append(" dist_x ").append(QString::number(dist_x))
+        .append(" move_x ").append(QString::number(smallTimer.elapsed()));
+    QString log = QString(" [Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                        .append(QString::number(timer.elapsed()))
+                                        .append(temp);
+
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -128,6 +181,9 @@ bool MaterialCarrier::Move_SZ_SX_YS_X_Z_Sync(double x, double y, double z, bool 
 
 bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool check_autochthonous,bool check_softlanding, double check_distance, int timeout)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if (check_softlanding)
     {
         if (!motor_z->resetSoftLanding(timeout)) return false;
@@ -138,25 +194,51 @@ bool MaterialCarrier::Move_SZ_SY_X_Y_Z_Sync(double x, double y, double z,bool ch
     bool result;
     if(CheckXYDistanceBigger(x,y,check_distance))
     {
+        double dist_z = fabs(motor_z->GetFeedbackPos() - parameters.SafetyZ());
+        smallTimer.restart();
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" move_z ").append(QString::number(smallTimer.elapsed()));
         if(!result) return false;
         if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
         {
+            smallTimer.restart();
+            double dist_y = fabs(motor_y->GetFeedbackPos() - parameters.SafetyY());
             result = motor_y->MoveToPosSync(parameters.SafetyY());
+            temp.append(" dist_y ").append(QString::number(dist_y))
+                .append(" move_y ").append(QString::number(smallTimer.elapsed()));
             if(!result) return false;
         }
     }
+    double dist_x = fabs(motor_x->GetFeedbackPos() - x);
+    double dist_y = fabs(motor_y->GetFeedbackPos() - y);
+    double dist_z = fabs(motor_z->GetFeedbackPos() - z);
+    smallTimer.restart();
     result = motor_x->MoveToPosSync(x);
+    temp.append(" dist_x ").append(QString::number(dist_x))
+        .append(" move_x ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    smallTimer.restart();
     result = motor_y->MoveToPosSync(y);
+    temp.append(" dist_y ").append(QString::number(dist_y))
+        .append(" move_y ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    smallTimer.restart();
     result = motor_z->MoveToPosSync(z);
-    //    QThread::msleep(300);
+    temp.append(" dist_z ").append(QString::number(dist_z))
+        .append(" move_z ").append(QString::number(smallTimer.elapsed()));
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool MaterialCarrier::Move_SZ_SY_X_YS_Z_Sync(double x, double y, double z, bool check_autochthonous, bool check_softlanding, double check_distance, int timeout)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if (check_softlanding)
     {
         if (!motor_z->resetSoftLanding(timeout)) return false;
@@ -167,20 +249,43 @@ bool MaterialCarrier::Move_SZ_SY_X_YS_Z_Sync(double x, double y, double z, bool 
     bool result;
     if(CheckXYDistanceBigger(x,y,check_distance))
     {
+        double dist_z = fabs(motor_z->GetFeedbackPos() - parameters.SafetyZ());
+        smallTimer.restart();
         result = motor_z->MoveToPosSync(parameters.SafetyZ());
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" move_safety_z ").append(QString::number(smallTimer.elapsed()));
         if(!result) return false;
         if(fabs(x - motor_x->GetFeedbackPos()) > check_distance)
         {
+            smallTimer.restart();
+            double dist_y = fabs(motor_y->GetFeedbackPos() - parameters.SafetyY());
             result = motor_y->MoveToPosSync(parameters.SafetyY());
+            temp.append(" dist_y ").append(QString::number(dist_y))
+                .append(" move_safety_y ").append(QString::number(smallTimer.elapsed()));
             if(!result) return false;
         }
     }
+    double dist_x = fabs(motor_x->GetFeedbackPos() - x);
+    smallTimer.restart();
     result = motor_x->MoveToPosSync(x);
+    temp.append(" dist_x ").append(QString::number(dist_x))
+        .append(" move_x ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    double dist_y = fabs(motor_y->GetFeedbackPos() - y);
+    smallTimer.restart();
     result = motor_y->MoveToPosSaftySync(y);
+    temp.append(" dist_y ").append(QString::number(dist_y))
+        .append(" move_y ").append(QString::number(smallTimer.elapsed()));
     if(!result) return false;
+    smallTimer.restart();
+    double dist_z = fabs(motor_z->GetFeedbackPos() - z);
     result = motor_z->MoveToPosSync(z);
-    //    QThread::msleep(300);
+    temp.append(" dist_z ").append(QString::number(dist_z))
+        .append(" move_z ").append(QString::number(smallTimer.elapsed()));
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 

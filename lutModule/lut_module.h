@@ -140,6 +140,8 @@ private:
     void sendPrEvent(const PrOffset pr_offset);
 
 public:
+    QString callerName;
+    void setCallerName(QString name) { this->callerName = name; }
     Q_INVOKABLE int getConnectedClient();
     Q_INVOKABLE void calculcateRelativePosition();
     Q_INVOKABLE bool moveToAA1UplookPos(bool check_autochthonous = false, bool check_softlanding = false);

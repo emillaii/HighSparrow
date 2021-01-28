@@ -1,7 +1,7 @@
 ﻿#include "utils/imageprovider.h"
 
 ImageProvider::ImageProvider()
-    : QQuickImageProvider(QQuickImageProvider::Image)
+    : QQuickImageProvider(QQuickImageProvider::Image, QQmlImageProviderBase::ForceAsynchronousImageLoading)
 {
 }
 

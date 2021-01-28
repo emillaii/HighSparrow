@@ -44,13 +44,10 @@ public:
     void Init(int curve_id,int thread_curve,int thread_trig,QVector<XtMotor *> executive_motors,XtGeneralOutput* output_io, XtGeneralInput *input_io);
     ~Dispenser();
     bool Dispense(QVector<DispensePathPoint> &dispense_path);
-    bool DispenseCircle(QVector<DispensePathPoint> &dispense_path, QPointF centerMech);
     bool WaitForFinish(int time = 60000);
     void CleanUpCurve();
 
     DISPENSER_STATE GetState();
-    bool checkInputIoExist();
-    bool getInputIoValue();
 private:
     double getMaxSpeed(int index);
     double getEndSpeed(int index);

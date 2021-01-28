@@ -1289,10 +1289,7 @@ void SensorLoaderModule::run()
         }
 
         //SUT操作
-        if((states.picker1MaterialState() != MaterialState::IsEmpty || states.isLastTray() == true)
-                &&(states.picker2MaterialState() == MaterialState::IsEmpty)
-                &&(((states.busyState() == BusyState::SUT1)&&states.sut1Ready())
-         ||((states.busyState() == BusyState::SUT2)&&states.sut2Ready())))
+        if((states.picker2MaterialState() == MaterialState::IsEmpty)&&(((states.busyState() == BusyState::SUT1)&&states.sut1Ready())||((states.busyState() == BusyState::SUT2)&&states.sut2Ready())))
         {
             bool is_local = states.busyState() == BusyState::SUT2;
             //取成品/NG成品
@@ -1974,17 +1971,30 @@ bool SensorLoaderModule::findTrayNextInitStatePos(int tray_index)
 
 bool SensorLoaderModule::moveCameraToTrayCurrentPos(int tray_index, bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QString temp;
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = pick_arm->move_XY_Synic(tray->getCurrentPosition(tray_index),false,check_softlanding);
-    if(result)
+    temp.append(" move_XY_Synic ").append(QString::number(timer.elapsed()));
+    pick_arm->setCallerName("");
+    if(result){
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString tray_name = tray->getTrayName(tray_index);
     AppendError(QString(u8"移动到盘下一个位置失败").arg(tray_name));
     qInfo(u8"移动到%s下一个位置",tray_name.toStdString().c_str());
+    //qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return false;
 }
 
 bool SensorLoaderModule::moveCameraToSUTPRPos(bool is_local,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     bool result;
     QPointF temp_pos;
     if(is_local)
@@ -1992,15 +2002,20 @@ bool SensorLoaderModule::moveCameraToSUTPRPos(bool is_local,bool check_softlandi
     else
         temp_pos =  sut1_pr_position.ToPointF();
     result = pick_arm->move_XYT1T2_Synic(temp_pos.x(),temp_pos.y(),parameters.picker1PlaceTheta(),parameters.picker2PickTheta(),true,check_softlanding);
-    if(result)return true;
+    if(result) {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+        return true;
+    }
     int sut_i = is_local?2:1;
     AppendError(QString(u8"移动SPA相机SUT%1位置失败").arg(sut_i));
     qInfo(u8"移动SPA相机SUT%d位置失败",sut_i);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     bool result;
     QPointF temp_pos;
     if(is_local)
@@ -2015,16 +2030,23 @@ bool SensorLoaderModule::movePicker1ToSUTPos(bool is_local,bool check_softlandin
         x-=temp_offset.x();
         y-=temp_offset.y();
     }
+    pick_arm->setCallerName(__FUNCTION__);
     result = pick_arm->move_XYT1_Synic(x,y,parameters.picker1PlaceTheta(),true,check_softlanding);
-    if(result) return true;
+    pick_arm->setCallerName("");
+    if(result) {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+        return true;
+    }
     int sut_i = is_local?2:1;
     AppendError(QString(u8"移动sensor吸头到SUT%1位置失败").arg(sut_i));
     qInfo(u8"移动sensor吸头到SUT%d位置失败",sut_i);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local,bool is_product,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     bool result;
     QPointF temp_pos;
     if(is_local)
@@ -2042,17 +2064,25 @@ bool SensorLoaderModule::movePicker2ToSUTPos(bool is_local,bool is_product,bool 
         x-=temp_offset.x();
         y-=temp_offset.y();
     }
+    pick_arm->setCallerName(__FUNCTION__);
     result = pick_arm->move_XYT2_Synic(x,y,theta,true,check_softlanding);
-    if(result)return true;
+    pick_arm->setCallerName("");
+    if(result) {
+        if (timer.elapsed() > 0)
+            qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+        return true;
+    }
     int sut_i = is_local?2:1;
     AppendError(QString(u8"移动成品吸头到SUT%1位置失败").arg(sut_i));
     qInfo(u8"移动成品吸头到SUT%d位置失败",sut_i);
+    if (timer.elapsed() > 0)
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SensorLoaderModule::performTraySensorPR()
 {
-    qInfo("performTraySensorPR");
+    QElapsedTimer timer; timer.start();
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
         result = tray_sensor_location->performNoMaterialPR();
@@ -2062,12 +2092,13 @@ bool SensorLoaderModule::performTraySensorPR()
         tray->setTrayCurrentPrOffset(tray_sensor_location->getCurrentResult(false),states.currentTrayID());
     else
         AppendError(QString(u8"执行料盘sensor视觉失败!"));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return  result;
 }
 
 bool SensorLoaderModule::performTrayEmptyPR()
 {
-    qInfo("performTrayEmptyPR");
+    QElapsedTimer timer; timer.start();
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
         result= tray_empty_location->performNoMaterialPR();
@@ -2075,6 +2106,7 @@ bool SensorLoaderModule::performTrayEmptyPR()
         result = tray_empty_location->performPR();
     if(!result)
         AppendError(QString(u8"执行料盘空位视觉失败!"));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return  result;
 }
 
@@ -2106,6 +2138,7 @@ bool SensorLoaderModule::performSUTSensorPR()
 
 bool SensorLoaderModule::performSUTProductPR()
 {
+    QElapsedTimer timer; timer.start();
     qInfo("performSUTProductPR");
     bool result;
     if(states.runMode() == RunMode::NoMaterial)
@@ -2114,6 +2147,7 @@ bool SensorLoaderModule::performSUTProductPR()
         result =  sut_product_location->performPR();
     if(!result)
         AppendError(QString(u8"执行SUT视觉失败!"));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return  result;
 }
 
@@ -2143,6 +2177,8 @@ bool SensorLoaderModule::moveToPRResultPos(PrOffset pr_result,bool check_softlan
 
 bool SensorLoaderModule::movePicker1ToTrayCurrentPos(int tray_index,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QString temp;
     QPointF next_pos = tray->getCurrentPosition(tray_index);
     PrOffset temp_pr = tray_sensor_location->getCurrentResult();
     double x = next_pos.x() + picker1_offset.X() - temp_pr.X;
@@ -2164,15 +2200,27 @@ bool SensorLoaderModule::movePicker1ToTrayCurrentPos(int tray_index,bool check_s
         x += sensorTray2PickOffset.X();
         y += sensorTray2PickOffset.Y();
     }
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = pick_arm->move_XYT1_Synic(x,y,t,false,check_softlanding);
-    if(result) return true;
+    temp.append(" move_XYT1_Synic ").append(QString::number(timer.elapsed()));
+    pick_arm->setCallerName("");
+    if(result) {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+        return true;
+    }
     AppendError(QString(u8"移动1号吸头到位置(x %1,y %2,t %3)失败!").arg(x).arg(y).arg(t));
     qInfo(u8"移动1号吸头到位置(x %f,y %f,t %f)失败!",x,y,t);
+    //qWarning("[Timelog] %s %d %f", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return  false;
 }
 
 bool SensorLoaderModule::movePicker2ToTrayCurrentPos(int tray_index,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     QPointF next_pos = tray->getCurrentPosition(tray_index);
     PrOffset temp_pr = tray_empty_location->getCurrentResult();
     double x = next_pos.x() + picker2_offset.X() - temp_pr.X;
@@ -2206,31 +2254,67 @@ bool SensorLoaderModule::movePicker2ToTrayCurrentPos(int tray_index,bool check_s
         x-=temp_offset.x();
         y-=temp_offset.y();
     }
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = pick_arm->move_XYT2_Synic(x,y,t,false,check_softlanding);
-    if(result) return true;
+    pick_arm->setCallerName("");
+    if(result) {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+        return true;
+    }
     AppendError(QString(u8"移动成品吸头到位置(x %1,y %2,t %3)失败!").arg(x).arg(y).arg(t));
     qInfo(u8"移动成品吸头到位置(x %f,y %f,t %f)失败!",x,y,t);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SensorLoaderModule:: picker1PickFromTray(double z, int time_out)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if(parameters.openTimeLog())
         qInfo("picker1PickFromTray z %f time_out %d",z,time_out);
     bool result = true;
     if(parameters.disablePickFromTrayForceLimit())
+    {
+        smallTimer.restart();
+        double dist_z = fabs(pick_arm->picker1->motor_z->GetFeedbackPos() - z + parameters.pickFromTrayMargin());
         result = pick_arm->MoveZ1Synic(z - parameters.pickFromTrayMargin(),time_out);
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" MoveZ1Synic ").append(QString::number(smallTimer.elapsed()));
+    }
     else
+    {
+        smallTimer.restart();
+        double dist_z = fabs(pick_arm->picker1->motor_z->GetFeedbackPos() - z + parameters.pickFromTrayMargin());
         result = pick_arm->Z1SearchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),time_out);
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" Z1SearchByForce ").append(QString::number(smallTimer.elapsed()));
+    }
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray pick result %d",result);
+    smallTimer.restart();
     setPicker1Vacuum(true);
+    temp.append(" setPicker1Vacuum ").append(QString::number(smallTimer.elapsed()));
     if(parameters.disablePickFromTrayForceLimit())
+    {
+        smallTimer.restart();
+        double dist_z = fabs(pick_arm->picker1->motor_z->GetFeedbackPos() - pick_arm->parameters.motor1SafeHeight());
         result &= pick_arm->MoveZ1ToSafeHeighSync();
-    else
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" MoveZ1ToSafeHeighSync ").append(QString::number(smallTimer.elapsed()));
+    }
+    else {
+        smallTimer.restart();
         result &= pick_arm->Z1SerchReturn(time_out);
+        temp.append(" Z1SerchReturn ").append(QString::number(smallTimer.elapsed()));
+    }
     if(parameters.openTimeLog())
         qInfo("picker1PickFromTray return result %d",result);
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -2257,12 +2341,19 @@ bool SensorLoaderModule::picker1BackToTray(double z, int time_out)
 
 bool SensorLoaderModule::picker1PlaceToSut(double z, bool is_local, int time_out)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if(parameters.openTimeLog())
         qInfo("picker1PlaceToSut z %f is_local %d time_out %d",z,is_local,time_out);
     bool result = true;
     if(parameters.enableEscape())
     {
+        pick_arm->setCallerName(__FUNCTION__);
+        smallTimer.restart();
         result = pick_arm->move_XeYe_Z1_XY(z - parameters.escapeHeight(),parameters.escapeX(),parameters.escapeY());
+        pick_arm->setCallerName("");
+        temp.append(" move_XeYe_Z1_XY ").append(QString::number(smallTimer.elapsed()));
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut escape result %d",result);
     }
@@ -2271,43 +2362,79 @@ bool SensorLoaderModule::picker1PlaceToSut(double z, bool is_local, int time_out
         if(parameters.disablePlaceToSutForceLimmit())
         {
             double margin = is_local?parameters.pickFromSut2Margin():parameters.pickFromSut1Margin();
+            smallTimer.restart();
+            double dist_z = fabs( pick_arm->picker1->motor_z->GetFeedbackPos() - margin);
             result = pick_arm->MoveZ1Synic(z - margin,time_out);
+            temp.append(" dist_z ").append(QString::number(dist_z))
+                .append(" move_z1 ").append(QString::number(smallTimer.elapsed()));
         }
         else
+        {
+            double dist_z = fabs( pick_arm->picker1->motor_z->GetFeedbackPos() - parameters.vcmMargin());
+            smallTimer.restart();
             result = pick_arm->Z1SearchByForce(parameters.vcmWorkSpeed(),parameters.vcmWorkForce(),z,parameters.vcmMargin(),time_out);
+            temp.append(" dist_z ").append(QString::number(dist_z))
+                .append(" search_z1 ").append(QString::number(smallTimer.elapsed()));
+        }
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut pick result %d",result);
         is_local?openSut2Vacuum():openSut1Vacuum();
+        smallTimer.restart();
         setPicker1Vacuum(false);
         result &= waitSutVacuumFinish();
+        temp.append(" sut_vacuum_finish ").append(QString::number(smallTimer.elapsed()));
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut vacuum result %d",result);
         if(parameters.disablePlaceToSutForceLimmit()&&(!parameters.enableEscape()))
+        {
+            smallTimer.restart();
             result &= pick_arm->MoveZ1ToSafeHeighSync();
+            temp.append(" MoveZ1ToSafeHeighSync ").append(QString::number(smallTimer.elapsed()));
+        }
         else
+        {
+            smallTimer.restart();
             result &= pick_arm->Z1SerchReturn(time_out);
+            temp.append(" Z1SerchReturn ").append(QString::number(smallTimer.elapsed()));
+        }
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut return result %d",result);
     }
     if(parameters.enableEscape())
     {
+        smallTimer.restart();
         result &= pick_arm->MoveZ1ToSafeHeighSync();
+        temp.append(" MoveZ1ToSafeHeighSync ").append(QString::number(smallTimer.elapsed()));
         if(parameters.openTimeLog())
             qInfo("picker1PlaceToSut escape return result %d",result);
     }
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool SensorLoaderModule::picker2PickFromSut(double z,double force, bool is_local, int time_out)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
+
     if(parameters.openTimeLog())
         qInfo("picker2PickFromSut z %f force %f is_local %d is_open %d time_out %d",z,force,is_local,true,time_out);
     is_local?closeSut2Vacuum():closeSut1Vacuum();
+    smallTimer.restart();
     pick_arm->picker2->vacuum->Set(true,false);
+    temp.append(" picker_2_vacuum ").append(QString::number(smallTimer.elapsed()));
     bool result = true;
     if(parameters.enableEscape()&&(!parameters.disablePickFromSutForceLimit()))
     {
+        smallTimer.restart();
+        double dist_z = fabs(pick_arm->picker2->motor_z->GetFeedbackPos() - parameters.escapeHeight());
         result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" z_move ").append(QString::number(smallTimer.elapsed()));
         if(parameters.openTimeLog())
             qInfo("motor_z move  to escape %f result %d",z,result);
     }
@@ -2316,56 +2443,114 @@ bool SensorLoaderModule::picker2PickFromSut(double z,double force, bool is_local
         if(parameters.disablePickFromSutForceLimit())
         {
             double margin = is_local?parameters.pickFromSut2Margin():parameters.pickFromSut1Margin();
+            double dist_z = fabs(pick_arm->picker2->motor_z->GetFeedbackPos() - (z-margin));
+            smallTimer.restart();
             result &= pick_arm->MoveZ2Synic(z - margin,time_out);
+            temp.append(" dist_z ").append(QString::number(dist_z))
+                .append(" z_move ").append(QString::number(smallTimer.elapsed()));
         }
         else
+        {
+            double dist_z = fabs(pick_arm->picker2->motor_z->GetFeedbackPos() - (z-parameters.vcmMargin()));
+            smallTimer.restart();
             result &= pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),time_out);
+            temp.append(" dist_z ").append(QString::number(dist_z))
+                .append(" z_search ").append(QString::number(smallTimer.elapsed()));
+        }
+        smallTimer.restart();
         result &= waitSutVacuumFinish();
+        temp.append(" waitSutVacuumFinish ").append(QString::number(smallTimer.elapsed()));
 
         if(parameters.openTimeLog())
             qInfo("motor_z move to %f result %d",z,result);
+        smallTimer.restart();
         setPicker2Vacuum(true);
+        temp.append(" setPicker2Vacuum ").append(QString::number(smallTimer.elapsed()));
+
+        smallTimer.restart();
         if(parameters.disablePickFromSutForceLimit())
         {
-            if(parameters.enableEscape())
+            if(parameters.enableEscape()) {
+                double dist_z = fabs(pick_arm->picker2->motor_z->GetFeedbackPos() - (z-parameters.escapeHeight()));
                 result = pick_arm->picker2->motor_z->MoveToPosSync(z - parameters.escapeHeight());
-            else
+                temp.append(" dist_z ").append(QString::number(dist_z))
+                    .append(" z_move ").append(QString::number(smallTimer.elapsed()));
+            }
+            else {
                 result &= pick_arm->MoveZ2ToSafeHeighSync();
+                temp.append(" MoveZ2ToSafeHeighSync ").append(QString::number(smallTimer.elapsed()));
+            }
         }
-        else
+        else {
             result &= pick_arm->Z2SerchReturn(time_out);
-
+            temp.append(" Z2SerchReturn ").append(QString::number(smallTimer.elapsed()));
+        }
         if(parameters.openTimeLog())
             qInfo("motor_z move return result %d",result);
     }
-    if(parameters.enableEscape())
+    if(parameters.enableEscape()){
+        smallTimer.restart();
+        pick_arm->setCallerName(__FUNCTION__);
         result &= pick_arm->move_XeYe_Z2(pick_arm->parameters.motor2SafeHeight(),parameters.escapeX(),parameters.escapeY());
-
+        pick_arm->setCallerName("");
+        temp.append(" move_XeYe_Z2 ").append(QString::number(smallTimer.elapsed()));
+    }
     if(parameters.openTimeLog())
         qInfo("picker2PickFromSut result %d",result);
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool SensorLoaderModule::picker2PlaceToTray(double z,double force,bool is_product, int time_out)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray z %f time_out %d",z,time_out);
     bool result = true;
     bool disable = is_product?parameters.disablePlaceToGoodTrayForceLimit():parameters.disablePlaceToNgTrayForceLimit();
     double margin = is_product?parameters.placeToGoodTrayMargin():parameters.placeToNgTrayMargin();
-    if(disable)
+    if(disable) {
+        smallTimer.restart();
+        double dist_z = fabs(pick_arm->picker2->motor_z->GetFeedbackPos() - (z-margin));
         result = pick_arm->MoveZ2Synic(z - margin,time_out);
-    else
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" z_move ").append(QString::number(smallTimer.elapsed()));
+    }
+    else {
+        smallTimer.restart();
+        double dist_z = fabs(pick_arm->picker2->motor_z->GetFeedbackPos() - (z-parameters.vcmMargin()));
         result = pick_arm->Z2SerchByForce(parameters.vcmWorkSpeed(),force,z,parameters.vcmMargin(),time_out);
+        temp.append(" dist_z ").append(QString::number(dist_z))
+            .append(" z_search ").append(QString::number(smallTimer.elapsed()));
+    }
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray pick result %d",result);
+    smallTimer.restart();
     setPicker2Vacuum(false);
+    temp.append(" setPicker2Vacuum ").append(QString::number(smallTimer.elapsed()));
     if(disable)
+    {
+        smallTimer.restart();
         result &= pick_arm->MoveZ2ToSafeHeighSync();
+        temp.append(" MoveZ2ToSafeHeighSync ").append(QString::number(smallTimer.elapsed()));
+    }
     else
+    {
+        smallTimer.restart();
         result &= pick_arm->Z2SerchReturn(time_out);
+        temp.append(" Z2SerchReturn ").append(QString::number(smallTimer.elapsed()));
+    }
     if(parameters.openTimeLog())
         qInfo("picker2PlaceToTray return result %d",result);
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -2456,6 +2641,7 @@ bool SensorLoaderModule::checkPicker1HasMaterialSync()
 
 bool SensorLoaderModule::checkPicker2HasMaterialSync()
 {
+    QElapsedTimer timer; timer.start();
     if(parameters.openTimeLog())
         qInfo("checkPicker2HasMaterialSync start");
     bool result;
@@ -2463,24 +2649,31 @@ bool SensorLoaderModule::checkPicker2HasMaterialSync()
     if(parameters.openTimeLog())
         qInfo("checkPicker2HasMaterialSync result %d",result);
     if(result||RunMode::NoMaterial == states.runMode())
+    {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString error = QString(u8"成品吸头上应有料，但真空检测未通过。");
     AppendError(error);
     qInfo(error.toStdString().c_str());
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SensorLoaderModule::checkPicker2HasMateril()
 {
+    QElapsedTimer timer; timer.start();
     if(parameters.openTimeLog())
         qInfo("checkPicker2HasMateril start");
     bool result;
     result = pick_arm->picker2->vacuum->checkHasMateriel(thread_id);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::waitPicker2CheckResult(bool check_state)
 {
+    QElapsedTimer timer; timer.start();
     if(parameters.openTimeLog())
         qInfo("waitPicker1CheckResult start");
     bool result;
@@ -2488,10 +2681,14 @@ bool SensorLoaderModule::waitPicker2CheckResult(bool check_state)
     if(parameters.openTimeLog())
         qInfo("waitPicker1CheckResult result %d",result);
     if(result == check_state||RunMode::NoMaterial == states.runMode())
+    {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString error = QString(u8"成品吸头上应无料，但真空检测能通过。");
     AppendError(error);
     qInfo(error.toStdString().c_str());
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
@@ -2513,15 +2710,18 @@ bool SensorLoaderModule::setPicker2Vacuum(bool state)
 
 bool SensorLoaderModule::checkPicker1HasMateril()
 {
+    QElapsedTimer timer; timer.start();
     if(parameters.openTimeLog())
         qInfo("checkPicker1HasNoMateril start");
     bool result;
     result = pick_arm->picker1->vacuum->checkHasMateriel(thread_id);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::waitPicker1CheckResult(bool check_state)
 {
+    QElapsedTimer timer; timer.start();
     if(parameters.openTimeLog())
         qInfo("waitPicker1CheckResult start");
     bool result;
@@ -2529,21 +2729,41 @@ bool SensorLoaderModule::waitPicker1CheckResult(bool check_state)
     if(parameters.openTimeLog())
         qInfo("waitPicker1CheckResult result %d",result);
     if(result == check_state||RunMode::NoMaterial == states.runMode())
+    {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString error = QString(u8"Sensor吸头上应无料，但真空检测能通过。");
     AppendError(error);
     qInfo(error.toStdString().c_str());
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool SensorLoaderModule::pickSensorFromTray(int tray_id,int time_out)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     double temp_z = SensorPosition::SENSOR_TRAY_1 == tray_id?parameters.pickSensorZ():parameters.pickSensorZ2();
+    this->setCallerName(__FUNCTION__);
+    smallTimer.restart();
     bool result = picker1PickFromTray(temp_z,time_out);
+    temp.append(" picker1PickFromTray ").append(QString::number(smallTimer.elapsed()));
+    this->setCallerName("");
     if(!result)
         AppendError(QString(u8"从%1号sensor盘取sensor失败.").arg(tray_id + 1));
     if(result)
+    {
+        smallTimer.restart();
         result &= checkPicker1HasMaterialSync();
+        temp.append(" checkPicker1HasMaterialSync ").append(QString::number(smallTimer.elapsed()));
+    }
+    //qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -2559,28 +2779,37 @@ bool SensorLoaderModule::backSensorToTray(int tray_id,int time_out)
 
 bool SensorLoaderModule::placeSensorToSUT(bool is_local,int time_out)
 {
+    QElapsedTimer timer; timer.start();
     double placeSensorZ = is_local?parameters.placeSUT2SensorZ():parameters.placeSUT1SensorZ();
+    setCallerName(__FUNCTION__);
     bool result = picker1PlaceToSut(placeSensorZ,is_local,time_out);
+    setCallerName("");
     if(!result)
         AppendError(QString(u8"放sensor到SUT%1失败").arg(is_local?2:1));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::pickNgSensorFromSut(bool is_local,int time_out)
 {
+    QElapsedTimer timer; timer.start();
     double pickNgSensorZ = is_local?parameters.pickSUT2NgSensorZ():parameters.pickSUT1NgSensorZ();
+    setCallerName(__FUNCTION__);
     bool result = picker2PickFromSut(pickNgSensorZ,parameters.pickProductForce(),is_local,time_out);
+    setCallerName("");
     if(!result)
         AppendError(QString(u8"从SUT%1取NGsenor失败").arg(is_local?2:1));
     if(result)
         result &= checkPicker2HasMaterialSync();
     if(parameters.openTimeLog())
         qInfo("pickSUTSensor resilt %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::pickProductFromSut(bool is_local,int time_out)
 {
+    QElapsedTimer timer; timer.start();
     double pickProductZ = is_local?parameters.pickSUT2ProductZ():parameters.pickSUT1ProductZ();
     bool result = picker2PickFromSut(pickProductZ,parameters.pickProductForce(),is_local,time_out);
     if(!result)
@@ -2589,27 +2818,35 @@ bool SensorLoaderModule::pickProductFromSut(bool is_local,int time_out)
         result &= checkPicker2HasMaterialSync();
     if(parameters.openTimeLog())
         qInfo("pickSUTProduct result %d",result);
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::placeNgSensorToTray(int time_out)
 {
+    QElapsedTimer timer; timer.start();
     bool result = picker2PlaceToTray(parameters.placeNgSensorZ(),parameters.pickProductForce(),false,time_out);
     if(!result)
         AppendError(QString(u8"将Ngsensor放入NG盘失败"));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::placeNgProductToTray(int time_out)
 {
+    QElapsedTimer timer; timer.start();
+    setCallerName(__FUNCTION__);
     bool result = picker2PlaceToTray(parameters.placeNgProductZ(),parameters.pickProductForce(),false,time_out);
+    setCallerName("");
     if(!result)
         AppendError(QString(u8"将Ngsensor放入NG盘失败"));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
 bool SensorLoaderModule::placeProductToTray(int tray_id,int time_out)
 {
+    QElapsedTimer timer; timer.start();
     qInfo("place product to tray");
     double temp_z = parameters.placeProductZ();
     if(SensorPosition::SENSOR_TRAY_2 == tray_id)
@@ -2619,6 +2856,7 @@ bool SensorLoaderModule::placeProductToTray(int tray_id,int time_out)
     bool result = picker2PlaceToTray(temp_z,parameters.pickProductForce(),false,time_out);
     if(!result)
         AppendError(QString(u8"将成品放入%1号成品盘失败").arg(tray_id + 1));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -2888,10 +3126,11 @@ bool SensorLoaderModule::moveToTrayPos(int index, int tray_index)
 
 bool SensorLoaderModule::moveToStartPos(int tray_index)
 {
-    qInfo("moveToStartPos%d",tray_index);
+    QElapsedTimer timer; timer.start();
     bool result = pick_arm->move_XY_Synic(tray->getStartPosition(tray_index),true);
     if(!result)
         AppendError(QString(u8"移动到%1盘起始位置失败").arg(tray_index == 0?"sensor":"成品"));
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return result;
 }
 
@@ -2906,10 +3145,18 @@ bool SensorLoaderModule::moveToTray1EndPos()
 
 bool SensorLoaderModule::moveCameraToStandbyPos(bool check_arrived,bool check_softlanding)
 {
-//    qInfo("moveToStandbyPosition");
+    QElapsedTimer timer; timer.start();
+    QString temp;
+    pick_arm->setCallerName(__FUNCTION__);
     bool result = pick_arm->move_XY_Synic(QPointF(spa_standby_position.X(), spa_standby_position.Y()),check_arrived,check_softlanding);
+    temp.append(" move_XY_Synic ").append(QString::number(timer.elapsed()));
+    pick_arm->setCallerName("");
     if(!result)
         AppendError(QString(u8"移动SPA到standby位置失败"));
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 

@@ -12,6 +12,7 @@ class LensPickArm:public ErrorBase
 {
 public:
     LensPickArm(QString name = "LensPickArm");
+    void setCallerName(QString name) { this->callerFunctionName = name; }
     void Init(XtMotor *motor_x_tray,XtMotor *motor_x,XtMotor *motor_y,MaterialPicker * picker);
     bool move_XtXY_Synic(QPointF position,double x,bool check_softlanding = false,int timeout = 30000);
     bool move_XtXYT_Synic(QPointF position,double x,double t,bool check_softlanding = false,int timeout = 30000);
@@ -36,6 +37,7 @@ public:
     XtMotor *motor_x = Q_NULLPTR;
     XtMotor *motor_y = Q_NULLPTR;
     MaterialPicker * picker = Q_NULLPTR;
+    QString callerFunctionName = "";
     // ErrorBase interface
 public:
     QString GetCurrentError();

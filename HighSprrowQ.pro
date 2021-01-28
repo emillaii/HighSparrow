@@ -148,12 +148,12 @@ LIBS += -L$$PWD/../libs/sparrow_core/sparrow_core/lib/ -lSparrowCore
 INCLUDEPATH += $$PWD/../libs/sparrow_core/sparrow_core/include
 DEPENDPATH += $$PWD/../libs/sparrow_core/sparrow_core/include
 
-LIBS += -L$$PWD/../libs/motion_x64/ -lMotionControlDll
-LIBS += -L$$PWD/../libs/motion_x64/ -lMotionControlExtendDll
-LIBS += -L$$PWD/../libs/motion_x64/ -lvoice_motor_dll
+LIBS += -L$$PWD/../libs/motion_x64_YongKu/ -lMotionControlDll
+LIBS += -L$$PWD/../libs/motion_x64_YongKu/ -lMotionControlExtendDll
+LIBS += -L$$PWD/../libs/motion_x64_YongKu/ -lvoice_motor_dll
 
-INCLUDEPATH += $$PWD/../libs/motion_x64
-DEPENDPATH += $$PWD/../libs/motion_x64
+INCLUDEPATH += $$PWD/../libs/motion_x64_YongKu
+DEPENDPATH += $$PWD/../libs/motion_x64_YongKu
 INCLUDEPATH += $$PWD/../libs/eigen/eigen-eigen-5a0156e40feb
 
 LIBS += -L$$PWD/../libs/DTCCM2_SDK/X64_Lib/ -ldtccm2
@@ -163,10 +163,6 @@ DEPENDPATH += $$PWD/../libs/DTCCM2_SDK/X64_Lib
 LIBS += -L$$PWD/../libs/UsbI2cIo/libs/ -lusbi2cio64
 INCLUDEPATH += $$PWD/../libs/UsbI2cIo/libs
 DEPENDPATH += $$PWD/../libs/UsbI2cIo/libs
-
-LIBS += -L$$PWD/../libs/SunnyImageAbnormalityDetection/lib/ -lSunnyDeepLearningImageAbnormalityDetection
-INCLUDEPATH += $$PWD/../libs/SunnyImageAbnormalityDetection/include
-DEPENDPATH += $$PWD/../libs/SunnyImageAbnormalityDetection/include
 
 HEADERS += \
     Drivers/LightSourceController/seenolightsourcecontroller.h \

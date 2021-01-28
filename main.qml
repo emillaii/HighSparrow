@@ -21,7 +21,7 @@ ApplicationWindow {
 
     visibility: "Maximized"
 
-    readonly property string version: "1.0.2"
+    readonly property string version: "1.0.3"
 
     readonly property string title_move_to: "移动"
     readonly property string title_read_encoder: "读取"
@@ -815,12 +815,12 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("流程图")
-            enabled: {
-                if (userManagement.currentAuthority >= 2)
-                    return true
-                else
-                    return false
-            }
+//            enabled: {
+//                if (userManagement.currentAuthority >= 2)
+//                    return true
+//                else
+//                    return false
+//            }
         }
         TabButton {
             text: qsTr("AA 控制面板")

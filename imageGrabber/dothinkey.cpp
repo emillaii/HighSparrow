@@ -146,12 +146,6 @@ BOOL Dothinkey::DothinkeyLoadIniFile(int channel) {
     otp_list.clear();
     iniParser_->GetI2CData(pCurrentSensor, cmd_list, otp_list);
     delete iniParser_;
-
-    // Get related params for partical check
-    particalCheckParamStruct.width = pCurrentSensor->width;
-    particalCheckParamStruct.height = pCurrentSensor->height;
-    particalCheckParamStruct.bayerMode = pCurrentSensor->outformat;
-
     return DT_ERROR_OK;
 }
 
@@ -268,36 +262,25 @@ BOOL Dothinkey::DothinkeyStartCamera(int channel)
                 uint addr = CommonMethod::getIntFromHexOrDecString(cmd[2]);
                 uint value = CommonMethod::getIntFromHexOrDecString(cmd[3]);
                 uint mode = CommonMethod::getIntFromHexOrDecString(cmd[4]);
-                qInfo("Set Register slaveId: %x addr: %x value: %x mode: %d", pSensor->SlaveID, addr, value, pSensor->mode);
-                WriteSensorReg(pSensor->SlaveID, (USHORT)addr, (USHORT)value, pSensor->mode);
-                Sleep(30);
+                qInfo("Set Register slaveId: %x addr: %x value: %x mode: %d", slaveId, addr, value, mode);
+                WriteSensorReg(pSensor->SlaveID, (USHORT)addr,  (USHORT)value, mode);
             } else if (cmd[0].compare("getregex", Qt::CaseInsensitive) == 0){
                 QString temp = "";
                 uint slaveId = CommonMethod::getIntFromHexOrDecString(cmd[1]);
                 uint addr = CommonMethod::getIntFromHexOrDecString(cmd[2]);
                 uint mode = CommonMethod::getIntFromHexOrDecString(cmd[3]);
                 qInfo("Get Register slaveId: %x addr: %x", slaveId, addr);
-                bool ret = ReadSensorReg(pSensor->SlaveID, (USHORT)addr, &value_1, pSensor->mode);
-                if (pSensor->mode == I2CMODE_MICRON || pSensor->mode == I2CMODE_MICRON2)
-                {
-                    qInfo("Read value result: %d value: %04x", ret, value_1);
-                    sensor_id.append(temp.sprintf("%04X", value_1));
-                }
-                else
-                {
-                    qInfo("Read value result: %d value: %02x", ret, value_1);
-                    sensor_id.append(temp.sprintf("%02X", value_1));
-                }
-            } else if (cmd[0].compare("delay", Qt::CaseInsensitive) == 0 || cmd[0].compare("sleep", Qt::CaseInsensitive) == 0){
-                uint time = cmd[1].toInt();
-                Sleep(time);
-                qInfo("Sleep %d", time);
+                bool ret = ReadSensorReg(pSensor->SlaveID, addr, &value_1, mode);
+                qInfo("Read value result: %d value: %04x", ret, value_1);
+                sensor_id.append(temp.sprintf("%02X", value_1));
+            } else if (cmd[0].compare("sleep", Qt::CaseInsensitive) == 0){
+                uint time = cmd[1].toInt(0);
+                Sleep(10);
             }
         }
     }
     qInfo("Sensor Id : %s", sensor_id.toStdString().c_str());
     setCurrentSensorID(sensor_id);
-    particalCheckParamStruct.fuseID = sensor_id;
     return true;
 }
 
@@ -307,11 +290,8 @@ BOOL Dothinkey::DothinkeyOTPEx()
     QTime time = QTime::currentTime();
     QByteArray byteData_year;
     int year = date.year();
-    QByteArray yearByte;
-    yearByte.resize(sizeof(int));
-    memcpy(yearByte.data(), &year, sizeof(int));
-    int year_MSB = yearByte[1];
-    int year_LSB = yearByte[0];
+    int year_MSB = year/100;
+    int year_LSB = year - year_MSB*100;
     bool result_otp = true;
     //QStringList otp_list = params.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 
@@ -332,25 +312,25 @@ BOOL Dothinkey::DothinkeyOTPEx()
                     uAddr = CommonMethod::getIntFromHexOrDecString(cmd_list[1]);
                     uint addr = CommonMethod::getIntFromHexOrDecString(cmd_list[2]);
                     uint value  = 0;
-                    if (cmd_list[3].compare("YY_H", Qt::CaseInsensitive) == 0){
+                    if (cmd_list[3].compare("YY_H", Qt::CaseSensitive) == 0){
                         value = year_MSB;
-                    } else if (cmd_list[3].compare("YY_L", Qt::CaseInsensitive) == 0){
+                    } else if (cmd_list[3].compare("YY_L", Qt::CaseSensitive) == 0){
                         value = year_LSB;
-                    } else if (cmd_list[3].compare("MM", Qt::CaseInsensitive) == 0) {
+                    } else if (cmd_list[3].compare("MM", Qt::CaseSensitive) == 0) {
                         value = date.month();
-                    } else if (cmd_list[3].compare("DD", Qt::CaseInsensitive) == 0) {
+                    } else if (cmd_list[3].compare("DD", Qt::CaseSensitive) == 0) {
                         value = date.day();
-                    } else if (cmd_list[3].compare("HH", Qt::CaseInsensitive) == 0) {
+                    } else if (cmd_list[3].compare("HH", Qt::CaseSensitive) == 0) {
                         value = time.hour();
-                    } else if (cmd_list[3].compare("MI", Qt::CaseInsensitive) == 0) {
+                    } else if (cmd_list[3].compare("MI", Qt::CaseSensitive) == 0) {
                         value = time.minute();
-                    } else if (cmd_list[3].compare("SS", Qt::CaseInsensitive) == 0) {
+                    } else if (cmd_list[3].compare("SS", Qt::CaseSensitive) == 0) {
                         value = time.second();
                     } else {
                         value = CommonMethod::getIntFromHexOrDecString(cmd_list[3]);
                     }
                     uint mode = CommonMethod::getIntFromHexOrDecString(cmd_list[4]);
-                    qInfo("SetRegEx uAddr: 0x%X, addr: 0x%4X, value: %d(0x%02X), mode: %d.", uAddr, addr, value, value, mode);
+                    qInfo("SetRegEx uAddr: 0x%X, addr: 0x%4X, value : %d, mode: %d.", uAddr, addr, value, mode);
                     int result = WriteSensorReg(uAddr, addr, value, mode);
                     if(result != 1) {
                         qCritical("WriteSensorReg fail. uAddr: 0x%X addr: 0x%4X value: %d mode: %d", uAddr, addr, value, mode);
@@ -702,58 +682,6 @@ QImage* Dothinkey::DothinkeyGrabImage(int channel)
     delete(CameraBuffer);
     CameraBuffer = NULL;
     return image;
-}
-
-void Raw10toRaw8(BYTE *pIn, long number)
-{
-    BYTE *pTemp = pIn;
-    BYTE *pOut = pIn;
-
-    for (long i = 0; i < number; i = i + 5)
-    {
-        *pOut++ = pTemp[i];
-        *pOut++ = pTemp[i + 1];
-        *pOut++ = pTemp[i + 2];
-        *pOut++ = pTemp[i + 3];
-    }
-}
-
-bool Dothinkey::DothinkeyGrabImageRaw8(int channel, unsigned char *imageBuffer)
-{
-    if (imageBuffer == nullptr)
-    {
-        return false;
-    }
-
-    SensorTab *pSensor = nullptr;
-    ULONG retSize = 0;
-    int iDevID = -1;
-    UINT crcCount = 0;
-    int grabSize;
-    if (channel == 0 || channel == 1) {
-        pSensor = &(m_CameraChannels[channel].current_sensor);
-        iDevID = m_CameraChannels[channel].m_iDevID;
-        grabSize = m_CameraChannels[channel].m_GrabSize;
-    }
-
-    FrameInfo frameInfo;
-    int ret = GrabFrame(imageBuffer, grabSize, &retSize, &frameInfo, iDevID);
-    if (ret != DT_ERROR_OK)
-    {
-        GetMipiCrcErrorCount(&crcCount, CHANNEL_A, iDevID);
-        return false;
-    }
-    else
-    // Convert Raw10 to Raw8
-    Raw10toRaw8(imageBuffer, retSize);
-	
-	//QFile f(fileName1);
-    //f.open(QIODevice::WriteOnly);
-    //f.write((const char*)bmpBuffer, retSize);
-    //f.flush();
-    //f.close();
-
-    return true;
 }
 
 BOOL Dothinkey::SaveBmpFile(std::string sfilename, BYTE *pBuffer, UINT width, UINT height)

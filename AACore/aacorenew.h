@@ -29,14 +29,6 @@
 #include "i2cControl/i2ccontrol.h"
 #include "Drivers/LightSourceController/seenolightsourcecontroller.h"
 #include <QProcess>
-
-// Comment this define if sunny image abnormality detection is not used
-//#define SunnyImageAbnormalityDetection
-
-#ifdef SunnyImageAbnormalityDetection
-#include "SunnyTest.h"
-#endif
-
 class AACoreNew : public ThreadWorkerBase
 {
     Q_OBJECT
@@ -67,7 +59,6 @@ public:
         PARTICAL_CHECK = 21
     };
     explicit AACoreNew(QString name = "AACoreNew", QObject * parent = nullptr);
-    ~AACoreNew();
     void Init(AAHeadModule* aa_head,SutModule* sut,Dothinkey *dk,
               ChartCalibration * chartCalibration,DispenseModule* dispense,
               ImageGrabbingWorkerThread * imageThread, Unitlog * unitlog, int serverMode);
@@ -76,8 +67,6 @@ public:
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
     Q_INVOKABLE void clearCurrentDispenseCount();
-    Q_INVOKABLE void drawPoint1(double x, double y);
-    Q_INVOKABLE void drawPoint2(double x, double y);
     ErrorCodeStruct performVCMInit(QJsonValue params);
     ErrorCodeStruct performVCMDirectMode(QJsonValue params);
     ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);
@@ -146,7 +135,6 @@ private:
     void SetProduct();
     double getSFRDev_mm(int count,double numbers,...);
     double getzPeakDev_um(int count,double numbers,...);
-    QImage dispenseImageCache;
 private:
     QString sensorID = "";
     int serverMode = 0;
@@ -162,7 +150,6 @@ private:
     SfrWorkerController * sfrWorkerController = Q_NULLPTR;
     std::unordered_map<unsigned int, std::vector<Sfr_entry>> clustered_sfr_map;
     QVariantMap current_dfov;
-    QPointF dispenseDrawPoint1, dispenseDrawPoint2;
     double current_fov_slope;
     bool isZScanNeedToStop = false;
     int currentChartDisplayChannel = 0;
@@ -202,16 +189,6 @@ private:
     double sumA=0,sumB=0,sumC=0,sumX=0,sumY=0,sumZ=0;
     int recordedTiltNum=0;
     Position6D temp_mushroom_position;
-
-    bool glueLevelCheck();
-    bool glueLevelCheckResult = false;
-    int current_glue_level_check = 0;
-
-    // Sunny deep learning image abnormality detection instance, ~200mb needed
-    // One instance for one thread only
-#ifdef SunnyImageAbnormalityDetection
-    SunnyDetector* Detector;
-#endif
 public slots:
     //ThreadWorkerBase
     void startWork(int run_mode);
@@ -227,7 +204,6 @@ signals:
     void pushNgDataToCSV(QString uuid, QString lotNumber, QString sensorId, QString testItemName, QString errorMessage);
     void clearHeaders();
     void postDataToELK(QString, QString);
-    void postDataToELKInternal(QString, QString);
     void postSfrDataToELK(QString, QVariantMap);
     void sendLensRequestToLut();
     void needUpdateParameterInTcpModule();
@@ -248,6 +224,7 @@ public:
 
     // ThreadWorkerBase interface
 public:
+    void performAATiltCalibration();
     void receivceModuleMessage(QVariantMap module_message);
     QMap<QString, PropertyBase *> getModuleParameter();
     void setModuleParameter(QMap<QString, PropertyBase *>);

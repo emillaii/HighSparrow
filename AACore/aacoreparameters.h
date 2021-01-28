@@ -139,8 +139,6 @@ class AACoreParameters : public PropertyBase
 
     QString m_vcmRegAddress = "0x03";
 
-    int m_vcmI2cMode = 0;
-
 public:
     explicit AACoreParameters(){
         for (int i = 0; i < 4*5; i++) // 4 field of view * 4 edge number
@@ -213,7 +211,6 @@ public:
     Q_PROPERTY(int vcmInitMode READ vcmInitMode WRITE setVCMInitMode NOTIFY vcmInitModeChanged)
     Q_PROPERTY(QString vcmSlaveId READ vcmSlaveId WRITE setVCMSlaveId NOTIFY vcmSlaveIdChanged)
     Q_PROPERTY(QString vcmRegAddress READ vcmRegAddress WRITE setVCMRegAddress NOTIFY vcmRegAddressChanged)
-    Q_PROPERTY(int vcmI2cMode READ vcmI2cMode WRITE setVCMI2cMode NOTIFY vcmI2cModeChanged)
 
     double EFL() const
     {
@@ -542,11 +539,6 @@ public:
     QString vcmRegAddress() const
     {
         return m_vcmRegAddress;
-    }
-
-    int vcmI2cMode() const
-    {
-        return m_vcmI2cMode;
     }
 
 public slots:
@@ -1127,15 +1119,6 @@ public slots:
         emit vcmRegAddressChanged(m_vcmRegAddress);
     }
 
-    void setVCMI2cMode(int vcmI2cMode)
-    {
-        if (m_vcmI2cMode == vcmI2cMode)
-            return;
-
-        m_vcmI2cMode = vcmI2cMode;
-        emit vcmI2cModeChanged(m_vcmI2cMode);
-    }
-
 signals:
     void paramsChanged();
     void firstRejectSensorChanged(bool firstRejectSensor);
@@ -1192,7 +1175,6 @@ signals:
     void vcmInitModeChanged(int vcmInitMode);
     void vcmSlaveIdChanged(QString vcmSlaveId);
     void vcmRegAddressChanged(QString vcmRegAddress);
-    void vcmI2cModeChanged(int vcmI2cMode);
 };
 class AACoreStates: public PropertyBase
 {

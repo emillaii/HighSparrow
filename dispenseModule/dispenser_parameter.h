@@ -19,7 +19,6 @@ public:
     Q_PROPERTY(QString dispenseIo READ dispenseIo WRITE setDispenseIo NOTIFY DispenseIoChanged)
     Q_PROPERTY(QString glueLevelCheckIO READ glueLevelCheckIO WRITE setGlueLevelCheckIO NOTIFY glueLevelCheckIOChanged)
     Q_PROPERTY(bool enableGlueLevelCheck READ enableGlueLevelCheck WRITE setEnableGlueLevelCheck NOTIFY glueLevelCheckChanged)
-    Q_PROPERTY(int glueLevelCheckInterval READ glueLevelCheckInterval WRITE setGlueLevelCheckInterval NOTIFY glueLevelCheckIntervalChanged)
 //    Q_PROPERTY(double theta READ theta WRITE setTheta NOTIFY ThetaChanged)
     double openOffset() const
     {
@@ -68,11 +67,6 @@ public:
     bool enableGlueLevelCheck() const
     {
         return m_enableGlueLevelCheck;
-    }
-
-    int glueLevelCheckInterval() const
-    {
-        return m_glueLevelCheckInterval;
     }
 
 public slots:
@@ -187,15 +181,6 @@ public slots:
         emit glueLevelCheckChanged(m_enableGlueLevelCheck);
     }
 
-    void setGlueLevelCheckInterval(int glueLevelCheckInterval)
-    {
-        if (m_glueLevelCheckInterval == glueLevelCheckInterval)
-            return;
-
-        m_glueLevelCheckInterval = glueLevelCheckInterval;
-        emit glueLevelCheckIntervalChanged(m_glueLevelCheckInterval);
-    }
-
 signals:
     void openOffsetChanged(double openOffset);
 
@@ -225,8 +210,6 @@ signals:
 
     void glueLevelCheckChanged(bool enableGlueLevelCheck);
 
-    void glueLevelCheckIntervalChanged(int glueLevelCheckInterval);
-
 private:
     double m_openOffset = 0;
     double m_closeOffset = 0;
@@ -238,7 +221,6 @@ private:
     int m_speedCount = 0;
     QString m_glueLevelCheckIO = "Glue_Level_Check_IO";
     bool m_enableGlueLevelCheck = false;
-    int m_glueLevelCheckInterval = 20;
 };
 
 #endif // DISPENSER_PARAMETER_H

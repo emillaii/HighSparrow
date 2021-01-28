@@ -7,20 +7,12 @@ import LogicManagerLib 1.1
 // 2，5，0.2 0.5 0.02 0.05
 Popup {
     property double selectedStepSize: 0.1
-    property double opacityLevel: 1
 
     id: dialog
     visible: false
-    //opacity: 0
-    background: Rectangle {
-        color: "white"
-        opacity: 0.1
-    }
     contentItem: Rectangle {
         id: rectangle
-        color: Qt.rgba(0,0,0,opacityLevel)
-//        color: "black"
-//        opacity: 0.1
+        color: "black"
         implicitWidth: 650
         implicitHeight: 1000
 
@@ -159,25 +151,6 @@ Popup {
                         }
                     }
                 }
-                RadioButton {
-                    id: stepCustomButton
-                    text: "Custom"
-                    font.pixelSize: 10
-                }
-                TextField{
-                    text: "0.1"
-                    id: stepCustomText
-                    width: 100
-                    Layout.preferredWidth: 100
-                    horizontalAlignment: TextInput.AlignHCenter
-                    validator: DoubleValidator {
-                        bottom: -100
-                        top: 100
-                        decimals: 6
-                        notation: DoubleValidator.StandardNotation
-                    }
-                }
-
             }
             ScrollView {
                 Timer {
@@ -186,30 +159,9 @@ Popup {
                 }
 
                 implicitWidth:  550
-                implicitHeight: 800
+                implicitHeight: 600
                 clip: true
                 ColumnLayout {
-                    RowLayout {
-                        id:opacityView
-                        Text {
-                            text: qsTr("透明度：")
-                            color: "cyan"
-                        }
-                        Slider {
-                            id: opacitySlider
-                            width: 300
-                            Layout.preferredWidth: 300
-                            height: 48
-                            stepSize: 0.05
-                            to: 1
-                            from: 0
-                            value: 1
-                            onValueChanged: {
-                                opacityLevel = opacitySlider.value
-                            }
-                        }
-                    }
-
                     RowLayout {
                         Text {
                             text: "AA_A_Inter "
@@ -262,15 +214,15 @@ Popup {
                                     Connections{
                                        target: timer
                                        onTriggered:{
-                                            if (baseModuleManager.getMotorAlarmState(modelData))
-                                                err.color = "red"
-                                            else
+//                                            if (baseModuleManager.getMotorAlarmState(modelData))
+//                                                err.color = "red"
+//                                            else
                                                 err.color = "green"
                                        }
                                     }
                                 }
                                 onClicked: {
-                                    baseModuleManager.clearMotorAlarmState(modelData)
+//                                    baseModuleManager.clearMotorAlarmState(modelData)
                                 }
                             }
                             Rectangle{
@@ -322,8 +274,7 @@ Popup {
                                 text:"-"
                                 onClicked: {
                                    //console.log("move "+modelData);
-                                   var stepSize = stepCustomButton.checked ? stepCustomText.text : selectedStepSize
-                                   var res = baseModuleManager.stepMove(modelData,stepSize,false)
+                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,false)
                                    console.log("result: "+res)
                                 }
                             }
@@ -331,8 +282,7 @@ Popup {
                                 text:"+"
                                 onClicked: {
                                    //console.log("move "+modelData);
-                                   var stepSize = stepCustomButton.checked ? stepCustomText.text : selectedStepSize
-                                   var res = baseModuleManager.stepMove(modelData,stepSize,true)
+                                   var res = baseModuleManager.stepMove(modelData,selectedStepSize,true)
                                    console.log(motorsNames.length)
                                    console.log("result: "+res)
                                 }

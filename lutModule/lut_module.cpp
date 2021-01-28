@@ -677,21 +677,35 @@ bool LutModule::moveToAA1UplookPos(bool check_autochthonous,bool check_softlandi
 
 bool LutModule::moveToAA1UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     qInfo("moveToAA1UplookPR");
     uplook_location->OpenLight();
+    carrier->setCallerFunctionName(__FUNCTION__);
+    smallTimer.restart();
     bool result = moveToAA1UplookPos(check_autochthonous, check_softlanding);
+    setCallerName("");
+    temp.append(" moveToAA1UplookPos ").append(QString::number(smallTimer.elapsed()));
     if(result)
     {
+       smallTimer.restart();
        result = performUpLookPR();
+       temp.append(" performUplookPR ").append(QString::number(smallTimer.elapsed()));
        offset = uplook_location->getCurrentResult();
     }
     if(close_lighting)
         uplook_location->CloseLight();
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool LutModule::moveToAA1UplookPR(bool close_lighting, bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToAA1UplookPR");
     PrOffset pr_offset;
     if(moveToAA1UplookPR(pr_offset,close_lighting,check_autochthonous, check_softlanding))
@@ -703,9 +717,11 @@ bool LutModule::moveToAA1UplookPR(bool close_lighting, bool check_autochthonous,
         result.insert("event", "prResp");
         this->sendMessageToModule("AA1CoreNew", "UplookPrResult", result);
         //emit sendMessageToClient("::1", getStringFromJsonObject(result));
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
     }
     AppendError(u8"执行AA1uplook PR失败");
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
@@ -717,21 +733,33 @@ bool LutModule::moveToAA2UplookPos(bool check_autochthonous,bool check_softlandi
 
 bool LutModule::moveToAA2UplookPR(PrOffset &offset, bool close_lighting,bool check_autochthonous,bool check_softlanding)
 {
-    qInfo("moveToAA2UplookPR");
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     uplook_location->OpenLight();
+    carrier->setCallerFunctionName(__FUNCTION__);
     bool result = moveToAA2UplookPos(check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName("");
+    temp.append(" moveToAA2UplookPos  ").append(QString::number(smallTimer.elapsed()));
     if(result)
     {
+        smallTimer.restart();
         result = performUpLookPR();
+        temp.append(" performUpLookPR  ").append(QString::number(smallTimer.elapsed()));
         offset = uplook_location->getCurrentResult();
     }
     if(close_lighting)
         uplook_location->CloseLight();
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
 bool LutModule::moveToAA2UplookPR(bool close_lighting, bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToAA2UplookPR");
     PrOffset pr_offset;
     if(moveToAA2UplookPR(pr_offset,close_lighting,check_autochthonous,check_softlanding))
@@ -743,9 +771,11 @@ bool LutModule::moveToAA2UplookPR(bool close_lighting, bool check_autochthonous,
         result.insert("event", "prResp");
         this->sendMessageToModule("AA2CoreNew", "UplookPrResult", result);
         //emit sendMessageToClient("remote", getStringFromJsonObject(result));
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
     }
     AppendError(u8"执行AA2 uplook PR失败");
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
@@ -756,11 +786,30 @@ bool LutModule::moveToLoadPos(bool check_autochthonous,bool check_softlanding)
 
 bool LutModule::moveToLoadPosAndCheckMaterial(bool has_lens,bool has_ng_lens,bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     bool result = load_vacuum->checkHasMateriel(check_thread);
+    temp.append(" load_vacuum_checkHasMateriel ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
     result &= unload_vacuum->checkHasMateriel(check_thread);
+    temp.append(" unload_vacuum_checkHasMateriel ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
+    carrier->setCallerFunctionName(__FUNCTION__);
     result &= carrier->Move_SZ_SY_X_Y_Z_Sync(load_position.X(),load_position.Y(),load_position.Z(),check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName("");
+    temp.append(" Move_SZ_SY_X_Y_Z_Sync ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
     result &=  waitLutLensCheckResult(has_lens);
+    temp.append(" waitLutLensCheckResult ").append(QString::number(smallTimer.elapsed()));
+    smallTimer.restart();
     result &=  waitLutNgLensCheckResult(has_ng_lens);
+    temp.append(" waitLutNgLensCheckResult ").append(QString::number(smallTimer.elapsed()));
+    //qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -804,30 +853,62 @@ double LutModule::getLoadUplookPRY()
 
 bool LutModule::moveToAA1PickLens(bool need_return,bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
+
     openAA1Griper();
+    temp.append(" openAA1Griper ").append(QString::number(smallTimer.elapsed()));
     bool result = true;
     if(parameters.enablePickForce())
     {
+        smallTimer.restart();
+        carrier->setCallerFunctionName(__FUNCTION__);
         result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+        carrier->setCallerFunctionName("");
+        temp.append(" Move_SZ_SY_X_YS_Z_Sync ").append(QString::number(smallTimer.elapsed()));
     }
     else
     {
+        smallTimer.restart();
+        carrier->setCallerFunctionName(__FUNCTION__);
         result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_picklens_position.X(),aa1_picklens_position.Y(),aa1_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
+        carrier->setCallerFunctionName("");
+        temp.append(" Move_SZ_SY_X_YS_Z_Sync ").append(QString::number(smallTimer.elapsed()));
     }
     if(result)
     {
         if(parameters.enablePickForce())
         {
-            qInfo("moveToAA1PickLens Start ZSerchByForce");
+            smallTimer.restart();
+            carrier->setCallerFunctionName(__FUNCTION__);
+            double dist_z = fabs(carrier->motor_z->GetFeedbackPos() - aa1_picklens_position.Z());
             result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
-            qInfo("moveToAA1PickLens Finish ZSerchByForce");
+            carrier->setCallerFunctionName("");
+            temp.append(" dist_z ").append(QString::number(dist_z))
+                .append(" SearchPosByForce ").append(QString::number(smallTimer.elapsed()));
         }
+        smallTimer.restart();
         closeAA1Griper();
+        temp.append(" closeAA1Griper ").append(QString::number(smallTimer.elapsed()));
+
+        smallTimer.restart();
         result &= closeLoadVacuum();
+        temp.append(" closeLoadVacuum ").append(QString::number(smallTimer.elapsed()));
+        smallTimer.restart();
         Sleep(parameters.gripperDelay());
+        temp.append(" delay ").append(QString::number(smallTimer.elapsed()));
         if(need_return)
+        {
+            smallTimer.restart();
             result &= carrier->ZSerchReturn();
+            temp.append(" ZSerchReturn ").append(QString::number(smallTimer.elapsed()));
+        }
     }
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -899,15 +980,33 @@ bool LutModule::moveToAA1UnPickLensPos(bool check_autochthonous, bool check_soft
 
 bool LutModule::moveToAA1UnPickLens(bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
+    carrier->setCallerFunctionName(__FUNCTION__);
     bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa1_unpicklens_position.X(),aa1_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName("");
+    temp.append(" Move_SZ_SY_X_YS_Z_Sync ").append(QString::number(smallTimer.elapsed()));
     if(result)
     {
+        smallTimer.restart();
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa1_picklens_position.Z(),parameters.lensHeight());
+        temp.append(" SearchPosByForce ").append(QString::number(smallTimer.elapsed()));
         openAA1Griper();
+        smallTimer.restart();
         result &= openUnloadVacuum();
+        temp.append(" openUnloadVacuum ").append(QString::number(smallTimer.elapsed()));
+        smallTimer.restart();
         Sleep(parameters.gripperDelay());
+        temp.append(" gripperDelay ").append(QString::number(smallTimer.elapsed()));
+        smallTimer.restart();
         result &= carrier->ZSerchReturn();
+        temp.append(" ZSerchReturn ").append(QString::number(smallTimer.elapsed()));
     }
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -933,33 +1032,57 @@ bool LutModule::moveToAA2PickLensPos(bool check_autochthonous,bool check_softlan
 
 bool LutModule::moveToAA2PickLens(bool need_return, bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     qInfo("moveToAA2PickLens");
     aa2HeadMoveToPickPos();
     openAA2Griper();
     bool result = true;
     if(parameters.enablePickForce())
     {
+        carrier->setCallerFunctionName(__FUNCTION__);
+        smallTimer.restart();
         result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+        temp.append(" Move_SZ_SY_X_YS_Z_Sync ").append(QString::number(smallTimer.elapsed()));
+        carrier->setCallerFunctionName("");
     }
     else
     {
+        carrier->setCallerFunctionName(__FUNCTION__);
+        smallTimer.restart();
         result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_picklens_position.X(),aa2_picklens_position.Y(),aa2_picklens_position.Z() - parameters.lensHeight(),check_autochthonous,check_softlanding);
+        temp.append(" Move_SZ_SY_X_YS_Z_Sync ").append(QString::number(smallTimer.elapsed()));
+        carrier->setCallerFunctionName("");
     }
-        if(result)
+    if(result)
     {
         if(parameters.enablePickForce())
         {
-            qInfo("moveToAA2PickLens Start ZSerchByForce");
-//            result = carrier->ZSerchByForce(parameters.pickSpeed(),parameters.pickForce(),-1,0,load_vacuum);
+            carrier->setCallerFunctionName(__FUNCTION__);
+            smallTimer.restart();
             result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
-            qInfo("moveToAA2PickLens Finish ZSerchByForce");
+            carrier->setCallerFunctionName("");
+            temp.append(" SearchPosByForce ").append(QString::number(smallTimer.elapsed()));
         }
         closeAA2Griper();
+        smallTimer.restart();
         result &= closeLoadVacuum();
+        temp.append(" closeLoadVacuum ").append(QString::number(smallTimer.elapsed()));
+        smallTimer.restart();
         Sleep(parameters.gripperDelay());
-        if(need_return)
+        temp.append(" closeLoadVacuum ").append(QString::number(smallTimer.elapsed()));
+        if(need_return){
+            smallTimer.restart();
             result &= carrier->ZSerchReturn();
+            temp.append(" ZSerchReturn ").append(QString::number(smallTimer.elapsed()));
+        }
     }
+   // qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    QString log = QString("[Timelog] ").append(callerName).append(":").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -1002,20 +1125,38 @@ bool LutModule::moveToAA2UnPickLensPos(bool check_autochthonous, bool check_soft
 
 bool LutModule::moveToAA2UnPickLens(bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
+    QElapsedTimer smallTimer; smallTimer.start();
+    QString temp;
     qInfo("moveToAA2UnPickLens Start to aa2 unpickLens");
     aa2HeadMoveToPickPos();
+    temp.append(" aa2HeadMoveToPickPos ").append(QString::number(smallTimer.elapsed()));
+
+    carrier->setCallerFunctionName(__FUNCTION__);
+    smallTimer.restart();
     bool result = carrier->Move_SZ_SY_X_YS_Z_Sync(aa2_unpicklens_position.X(),aa2_unpicklens_position.Y(),carrier->parameters.SafetyZ(),check_autochthonous,check_softlanding);
+    temp.append(" Move_SZ_SY_X_YS_Z_Sync ").append(QString::number(smallTimer.elapsed()));
+    carrier->setCallerFunctionName("");
     if(result)
     {
-        qInfo("moveToAA2UnPickLens Start ZSerchByForce");
-//        result = carrier->ZSerchByForce(10,parameters.pickForce(),-1,0,load_vacuum);
+        smallTimer.restart();
         result = carrier->motor_z->SearchPosByForce(parameters.pickSpeed(),parameters.pickForce(),aa2_picklens_position.Z(),parameters.lensHeight());
-        qInfo("moveToAA2UnPickLens Finish ZSerchByForce");
+        temp.append(" SearchPosByForce ").append(QString::number(smallTimer.elapsed()));
         openAA2Griper();
+        smallTimer.restart();
         result &= openUnloadVacuum();
+        temp.append(" openUnloadVacuum ").append(QString::number(smallTimer.elapsed()));
+        smallTimer.restart();
         Sleep(parameters.gripperDelay());
+        temp.append(" gripperDelay ").append(QString::number(smallTimer.elapsed()));
+        smallTimer.restart();
         result &= carrier->motor_z->resetSoftLanding();
+        temp.append(" resetSoftLanding ").append(QString::number(smallTimer.elapsed()));
     }
+    QString log = QString("[Timelog] ").append(__FUNCTION__).append(" ")
+                                       .append(QString::number(timer.elapsed()))
+                                       .append(temp);
+    qWarning(log.toStdString().c_str());
     return result;
 }
 
@@ -1062,40 +1203,58 @@ bool LutModule::moveToAA2ReturnPos(bool check_autochthonous,bool check_softlandi
 
 bool LutModule::moveToAA1ReadyPos(bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToAA1readyPos(%f,%f,%f)",aa1_unpicklens_position.X(),0,0);
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),0,0,check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName(__FUNCTION__);
+    bool ret = carrier->Move_SZ_SY_X_Y_Z_Sync(aa1_unpicklens_position.X(),0,0,check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName("");
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    return ret;
 }
 
 bool LutModule::moveToAA2ReadyPos(bool check_autochthonous,bool check_softlanding)
 {
+    QElapsedTimer timer; timer.start();
     qInfo("moveToAA2readyPos(%f,%f,%f)",aa2_unpicklens_position.X(),0,0);
-    return  carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),0,0,check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName(__FUNCTION__);
+    bool ret = carrier->Move_SZ_SY_X_Y_Z_Sync(aa2_unpicklens_position.X(),0,0,check_autochthonous,check_softlanding);
+    carrier->setCallerFunctionName("");
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
+    return ret;
 }
 
 bool LutModule::checkLutLensSync(bool check_state)
 {
-    if(!has_material)
+    QElapsedTimer timer; timer.start();
+    if(!has_material) {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     bool result = load_vacuum->checkHasMaterielSync();
     if(result == check_state||states.runMode() == RunMode::NoMaterial)
+    {
+        qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
         return true;
+    }
     QString error = QString(u8"LUT放Lens位置上逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
     AppendError(error);
     qInfo(error.toStdString().c_str());
+    qWarning("[Timelog] %s %d", __FUNCTION__, timer.elapsed());
     return false;
 }
 
 bool LutModule::checkLutNgLensSync(bool check_state)
 {
-    if(!has_material)
-        return true;
-    bool result = unload_vacuum->checkHasMaterielSync();
-    if(result == check_state||states.runMode() == RunMode::NoMaterial)
-        return true;
-    QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
-    AppendError(error);
-    qInfo(error.toStdString().c_str());
-    return false;
+    return true;
+//    if(!has_material)
+//        return true;
+//    bool result = unload_vacuum->checkHasMaterielSync();
+//    if(result == check_state||states.runMode() == RunMode::NoMaterial)
+//        return true;
+//    QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+//    AppendError(error);
+//    qInfo(error.toStdString().c_str());
+//    return false;
 }
 
 bool LutModule::waitLutLensCheckResult(bool check_state)
@@ -1111,13 +1270,14 @@ bool LutModule::waitLutLensCheckResult(bool check_state)
 
 bool LutModule::waitLutNgLensCheckResult(bool check_state)
 {
-    bool result = unload_vacuum->getHasMateriel(check_thread);
-    if(result == check_state||states.runMode() == RunMode::NoMaterial)
-        return true;
-    QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
-    AppendError(error);
-    qInfo(error.toStdString().c_str());
-    return false;
+    return true;
+//    bool result = unload_vacuum->getHasMateriel(check_thread);
+//    if(result == check_state||states.runMode() == RunMode::NoMaterial)
+//        return true;
+//    QString error = QString(u8"LUT放NgLens位置逻辑%1料，但检测到%2料。").arg(check_state?u8"有":u8"无").arg(result?u8"有":u8"无");
+//    AppendError(error);
+//    qInfo(error.toStdString().c_str());
+//    return false;
 }
 
 bool LutModule::stepMove_XY_Sync(double x, double y)

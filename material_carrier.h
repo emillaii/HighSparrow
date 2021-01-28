@@ -18,7 +18,9 @@ public:
     XtVacuum* vacuum = Q_NULLPTR;
 public:
     MaterialCarrierParameter parameters;
+    QString callerName = "";
 public:
+    void setCallerFunctionName(QString name) { this->callerName = name; }
     bool CheckXYZArrived(double x,double y,double z);
     bool CheckXYDistanceBigger(double x,double y,double check_distance);
     bool Move_SZ_XY_Z_Sync(double x,double y,double z,int timeout = 3000);

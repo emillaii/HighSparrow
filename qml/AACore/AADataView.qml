@@ -9,16 +9,6 @@ Grid {
     width: 800
     height: 800
 
-    property bool drawMeasurePointState: true
-
-    function calculateOffset(w, h, px, py, rw, rh)
-    {
-        var delta = {};
-        delta.x = (w/2 - px)*rw;
-        delta.y = (h/2 - py)*rh;
-        return delta;
-    }
-
     //ToDo: Refactor the plotChart1 and plotChart2
     function plotChart1() {
         spline1Label.text = dataFromCpp.layer0
@@ -474,30 +464,6 @@ Grid {
                 onDisplayGlueInspectImageInUI: {
                     image6.source = ""
                     image6.source = "image://dispenseImage"
-                }
-            }
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    var borderX = (image6.width - image6.paintedWidth) / 2
-                    var borderY = (image6.height - image6.paintedHeight) / 2
-                    if (mouseX < borderX || mouseX > image6.width - borderX ||
-                        mouseY < borderY || mouseY > image6.height - borderY)
-                    {
-                        return console.log("Image Click Out of range")
-                    }
-                    var delta = calculateOffset(image6.width, image6.height, mouseX, mouseY,
-                                                image6.sourceSize.width/image6.paintedWidth,
-                                                image6.sourceSize.height/image6.paintedHeight)
-                    var mapX = image6.sourceSize.width/2 - delta.x
-                    var mapY = image6.sourceSize.height/2 - delta.y
-                    console.log("Map x: " + mapX +  " y:" + mapY)
-                    if (drawMeasurePointState) {
-                        aaNewCore.drawPoint1(mapX, mapY)
-                    } else {
-                        aaNewCore.drawPoint2(mapX, mapY)
-                    }
-                    drawMeasurePointState = !drawMeasurePointState
                 }
             }
         }

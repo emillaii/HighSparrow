@@ -98,24 +98,82 @@ ItemDelegate {
                                 }
                             }
                             Label {
-                                text: qsTr("小物件 PR识别度")
+                                text: qsTr("Response")
                                 visible: displaySmallHoleDetectionSetting
                             }
                             TextField{
-                                visible: displaySmallHoleDetectionSetting
                                 color: "#57f529"
-                                text: smallObjectScore
+                                visible: displaySmallHoleDetectionSetting
+                                text: smallCircleEdgeResponse
                                 font.pixelSize: 14
-                                width: 50
-                                Layout.preferredWidth: 50
+                                width: 30
+                                Layout.preferredWidth: 30
                                 onEditingFinished: {
-                                    if (text < 0.2) {
-                                        text = 0.2
-                                    }
-                                    else if (text > 0.98) {
-                                        text = 0.98
-                                    }
-                                    setSmallObjectScore(text)
+                                    setSmallCircleEdgeResponse(text)
+                                }
+                            }
+                            Label {
+                                text: qsTr("count")
+                                visible: displaySmallHoleDetectionSetting
+                            }
+                            TextField{
+                                color: "#57f529"
+                                visible: displaySmallHoleDetectionSetting
+                                text: smallCircleScanCount
+                                font.pixelSize: 14
+                                width: 30
+                                Layout.preferredWidth: 30
+                                onEditingFinished: {
+                                    setSmallCircleScanCount(text)
+                                }
+                            }
+                            Label {
+                                text: qsTr("width")
+                                visible: displaySmallHoleDetectionSetting
+                            }
+                            TextField{
+                                color: "#57f529"
+                                visible: displaySmallHoleDetectionSetting
+                                text: smallCircleScanWidth
+                                font.pixelSize: 14
+                                width: 30
+                                Layout.preferredWidth: 30
+                                onEditingFinished: {
+                                    setSmallCircleScanWidth(text)
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            Label {
+                                text: qsTr("排气孔 min radius")
+                                visible: displaySmallHoleDetectionSetting
+                            }
+                            TextField{
+                                color: "#57f529"
+                                visible: displaySmallHoleDetectionSetting
+                                text: smallCircleRadiusMin
+                                font.pixelSize: 14
+                                width: 30
+                                Layout.preferredWidth: 30
+                                onEditingFinished: {
+                                    setSmallCircleRadiusMin(text)
+                                }
+                            }
+
+                            Label {
+                                text: qsTr("排气孔 max radius")
+                                visible: displaySmallHoleDetectionSetting
+                            }
+                            TextField{
+                                color: "#57f529"
+                                visible: displaySmallHoleDetectionSetting
+                                text: smallCircleRadiusMax
+                                font.pixelSize: 14
+                                width: 30
+                                Layout.preferredWidth: 30
+                                onEditingFinished: {
+                                    setSmallCircleRadiusMax(text)
                                 }
                             }
                         }

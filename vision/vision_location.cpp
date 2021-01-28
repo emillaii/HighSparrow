@@ -48,7 +48,6 @@ bool VisionLocation::performPR(PrOffset &offset, bool need_conversion)
         paramStruct.smallHoleEdgeResponse = parameters.smallCircleEdgeResponse();
         paramStruct.smallHoleRadiusMax = parameters.smallCircleRadiusMax();
         paramStruct.smallHoleRadiusMin = parameters.smallCircleRadiusMin();
-        paramStruct.smallObjectScore = parameters.smallObjectScore();
         temp = vison->PR_Generic_NCC_Template_Matching(parameters.cameraName(),
                                                        parameters.prFileName(),
                                                        pr_result,
@@ -203,18 +202,19 @@ bool VisionLocation::performPR()
 bool VisionLocation::performNoMaterialPR()
 {
     current_result.ReSet();
-    PrOffset offset;
-    if(parameters.waitImageDelay()>0)
-        QThread::msleep(parameters.waitImageDelay());
-    QString imageName;
-    imageName.append(getVisionLogDir())
-            .append(getCurrentTimeString())
-            .append(".jpg");
-    //bool result = saveImage(imageName);
-    if(parameters.performTime()>0)
-        QThread::msleep(parameters.performTime());
     return true;
-    //return result;
+//    current_result.ReSet();
+//    PrOffset offset;
+//    if(parameters.waitImageDelay()>0)
+//        QThread::msleep(parameters.waitImageDelay());
+//    QString imageName;
+//    imageName.append(getVisionLogDir())
+//            .append(getCurrentTimeString())
+//            .append(".jpg");
+//    bool result = saveImage(imageName);
+//    if(parameters.performTime()>0)
+//        QThread::msleep(parameters.performTime());
+//    return result;
 }
 
 bool VisionLocation::performPR(PRResultStruct &pr_result)
@@ -356,12 +356,14 @@ QPointF VisionLocation::getCurrentOffset()
 
 void VisionLocation::OpenLight()
 {
+    QElapsedTimer timer; timer.start();
     lighting->setBrightness(parameters.lightChannel(),parameters.lightBrightness());
     // if downlook location, open aux light channel too, for glue inspection
     if (parameters.auxLightChannel() >= 0)
     {
         lighting->setBrightness(parameters.auxLightChannel(),parameters.auxLightBrightness());
     }
+    qWarning("[Timelog] %s %d ", __FUNCTION__, timer.elapsed());
 //    QThread::msleep(30);
 }
 

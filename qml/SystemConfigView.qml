@@ -49,24 +49,6 @@ ItemDelegate {
                             }
                         }
                     }
-                    RowLayout {
-                        CheckBox {
-                            text: qsTr("上传MES")
-                            checked: moduleManagerParam.sendDataToMES
-                            onCheckedChanged: {
-                                moduleManagerParam.setSendDataToMES(checked)
-                            }
-                        }
-                        Label {
-                            text: qsTr("工序名称:")
-                        }
-                        TextField {
-                            text: moduleManagerParam.opType
-                            onEditingFinished: {
-                                moduleManagerParam.setOpType(text)
-                            }
-                        }
-                    }
                 }
             }
         }

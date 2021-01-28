@@ -312,6 +312,8 @@ private:
     bool current_time;
     QString getUuid(int sensor_index);
 public:
+    QString callerName = "";
+    void setCallerName(QString name) { this->callerName = name; }
     void startRecord(QString uuid);
     void recordPrTest(QString uuid,VisionLocation location);
     void endRecord(QString uuid);

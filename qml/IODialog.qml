@@ -95,16 +95,16 @@ Popup {
         ListElement{
             cylinderName:"STIE气阀"
             oneInName:"STIE气缸伸出"
-            oneOutName:"STIE气阀伸出"
+            oneOutName:"STIE气阀"
             zeroInName:"STIE气缸退回"
-            zeroOutName:"STIE气阀退回"
+            zeroOutName:"STIE气阀"
         }
         ListElement{
             cylinderName:"STOE气阀"
             oneInName:"STOE气缸伸出"
-            oneOutName:"STOE气阀伸出"
+            oneOutName:"STOE气阀"
             zeroInName:"STOE气缸退回"
-            zeroOutName:"STOE气阀退回"
+            zeroOutName:"STOE气阀"
         }
         ListElement{
             cylinderName:"Gripper气缸"
@@ -119,9 +119,9 @@ Popup {
         ListElement{
             cylinderName:"POGOPIN"
             oneInName:"null"
-            oneOutName:"POGOPIN下"
+            oneOutName:"SUT1气缸"
             zeroInName:"null"
-            zeroOutName:"POGOPIN上"
+            zeroOutName:"null"
         }
         ListElement{
             cylinderName:"弹夹推料气缸"
@@ -177,15 +177,15 @@ Popup {
                             target: timer
                             onTriggered: {
                                 if (dialog.visible) {
-                                    if(special_ouput.checked !== baseModuleManager.getOutput("POGOPIN_DOWN"))
+                                    if(special_ouput.checked !== baseModuleManager.getOutput("SUT1气缸"))
                                         special_ouput.toggle()
                                     //if(index%2==0&&!swich_id.checked)swich_id.toggle()
                                 }
                             }
                         }
                         onCheckedChanged:{
-                            baseModuleManager.setOutput("POGOPIN_DOWN", checked)
-                            baseModuleManager.setOutput("POGOPIN_UP", !checked)
+                            baseModuleManager.setOutput("SUT1气缸", checked)
+//                            baseModuleManager.setOutput("POGOPIN_UP", !checked)
                         }
                     }
                     ListView{

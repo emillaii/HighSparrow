@@ -348,11 +348,11 @@ ScrollView {
                         }
 
                         Label {
-                            text: qsTr("选择通电模式: ")
+                            text: qsTr("Selected Lens VCM Mode: ")
                         }
                         ComboBox {
                             id: selectedLensVCMMode
-                            Layout.preferredWidth: 150
+                            Layout.preferredWidth: 300
                             model: [ "Server Mode", "Direct Mode" ]
                             currentIndex: aaCoreParams.vcmInitMode
                             enabled: lensVCMCheckBox.checked
@@ -363,47 +363,9 @@ ScrollView {
                     }
 
                     RowLayout {
-                        enabled: (lensVCMCheckBox.checked) && (selectedLensVCMMode.currentIndex == 0)
+                        enabled: lensVCMCheckBox.checked
                         Label {
-                            text: qsTr("Server Mode参数设置: ")
-                            font.bold: true
-                        }
-                        Label {
-                            text: qsTr("Lens AA位置")
-                        }
-                        TextField {
-                            text: aaCoreParams.lensVcmWorkPosition
-                            horizontalAlignment: TextInput.AlignHCenter
-                            validator: DoubleValidator {
-                                decimals: 2
-                                notation: DoubleValidator.StandardNotation
-                            }
-                            onEditingFinished: {
-                                aaCoreParams.setLensVcmWorkPosition(text)
-                            }
-                        }
-                        Button{
-                            text:qsTr("初始化")
-                            onClicked: {
-                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
-                            }
-                        }
-                        Button{
-                            text:qsTr("移动")
-                            onClicked: {
-                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.LENS_VCM_POS)
-                            }
-                        }
-                    }
-
-                    RowLayout {
-                        enabled: (lensVCMCheckBox.checked) && (selectedLensVCMMode.currentIndex == 1)
-                        Label {
-                            text: qsTr("Direct Mode参数设置: ")
-                            font.bold: true
-                        }
-                        Label {
-                            text: qsTr("SlaveID")
+                            text: qsTr("SlaveID: ")
                         }
                         TextField {
                             text: aaCoreParams.vcmSlaveId
@@ -413,7 +375,7 @@ ScrollView {
                             }
                         }
                         Label {
-                            text: qsTr("RegAddr")
+                            text: qsTr("RegAddr: ")
                         }
                         TextField {
                             text: aaCoreParams.vcmRegAddress
@@ -436,15 +398,10 @@ ScrollView {
                                 aaCoreParams.setLensVcmWorkPosition(text)
                             }
                         }
-                        Label {
-                            text: qsTr("Mode")
-                        }
-                        ComboBox {
-                            Layout.preferredWidth: 150
-                            model: [ "ADDR8_VALUE8", "ADDR8_VALUE16", "ADDR16_VALUE8", "ADDR16_VALUE16","ADDR16_VALUE32"]
-                            currentIndex: aaCoreParams.vcmI2cMode
-                            onCurrentIndexChanged: {
-                                aaCoreParams.setVCMI2cMode(currentIndex)
+                        Button{
+                            text:qsTr("初始化")
+                            onClicked: {
+                                logicManager.performHandling(aaCoreParams.moduleName,AACoreNew.INIT_VCM)
                             }
                         }
                         Button{

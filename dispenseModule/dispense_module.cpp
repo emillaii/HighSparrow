@@ -43,10 +43,8 @@ void DispenseModule::Init(QString file_path,QString name,Calibration *calibratio
 
 void DispenseModule::updatePath()
 {
-    getDispenseCircleProperties();
     QVector<QPoint> map_path = vision->Read_Dispense_Path();
     mechPoints.clear();
-
     foreach(QPoint pt, map_path)
     {
         QPointF mechPoint;
@@ -58,45 +56,6 @@ void DispenseModule::updatePath()
     dispenser->parameters.setSpeedCount(mechPoints.size());
     qInfo("read point :%d",mechPoints.size());
     emit callQmlRefeshImg(12);
-}
-
-bool DispenseModule::getDispenseCircleProperties()
-{
-    QFile file;
-    QString val;
-    file.setFileName(DISPENSE_PATH_CIRCLE_PROPERTIES);
-
-    if (!file.exists()) {
-        qWarning("Dispense path circle properties file does not exist");
-        return false;
-    }
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    val = file.readAll();
-    file.close();
-    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-    QJsonObject sett2 = d.object();
-    QJsonValue patternType = sett2.value(QString("type"));
-    QJsonValue radius = sett2.value(QString("radius"));
-    QJsonValue center_x = sett2.value(QString("center_x"));
-    QJsonValue center_y = sett2.value(QString("center_y"));
-    //radius_in_mm = radius.toDouble(0);
-    pattern_type = patternType.toInt(0);
-    center.setX(center_x.toDouble());
-    center.setY(center_y.toDouble());
-
-    if (pattern_type == 1)  //Circle
-    {
-        QPointF pt;
-        pt.setX(center_x.toDouble());
-        pt.setY(center_y.toDouble());
-        QPointF mechPoint;
-        calibration->getDeltaDistanceFromCenter(pt, mechPoint);
-        qInfo("mechPoint x: %f mechPoint y: %f", mechPoint.x(), mechPoint.y());
-        mechCenter.setX(-mechPoint.x());
-        mechCenter.setY(-mechPoint.y());
-    }
-
-    return true;
 }
 
 void DispenseModule::updateSpeed()
@@ -185,7 +144,7 @@ void DispenseModule::calulateOffset(int digit)
 
 QVector<mPoint3D> DispenseModule::getDispensePath()
 {
-    if(mechPoints.empty())
+    if(mechPoints.size() < 2)
         updatePath();
     QVector<mPoint3D> dispense_path = QVector<mPoint3D>();
     double temp_theta = (pr_theta - parameters.initTheta())*PI/180;
@@ -202,62 +161,29 @@ QVector<mPoint3D> DispenseModule::getDispensePath()
 bool DispenseModule::performDispense()
 {
     QVector<mPoint3D> temp_path = getDispensePath();
-    QVector<DispensePathPoint> dispense_path;
     if(temp_path.size()<2)
     {
        qInfo("point too small :%d",temp_path.size());
        return false;
     }
-    if (pattern_type == 0)
+    QVector<DispensePathPoint> dispense_path;
+    for (int i = 0; i < temp_path.size(); ++i)
     {
-        for (int i = 0; i < temp_path.size(); ++i)
-        {
-           QVector<double> pos;
-           PATH_POINT_TYPE type = PATH_POINT_LINE;
-           pos.append(temp_path[i].X);
-           pos.append(temp_path[i].Y);
-           pos.append(temp_path[i].Z);
-           if (i == temp_path.size() - 1) type = PATH_POINT_CLOSE_VALVE;
-           else if (i == 0) type = PATH_POINT_CLOSE_VALVE;
-           else type = PATH_POINT_OPEN_VALVE;
-           dispense_path.append(DispensePathPoint(3,pos,type));
-        }
+       QVector<double> pos;
+       PATH_POINT_TYPE type = PATH_POINT_LINE;
+       pos.append(temp_path[i].X);
+       pos.append(temp_path[i].Y);
+       pos.append(temp_path[i].Z);
+       if (i == temp_path.size() - 1) type = PATH_POINT_CLOSE_VALVE;
+       else if (i == 0) type = PATH_POINT_CLOSE_VALVE;
+       else type = PATH_POINT_OPEN_VALVE;
+       dispense_path.append(DispensePathPoint(3,pos,type));
     }
-    else if (pattern_type == 1)
-    {
-        for (int i = 0; i < temp_path.size(); ++i)
-        {
-           QVector<double> pos;
-           PATH_POINT_TYPE type = PATH_POINT_LINE;
-           pos.append(temp_path[i].X);
-           pos.append(temp_path[i].Y);
-           pos.append(temp_path[i].Z);
-           if (i == 0) type = PATH_POINT_CLOSE_VALVE;
-           else type = PATH_POINT_OPEN_VALVE;
-           dispense_path.append(DispensePathPoint(3,pos,type));
-        }
-    }
-
     qInfo("Dispense start");
     lastDispenseDateTime = QDateTime::currentDateTime();
     parameters.setLastDispenseTime(lastDispenseDateTime.toString("yyyy-MM-dd hh:mm:ss"));
-    if (pattern_type == 0)
-    {
-        if( dispenser->Dispense(dispense_path))
-            return dispenser->WaitForFinish();
-    }
-    else if (pattern_type == 1)
-    {
-        double temp_theta = (pr_theta - parameters.initTheta())*PI/180;
-        double x = mechCenter.x();
-        double y = mechCenter.y();
-        QPointF dispenseMechCenter;
-        dispenseMechCenter.setX(x*cos(temp_theta) + y*sin(temp_theta) + pos_x + pr_x + parameters.dispenseXOffset());
-        dispenseMechCenter.setX(y*cos(temp_theta)- x*sin(temp_theta) + pos_y + pr_y + parameters.dispenseYOffset());
-
-        if( dispenser->DispenseCircle(dispense_path, dispenseMechCenter))
-            return dispenser->WaitForFinish();
-    }
+    if( dispenser->Dispense(dispense_path))
+        return dispenser->WaitForFinish();
     qInfo("Dispense fail");
     return false;
 }

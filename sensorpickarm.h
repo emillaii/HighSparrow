@@ -48,6 +48,8 @@ public:
     double GetZ2MeasuredHeight(bool get_current = false);
 private:
 public:
+    QString callerName = "";
+    void setCallerName(QString name) { callerName = name; }
     SensorPickArmParameter parameters;
     XtMotor* motor_x = Q_NULLPTR;
     XtMotor* motor_y = Q_NULLPTR;

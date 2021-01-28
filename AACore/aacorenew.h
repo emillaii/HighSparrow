@@ -67,6 +67,8 @@ public:
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
     Q_INVOKABLE void clearCurrentDispenseCount();
+    Q_INVOKABLE bool lightPanelOpen();
+    Q_INVOKABLE bool lightPanelClose();
     ErrorCodeStruct performVCMInit(QJsonValue params);
     ErrorCodeStruct performVCMDirectMode(QJsonValue params);
     ErrorCodeStruct performInitSensor(int finish_delay = 0,bool check_map = false);

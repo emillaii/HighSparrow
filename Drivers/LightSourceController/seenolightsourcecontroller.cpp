@@ -38,9 +38,9 @@ void SeenoLightSourceController::close()
 {
     if(isOpen)
     {
+        setIntensity(0);
         device.close();
         isOpen = false;
-        setIntensity(0);
     }
 }
 
@@ -49,6 +49,7 @@ void SeenoLightSourceController::setIntensity(int brightness)
     if(!isOpen){qCritical() << tr("Did not init!"); return;}
 
     try {
+        qInfo("brightness: %d", brightness);
         SLSCCommandStruct cmd;
         cmd.cmd = SetBrightness;
         ushort value = brightness;

@@ -51,7 +51,7 @@ ItemDelegate {
                     enabled: userManagement.currentAuthority >= 2 // At least engineer autority
                 }
                 Button{
-                    text:qsTr("背光板操作")
+                    text:qsTr("小光板操作")
                     onClicked:{
                         slsc.open()
                     }

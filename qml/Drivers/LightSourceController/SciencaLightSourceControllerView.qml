@@ -66,6 +66,7 @@ Popup{
             TextField {
                 text: lightPanelController.brightness
                 validator: IntValidator{}
+                selectByMouse: true
                 onEditingFinished: {
                     lightPanelController.setBrightness(text)
                 }

@@ -100,6 +100,7 @@ public slots:
 
         m_brightness = brightness;
         emit brightnessChanged(m_brightness);
+        saveJsonConfig(configFileName, configSectionName);
     }
 
 signals:
@@ -108,7 +109,7 @@ signals:
     void brightnessChanged(int brightness);
 
 private:
-    const QString configFileName = "seenoLightSourceControllerParam.json";
+    const QString configFileName = "config//seenoLightSourceControllerParam.json";
     const QString configSectionName = "seenoLightSourceControllerParam";
 
     bool isOpen;

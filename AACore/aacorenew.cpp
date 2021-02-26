@@ -3807,15 +3807,37 @@ ErrorCodeStruct AACoreNew::performOC(QJsonValue params)
         map.insert("OC_OFFSET_Y_IN_PIXEL", round(offsetY*1000)/1000);
     } else {
         QImage outImage; QPointF center;
-        if (!AA_Helper::calculateOC(img, center, outImage, oc_intensity_threshold))
-        {
-            LogicNg(current_aa_ng_time);
-            map.insert("result", "OC Cannot calculate OC");
-            map.insert("timeElapsed", timer.elapsed());
-            emit pushDataToUnit(this->runningUnit, "OC", map);
-            lightPanelClose();
+
+        try {
+            avl::Image image1(img.cols, img.rows, 3 * img.cols, avl::PlainType::UInt8, 3, (void*)(img.data));
+            avl::Region region1;
+            avl::Region region2;
+            avl::Point2D point2D1;
+            avl::Image image2;
+            avl::Image image3;
+            avl::ThresholdToRegion( image1, atl::NIL, oc_intensity_threshold, atl::NIL, 0.0f, region1 );
+            avl::FillRegionHoles( region1, avl::RegionConnectivity::EightDirections, 0, atl::NIL, region2 );
+            avl::RegionMassCenter( region2, point2D1 );
+            center.setX(point2D1.X());
+            center.setY(point2D1.Y());
+            avl::RegionToImage( region2, image2 );
+            avs::DrawPoints_SingleColor( image2, atl::ToArray< atl::Conditional< avl::Point2D > >(point2D1), atl::NIL, avl::Pixel(255.0f, 128.0f, 0.0f, 0.0f), avl::DrawingStyle(avl::DrawingMode::HighQuality, 1.0f, 10.0f, false, avl::PointShape::Cross, 100.0f), true, image3 );
+            QImage tmpImage = QImage((uchar *)image3.Data(), image3.Width(), image3.Height(), image3.Pitch(), QImage::Format_RGB888);
+            outImage = tmpImage.copy();
+        } catch(const atl::Error& error) {
+            qWarning(error.Message());
             return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
         }
+
+//        if (!AA_Helper::calculateOC(img, center, outImage, oc_intensity_threshold))
+//        {
+//            LogicNg(current_aa_ng_time);
+//            map.insert("result", "OC Cannot calculate OC");
+//            map.insert("timeElapsed", timer.elapsed());
+//            emit pushDataToUnit(this->runningUnit, "OC", map);
+//           // lightPanelClose();
+//            return ErrorCodeStruct { ErrorCode::GENERIC_ERROR, "Cannot calculate OC"};
+//        }
         ocImageProvider_1->setImage(outImage);
         emit callQmlRefeshImg(1);
         offsetX = center.x() - img.cols/2;

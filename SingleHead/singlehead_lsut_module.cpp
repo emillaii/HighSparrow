@@ -168,6 +168,17 @@ void SingleheadLSutModule::startWork(int run_mode)
         while(is_run) {
             run();
         }
+    } else if (run_mode == RunMode::NoMaterial) {
+        qInfo("LSUT run in burnin mode");
+        is_run = true;
+        while(is_run) {
+            moveToLoadSensorPosition();
+            QThread::msleep(1000);
+            aa_head->closeGripper();
+            moveToMushroomPosition();
+            QThread::msleep(1000);
+            aa_head->openGripper();
+        }
     }
 }
 

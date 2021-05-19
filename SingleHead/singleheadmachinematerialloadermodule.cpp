@@ -1193,6 +1193,18 @@ void SingleHeadMachineMaterialLoaderModule::startWork(int run_mode)
     towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
     if (run_mode == RunMode::Normal)
         run();
+    else if (run_mode == RunMode::NoMaterial)
+    {
+        qInfo("Run in burn in mode");
+        is_run = true;
+        while (is_run)
+        {
+            moveToLensTrayStartPos(0);
+            QThread::msleep(1000);
+            moveToLensTrayEndPos();
+            QThread::msleep(1000);
+        }
+    }
 
 }
 

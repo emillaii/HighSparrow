@@ -331,9 +331,10 @@ void AACoreNew::SetProduct()
 
 void AACoreNew::startWork( int run_mode)
 {
+    qInfo("Start Work run_mode: %d", run_mode);
     if (run_mode == RunMode::Normal) run(true);
     else if (run_mode == RunMode::NoMaterial) {
-        run(false);
+        //run(false);
     } else if (run_mode == RunMode::VibrationTest) {
         is_run = true;
         mtf_log.clear();
@@ -820,9 +821,9 @@ ErrorCodeStruct AACoreNew::performDispense()
             QImage image(imageNameAfterDispense);
             dispenseImageProvider->setImage(image);
             emit callQmlRefeshImg(3);  //Emit dispense image to QML
-            towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
+            //towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Red);
             auto rsp = SI::ui.getUIResponse("Check Glue", "Please check glue!", MsgBoxIcon::Question, SI::ui.passFailButtons);
-            towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
+            //towerLightBuzzer->switchColor(TowerLightBuzzer::TowerLightColor::Green);
             if(rsp == SI::ui.Fail)
             {
                 autoRunDispenseTimes = 0;

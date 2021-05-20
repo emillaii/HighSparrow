@@ -880,7 +880,6 @@ bool BaseModuleManager::initialDevice()
     EnableMotors();
     GetOutputIoByName(u8"TL_上下平台")->Set(true);
     GetOutputIoByName(u8"SUT_气缸")->Set(true);
-    tower_light_buzzer.switchColor(TowerLightBuzzer::TowerLightColor::Yellow);
     return true;
 }
 

@@ -68,9 +68,9 @@ Grid {
             zPeak.append(dataFromCpp.zPeak,0)
             zPeak.append(dataFromCpp.zPeak,80)
         } else {
-            axisY1.max = 60
+            axisY1.max = 80
             zPeak.append(dataFromCpp.zPeak,0)
-            zPeak.append(dataFromCpp.zPeak,60)
+            zPeak.append(dataFromCpp.zPeak,80)
         }
     }
 

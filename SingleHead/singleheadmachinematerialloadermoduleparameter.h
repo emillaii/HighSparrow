@@ -45,6 +45,14 @@ class SingleHeadMachineMaterialLoaderModuleParameter:public PropertyBase
     double m_sutPlaceSensorAngle = 90;
 
     bool m_performPrAsPlacingNgDut;
+    double m_placeSensorToSUTOffsetX = 0;
+
+    double m_placeSensorToSUTOffsetY = 0;
+
+    double m_pickSensorFromTrayOffsetX = 0;
+
+    double m_pickSensorFromTrayOffsetY = 0;
+
 public:
     SingleHeadMachineMaterialLoaderModuleParameter():PropertyBase(){}
 
@@ -81,6 +89,11 @@ public:
 
     Q_PROPERTY(bool performPrAsPlacingNgDut READ performPrAsPlacingNgDut WRITE setPerformPrAsPlacingNgDut NOTIFY performPrAsPlacingNgDutChanged)
 
+    Q_PROPERTY(double placeSensorToSUTOffsetX READ placeSensorToSUTOffsetX WRITE setPlaceSensorToSUTOffsetX NOTIFY placeSensorToSUTOffsetXChanged)
+    Q_PROPERTY(double placeSensorToSUTOffsetY READ placeSensorToSUTOffsetY WRITE setPlaceSensorToSUTOffsetY NOTIFY placeSensorToSUTOffsetYChanged)
+
+    Q_PROPERTY(double pickSensorFromTrayOffsetX READ pickSensorFromTrayOffsetX WRITE setPickSensorFromTrayOffsetX NOTIFY pickSensorFromTrayOffsetXChanged)
+    Q_PROPERTY(double pickSensorFromTrayOffsetY READ pickSensorFromTrayOffsetY WRITE setPickSensorFromTrayOffsetY NOTIFY pickSensorFromTrayOffsetYChanged)
 
     double vcm1Svel() const
     {
@@ -224,6 +237,26 @@ public:
     bool performPrAsPlacingNgDut() const
     {
         return m_performPrAsPlacingNgDut;
+    }
+
+    double placeSensorToSUTOffsetX() const
+    {
+        return m_placeSensorToSUTOffsetX;
+    }
+
+    double placeSensorToSUTOffsetY() const
+    {
+        return m_placeSensorToSUTOffsetY;
+    }
+
+    double pickSensorFromTrayOffsetX() const
+    {
+        return m_pickSensorFromTrayOffsetX;
+    }
+
+    double pickSensorFromTrayOffsetY() const
+    {
+        return m_pickSensorFromTrayOffsetY;
     }
 
 public slots:
@@ -492,6 +525,44 @@ public slots:
     }
 
 
+    void setPlaceSensorToSUTOffsetX(double placeSensorToSUTOffsetX)
+    {
+        if (qFuzzyCompare(m_placeSensorToSUTOffsetX, placeSensorToSUTOffsetX))
+            return;
+
+        m_placeSensorToSUTOffsetX = placeSensorToSUTOffsetX;
+        emit placeSensorToSUTOffsetXChanged(m_placeSensorToSUTOffsetX);
+    }
+
+    void setPlaceSensorToSUTOffsetY(double placeSensorToSUTOffsetY)
+    {
+        if (qFuzzyCompare(m_placeSensorToSUTOffsetY, placeSensorToSUTOffsetY))
+            return;
+
+        m_placeSensorToSUTOffsetY = placeSensorToSUTOffsetY;
+        emit placeSensorToSUTOffsetYChanged(m_placeSensorToSUTOffsetY);
+    }
+
+    void setPickSensorFromTrayOffsetX(double pickSensorFromTrayOffsetX)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickSensorFromTrayOffsetX, pickSensorFromTrayOffsetX))
+            return;
+
+        m_pickSensorFromTrayOffsetX = pickSensorFromTrayOffsetX;
+        emit pickSensorFromTrayOffsetXChanged(m_pickSensorFromTrayOffsetX);
+    }
+
+    void setPickSensorFromTrayOffsetY(double pickSensorFromTrayOffsetY)
+    {
+        qWarning("Floating point comparison needs context sanity check");
+        if (qFuzzyCompare(m_pickSensorFromTrayOffsetY, pickSensorFromTrayOffsetY))
+            return;
+
+        m_pickSensorFromTrayOffsetY = pickSensorFromTrayOffsetY;
+        emit pickSensorFromTrayOffsetYChanged(m_pickSensorFromTrayOffsetY);
+    }
+
 signals:
 
     void vcm1SvelChanged(double vcm1Svel);
@@ -527,6 +598,10 @@ signals:
     void performPrAsPlacingNgDutChanged(bool performPrAsPlacingNgDut);
     void picker1PlaceOkProductOffsetXChanged(double picker1PlaceOkProductOffsetX);
     void picker1PlaceOkProductOffsetYChanged(double picker1PlaceOkProductOffsetY);void buzzerNameChanged(QString buzzerName);
+    void placeSensorToSUTOffsetXChanged(double placeSensorToSUTOffsetX);
+    void placeSensorToSUTOffsetYChanged(double placeSensorToSUTOffsetY);
+    void pickSensorFromTrayOffsetXChanged(double pickSensorFromTrayOffsetX);
+    void pickSensorFromTrayOffsetYChanged(double pickSensorFromTrayOffsetY);
 };
 
 class MaterialLoaderState:public PropertyBase

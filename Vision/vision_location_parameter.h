@@ -132,7 +132,6 @@ public slots:
 
     void setMaximunAngle(double maximunAngle)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_maximunAngle, maximunAngle))
             return;
 
@@ -142,7 +141,6 @@ public slots:
 
     void setMaximumLength(double maximumLength)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_maximumLength, maximumLength))
             return;
 
@@ -188,7 +186,6 @@ public slots:
 
     void setWaitImageDelay(double waitImageDelay)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_waitImageDelay, waitImageDelay))
             return;
 
@@ -198,7 +195,6 @@ public slots:
 
     void setOffsetX(double offsetX)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_offsetX, offsetX))
             return;
 
@@ -208,7 +204,6 @@ public slots:
 
     void setOffsetY(double offsetY)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_offsetY, offsetY))
             return;
 
@@ -218,7 +213,6 @@ public slots:
 
     void setOffsetTheta(double offsetTheta)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_offsetTheta, offsetTheta))
             return;
 

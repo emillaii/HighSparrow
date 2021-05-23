@@ -7,6 +7,9 @@ QT += websockets
 QT += sql
 CONFIG += c++11
 
+VERSION = 2.0.0.1
+
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Refer to the documentation for the

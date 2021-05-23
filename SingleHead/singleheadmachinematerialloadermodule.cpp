@@ -327,6 +327,8 @@ bool SingleHeadMachineMaterialLoaderModule::performLUTLensPR()
 bool SingleHeadMachineMaterialLoaderModule::picker2PickSensorFromTray(int time_out)
 {
     qInfo("pickTraySensor time_out %d", time_out);
+    this->pick_arm->motor_x->StepMoveSync(parameters.pickSensorFromTrayOffsetX());
+    qInfo("picker2PickSensorFromTray tl_x step move: %f", parameters.pickSensorFromTrayOffsetX());
     bool result = picker2SearchZ(pick_arm->parameters.pickSensorZ(), true, time_out, 1);
     if (!result)
         AppendError(QString(u8"从sensor盘取sensor失败"));
@@ -335,6 +337,8 @@ bool SingleHeadMachineMaterialLoaderModule::picker2PickSensorFromTray(int time_o
 bool SingleHeadMachineMaterialLoaderModule::picker2PlaceSensorToSUT(int time_out)
 {
     qInfo("placeSensorToSUT time_out %d", time_out);
+    this->pick_arm->motor_sut_x->StepMoveSync(parameters.placeSensorToSUTOffsetX());
+    qInfo("picker2PlaceSensorToSUT sut_x step move: %f", parameters.placeSensorToSUTOffsetX());
     bool result = picker2SearchSutZ2(pick_arm->parameters.placeSensorZ(), false, time_out);
     if (!result)
         AppendError(QString(u8"放sensor到SUT%1失败"));

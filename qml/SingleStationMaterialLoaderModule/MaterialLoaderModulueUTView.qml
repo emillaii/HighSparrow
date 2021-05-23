@@ -125,6 +125,21 @@ ColumnLayout {
                         materialLoaderParameter.setSutPlaceSensorAngle(text)
                     }
                 }
+
+                Label{
+                    text:qsTr("offset X")
+                }
+                TextField{
+                    text:materialLoaderParameter.placeSensorToSUTOffsetX
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setPlaceSensorToSUTOffsetX(text)
+                    }
+                }
             }
             RowLayout{
                 Button{

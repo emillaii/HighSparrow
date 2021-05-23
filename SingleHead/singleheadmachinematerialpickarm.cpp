@@ -19,7 +19,9 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
                                             XtVacuum *vacuum_sensor_suction,
                                             XtVacuum *vacuum_lut,
                                             XtVacuum *vacuum_sut,
-                                            XtCylinder *pogopin
+                                            XtCylinder *pogopin,
+                                            XtMotor *motor_sut_x,
+                                            XtMotor *motor_sut_y
                                             )
 {
     this->motor_x = motor_x;
@@ -34,6 +36,8 @@ void SingleHeadMachineMaterialPickArm::Init(XtMotor *motor_x,
     this->vacuum_lut = vacuum_lut;
     this->vacuum_sut = vacuum_sut;
     this->pogopin = pogopin;
+    this->motor_sut_x = motor_sut_x;
+    this->motor_sut_y = motor_sut_y;
 }
 
 
@@ -112,13 +116,14 @@ bool SingleHeadMachineMaterialPickArm::stepMove_XmYT2_Synic(const double step_x,
         if(!motor_vcm1->resetSoftLanding(timeout))return false;
         if(!motor_vcm2->resetSoftLanding(timeout))return false;
     }
-    double target_x = motor_vcmx->GetFeedbackPos() + step_x;
+    //double target_x = motor_x->GetFeedbackPos() + step_x;
     double target_y = motor_y->GetFeedbackPos() + step_y;
     double target_t = motor_th2->GetFeedbackPos() + step_t2;
-    motor_vcmx->StepMove(step_x);
+    //motor_vcmx->StepMove(step_x);
+    //motor_x->StepMove(step_x);
     motor_y->StepMove(step_y);
     motor_th2->StepMove(step_t2);
-    bool resut = motor_vcmx->WaitArrivedTargetPos(target_x);
+    bool resut = true;//motor_x->WaitArrivedTargetPos(target_x);
     resut &= motor_y->WaitArrivedTargetPos(target_y,timeout);
     resut &= motor_th2->WaitArrivedTargetPos(target_t,timeout);
     return resut;

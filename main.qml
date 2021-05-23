@@ -348,7 +348,7 @@ ApplicationWindow {
                 icon.source: "icons/flowchart.png"
                 icon.color: "deepskyblue"
                 onClicked: {
-                    baseModuleManager.loadParameter()
+                    baseModuleManager.loadParameters()
                 }
            }
            ToolButton {

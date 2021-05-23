@@ -233,6 +233,23 @@ ColumnLayout {
                 }
 
                 RowLayout{
+                    Label{
+                        text:qsTr("Pick Sensor From Tray Offset X:")
+                    }
+                    TextField{
+                        text: materialLoaderParameter.pickSensorFromTrayOffsetX
+                        horizontalAlignment: TextInput.AlignHCenter
+                        validator: DoubleValidator {
+                            decimals: 6
+                            notation: DoubleValidator.StandardNotation
+                        }
+                        onEditingFinished: {
+                            materialLoaderParameter.setPickSensorFromTrayOffsetX(text)
+                        }
+                    }
+                }
+
+                RowLayout{
                     Button{
                         text:qsTr("picker2取Sensor")
                         width: 40

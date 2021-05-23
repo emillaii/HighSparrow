@@ -26,7 +26,9 @@ public:
               XtMotor *motor_th1,XtMotor *motor_th2,
               XtVcMotor *motor_vcm1,XtVcMotor *motor_vcm2,XtVcMotor *motor_vcmx,
               XtVacuum *vacuum_lens_suction,XtVacuum *vacuum_sensor_suction,
-              XtVacuum *vacuum_lut,XtVacuum *vacuum_sut,XtCylinder *pogopin
+              XtVacuum *vacuum_lut,XtVacuum *vacuum_sut,XtCylinder *pogopin,
+              XtMotor *motor_sut_x,
+              XtMotor *motor_sut_y
               );
 
     bool move_Xm_Origin();
@@ -45,6 +47,8 @@ public:
     XtMotor *motor_y;
     XtMotor *motor_th1;
     XtMotor *motor_th2;
+    XtMotor *motor_sut_x;
+    XtMotor *motor_sut_y;
     XtVcMotor *motor_vcm1;
     XtVcMotor *motor_vcm2;
     XtVcMotor *motor_vcmx;

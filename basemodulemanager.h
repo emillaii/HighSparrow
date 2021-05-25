@@ -88,6 +88,8 @@ signals:
     void sendHandlingOperation(int cmd);
     void displaySfrImageInUI();
     void displayOCImageInUI();
+    void displayAACoreTuningImageInUI();
+    void displayAACoreTuningImageInUI2();
     void lightingValueChanged(int downlookLighting);
     void lightPanelValueChanged(int lightPanelLighting);
     void paramsChanged();
@@ -101,6 +103,10 @@ public slots:
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
+        else if (type == 3) {
+            emit displayAACoreTuningImageInUI();
+            emit displayAACoreTuningImageInUI2();
+        }
     }
     bool receiveMsgSignal(QString title,QString content);
     void setLightPanelLighting(int lightPanelLighting)

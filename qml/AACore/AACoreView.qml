@@ -416,6 +416,13 @@ ItemDelegate {
                             }
                         }
 
+                        RoundButton{
+                            text: qsTr("AA Debug Image")
+                            onClicked: {
+                                aaNewCore.performAADebugImage()
+                            }
+                        }
+
                         Button {
                             text: qsTr("Show Chart Theta")
                             onClicked: {
@@ -427,22 +434,44 @@ ItemDelegate {
             }
         }
 
-        Frame {
-            id: frame
-            Layout.fillWidth: true
-            contentHeight: 720
+        ColumnLayout {
+            Frame {
+                id: frame
+                Layout.fillWidth: true
+                contentHeight: 400
 
-            Image {
-                id: image1
-                anchors.fill: parent
-                source: "icons/sparrow.png"
-                fillMode: Image.PreserveAspectFit
-                cache: false
-                Connections {
-                    target: highSprrow
-                    onDisplayAACoreTuningImageInUI: {
-                        image1.source = ""
-                        image1.source = "image://aaCoreTuningImage"
+                Image {
+                    id: image1
+                    anchors.fill: parent
+                    source: "icons/sparrow.png"
+                    fillMode: Image.PreserveAspectFit
+                    cache: false
+                    Connections {
+                        target: highSprrow
+                        onDisplayAACoreTuningImageInUI: {
+                            image1.source = ""
+                            image1.source = "image://aaCoreTuningImage"
+                        }
+                    }
+                }
+            }
+            Frame {
+                id: frame2
+                Layout.fillWidth: true
+                contentHeight: 400
+
+                Image {
+                    id: image2
+                    anchors.fill: parent
+                    source: "icons/sparrow.png"
+                    fillMode: Image.PreserveAspectFit
+                    cache: false
+                    Connections {
+                        target: highSprrow
+                        onDisplayAACoreTuningImageInUI2: {
+                            image2.source = ""
+                            image2.source = "image://aaCoreTuningImage2"
+                        }
                     }
                 }
             }

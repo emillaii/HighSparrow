@@ -18,6 +18,8 @@
 #define PI  3.14159265
 #include <math.h>
 
+using namespace cv;
+
 vector<double> fitCurve(const vector<double> & x, const vector<double> & y, int order, double & localMaxX, double & localMaxY) {
     size_t n = x.size();
 
@@ -111,6 +113,8 @@ AACoreNew::AACoreNew(QString name, QObject *parent):ThreadWorkerBase (name)
     ocImageProvider_1 = new ImageProvider();
     sfrImageProvider = new ImageProvider();
     dispenseImageProvider = new ImageProvider();
+    aaCoreTuningProvider = new ImageProvider();
+    aaCoreTuningProvider2 = new ImageProvider();
     connect(this, &AACoreNew::sfrResultsReady, this, &AACoreNew::storeSfrResults, Qt::DirectConnection);
     connect(this, &AACoreNew::sfrResultsDetectFinished, this, &AACoreNew::stopZScan, Qt::DirectConnection);
 }
@@ -800,7 +804,8 @@ ErrorCodeStruct AACoreNew::performDispense()
     QVariantMap map;
     lsut->recordCurrentPos();
     dispense->setMapPosition(lsut->downlook_position.X(),lsut->downlook_position.Y());
-    dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,sensorDownlookOffset.Theta);
+    //dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,sensorDownlookOffset.Theta);
+    dispense->setPRPosition(sensorDownlookOffset.X,sensorDownlookOffset.Y,-sensorDownlookOffset.Theta);
 
     lsut->moveToZPos(1.5);
     hasDispense = true;
@@ -1124,8 +1129,8 @@ ErrorCodeStruct AACoreNew::performAA(QJsonValue params)
     } else {
         qInfo("Enable tilt...xTilt: %f yTilt: %f", aa_result["xTilt"].toDouble(), aa_result["yTilt"].toDouble());
         step_move_timer.start();
-        aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
-        //aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
+        //aa_head->stepInterpolation_AB_Sync(-aa_result["yTilt"].toDouble(), aa_result["xTilt"].toDouble());
+        aa_head->stepInterpolation_AB_Sync(-aa_result["xTilt"].toDouble(), -aa_result["yTilt"].toDouble());
         step_move_timer.start();
         wait_tilt_time += step_move_timer.elapsed();
         map.insert("WAIT_TILT_TIME", wait_tilt_time);
@@ -1292,8 +1297,8 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
             points_1.emplace_back(ex, ey, peak_z + start_pos);
             points_11.emplace_back(ex, ey, peak_z + start_pos);
         } else if ( i >= 5 && i <= 8) {
-            points_2.emplace_back(ex, ey, peak_z + start_pos);
-            points_22.emplace_back(ex, ey, peak_z + start_pos);
+//            points_2.emplace_back(ex, ey, peak_z + start_pos);
+//            points_22.emplace_back(ex, ey, peak_z + start_pos);
         } else if ( i >= 9 && i <= 12) {
             points_3.emplace_back(ex, ey, peak_z + start_pos);
             points_33.emplace_back(ex, ey, peak_z + start_pos);
@@ -1324,15 +1329,15 @@ QVariantMap AACoreNew::sfrFitCurve_Advance(int resize_factor, double start_pos)
     }
 
     //Layer checking
-    if ((points_1.size() > 0 && points_1.size() < 4) ||
-            (points_2.size() > 0 && points_2.size() < 4) ||
-            (points_3.size() > 0 && points_3.size() < 4))
-    {
-        qCritical("AA pattern layer checking fail.");
-        result.insert("OK", false);
-        emit postSfrDataToELK(runningUnit, map);
-        return result;
-    }
+//    if ((points_1.size() > 0 && points_1.size() < 4) ||
+//            (points_2.size() > 0 && points_2.size() < 4) ||
+//            (points_3.size() > 0 && points_3.size() < 4))
+//    {
+//        qCritical("AA pattern layer checking fail.");
+//        result.insert("OK", false);
+//        emit postSfrDataToELK(runningUnit, map);
+//        return result;
+//    }
 
     threeDPoint weighted_vector_1 = planeFitting(points_1);
     threeDPoint weighted_vector_2 = planeFitting(points_2);
@@ -1616,7 +1621,7 @@ ErrorCodeStruct AACoreNew::performMTFOffline(QJsonValue params)
     this->sfrWorkerController->setSfrWorkerParams(aaPrams);
     QElapsedTimer timer;
     QVariantMap map;
-    cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\jiexi\\3.jpg");
+    cv::Mat img = cv::imread("livePhoto.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\Desktop\\Test\\Samsung\\debug\\debug\\zscan_6.bmp");
     //cv::Mat img = cv::imread("C:\\Users\\emil\\share\\20-05-24-622.bmp");
     double dfov = calculateDFOV(img);
@@ -2519,17 +2524,23 @@ std::vector<AA_Helper::patternAttr> AACoreNew::search_mtf_pattern(cv::Mat inImag
 
 double AACoreNew::calculateDFOV(cv::Mat img)
 {
-    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
-    if (vector.size() == 4) {
-        double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
-        double d2 = sqrt(pow((vector[3].center.x() - vector[1].center.x()), 2) + pow((vector[3].center.y() - vector[1].center.y()), 2));
-        double f = parameters.EFL();
-        double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
-        double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;
-        double dfov = (dfov1 + dfov2)/2;
-        return dfov;
-    }
-    return -1;
+//    std::vector<AA_Helper::patternAttr> vector = AA_Helper::AAA_Search_MTF_Pattern_Ex(img, parameters.MaxIntensity(), parameters.MinArea(), parameters.MaxArea());
+//    qInfo("vector size: %d", vector.size());
+//    if (vector.size() == 4) {
+//        double d1 = sqrt(pow((vector[0].center.x() - vector[2].center.x()), 2) + pow((vector[0].center.y() - vector[2].center.y()), 2));
+//        double d2 = sqrt(pow((vector[3].center.x() - vector[1].center.x()), 2) + pow((vector[3].center.y() - vector[1].center.y()), 2));
+//        double f = parameters.EFL();
+//        double dfov1 = 2*atan(d1/(2*parameters.SensorXRatio()*f))*180/PI;
+//        double dfov2 = 2*atan(d2/(2*parameters.SensorYRatio()*f))*180/PI;
+//        double dfov = (dfov1 + dfov2)/2;
+//        return dfov;
+//    }
+    std::vector<Mat> rois;
+    std::vector<Point> centers;
+    std::vector<MTF_Pattern_Position> vec;
+    double dfov = 0;
+    findMarkPattern(img, rois, centers, dfov, true);
+    return dfov;
 }
 
 void AACoreNew::storeSfrResults(unsigned int index, vector<Sfr_entry> sfrs, int timeElapsed)
@@ -2574,64 +2585,135 @@ void AACoreNew::captureLiveImage()
     cv::imwrite("livePhoto.bmp", img);
 }
 
+void AACoreNew::performAADebugImage()
+{
+    aaCoreParametersChanged();
+}
+
 void AACoreNew::aaCoreParametersChanged()
 {
     qInfo("AA Core parameters changed");
     QVariantMap map;
     cv::Mat img = cv::imread("livePhoto.bmp");
-    QImage outImage = imageThread->cvMat2QImage(img);
-    double dfov = calculateDFOV(img);
-    double imageCenterX = img.cols/2;
-    double imageCenterY = img.rows/2;
-    QPainter qPainter(&outImage);
-    qPainter.setBrush(Qt::NoBrush);
-    qPainter.setPen(QPen(Qt::red, 4.0));
-    emit sfrWorkerController->calculate(0, 0, img, true);
-    int timeout=1000;
-    while(this->clustered_sfr_map.size() != 1 && timeout >0) {
-        Sleep(10);
-        timeout--;
+    std::vector<Mat> rois;
+    std::vector<Point> centers;
+    std::vector<MTF_Pattern_Position> vec;
+    double dfov = 0;
+    findMarkPattern(img, rois, centers, dfov, true);
+    QImage output("dst_image.bmp");
+    QImage output1("output.bmp");
+    aaCoreTuningProvider->setImage(output);
+    aaCoreTuningProvider2->setImage(output1);
+    emit callQmlRefeshImg(3);
+}
+
+bool AACoreNew::findMarkPattern(cv::Mat image, std::vector<cv::Mat> &rois, std::vector<cv::Point> &centers, double &outputDFOV, bool isDebug)
+{
+    double resizeFactor = 1;
+    if (image.cols < 4000) {
+        resizeFactor = 2;
+    } else if (image.cols < 6000) {
+        resizeFactor = 3;
+    } else {
+        resizeFactor = 4;
     }
-    vector<Sfr_entry> sv = clustered_sfr_map[0];
-    double r1 = sqrt(imageCenterX*imageCenterX + imageCenterY*imageCenterY);
+    Mat resize_image;
+    resize(image,resize_image,Size(image.cols/resizeFactor,image.rows/resizeFactor),0,0,INTER_LINEAR);
+    //resize_image.copyTo(m_currentResizeImage);
+    Mat src_image, dst_image;
+    cvtColor(resize_image, src_image, COLOR_RGB2GRAY);
+    //imwrite("src_image.bmp", src_image);
+    threshold(src_image, dst_image, parameters.MaxIntensity(), 255, 0);
+    Mat kernel(3,3,CV_8U,Scalar(1));
+    erode(dst_image, dst_image, kernel);
+    if (isDebug)
+        imwrite("dst_image.bmp", dst_image);
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    findContours( dst_image, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE, Point(0,0));
+    vector<Moments> mu(contours.size());
+    for ( int i = 0; i < contours.size(); i++){
+        mu[i] = moments(contours[i], false);
+        double area = contourArea(contours[i]);
+        if (area > parameters.MinArea() && area < parameters.MaxArea()){
+            Scalar color = Scalar(255, 155, 0);
+            Rect rect = boundingRect(contours[i]);
+            Rect scaledRect;
+            double radius = sqrt(pow(dst_image.cols/2 -  rect.x, 2) + pow(dst_image.rows/2 - rect.y, 2));
+            double f = radius/sqrt(pow(dst_image.cols/2, 2) + pow(dst_image.rows/2, 2));
+            qInfo("rect.x %d rect.y %d width: %d height: %d f: %f area: %f", rect.x, rect.y, rect.width, rect.height, f, area);
 
-    qPainter.setFont(QFont("Times",50, QFont::Bold));
-    qPainter.drawText(imageCenterX/2 , 100 , QString("DFOV: ").append(QString::number(dfov)));
-    for (unsigned int i = 0; i < sv.size(); i++)
-    {
-        double roi_width = sqrt(sv[i].area)*this->parameters.ROIRatio();
-        qInfo("%f %f %f %f %f %f %d %d", sv.at(i).px, sv.at(i).py,
-              sv.at(i).t_sfr, sv.at(i).r_sfr, sv.at(i).b_sfr, sv.at(i).l_sfr,
-              sv.at(i).layer, sv.at(i).location);
-        double radius = sqrt(pow(sv[i].px - imageCenterX, 2) + pow(sv[i].py - imageCenterY, 2));
+            if ( fabs(rect.width - rect.height) < 20 && f < 0.98) {
+                double roi_width = rect.width;
+                scaledRect.x = rect.x - roi_width/2;
+                scaledRect.y = rect.y - roi_width/2;
+                scaledRect.width = rect.width + roi_width;
+                scaledRect.height = rect.height + roi_width;
 
-        if (sv[i].layer == 0) {
-            qPainter.setPen(QPen(Qt::red, 4.0));
-        }
-        else if (sv[i].layer == 1) {
-            qPainter.setPen(QPen(QColor(102, 0, 204), 4.0)); //Purple
-        }
-        else if (sv[i].layer == 2) {
-            qPainter.setPen(QPen(Qt::blue, 4.0));
-        }
-        else if (sv[i].layer == 3) {
-            qPainter.setPen(QPen(Qt::yellow, 4.0));
-        }
-        double w_t = parameters.WeightList()[0 + sv[i].layer*4].toDouble();
-        double w_r = parameters.WeightList()[1 + sv[i].layer*4].toDouble();
-        double w_b = parameters.WeightList()[2 + sv[i].layer*4].toDouble();
-        double w_l = parameters.WeightList()[3 + sv[i].layer*4].toDouble();
+                Point center(rect.x + roi_width/2, rect.y + roi_width/2);
+                cv::drawMarker(resize_image, center, color);
+                //rectangle(resize_image, scaledRect, color, 6);
+                putText(resize_image, //target image
+                            QString::number(area).toStdString(), //text
+                            center, //top-left position
+                            cv::FONT_HERSHEY_DUPLEX,
+                            2.0,
+                            CV_RGB(255, 69, 0), //font color
+                            2);
+                //Crop ROI
+                {
+                    cv::Mat copped_roi;
+                    cv::Rect roi;
+                    double width = roi_width*resizeFactor;
+                    roi.width = width*2; roi.height = width*2;
+                    roi.x = rect.x*resizeFactor - width/2;
+                    roi.y = rect.y*resizeFactor - width/2;
 
-        qPainter.drawRect(QRectF(sv[i].px-roi_width/2, sv[i].py-roi_width/2, roi_width, roi_width));
-        qPainter.drawEllipse(QPoint(imageCenterX, imageCenterY), (int)(radius), (int)(radius));
+                    if (roi.x < 0) continue; ;
+                    if (roi.x + roi.width > image.cols) { continue;  }
+                    if (roi.y < 0) continue; ;
+                    if (roi.y + roi.height > image.rows) { continue;  }
 
-        qPainter.drawText(sv[i].px - 50 , sv[i].py - roi_width/2, QString("").append(QString::number(w_t)));
-        qPainter.drawText(sv[i].px - 50 + roi_width/2, sv[i].py,  QString("").append(QString::number(w_r)));
-        qPainter.drawText(sv[i].px - 50, sv[i].py + roi_width/2,  QString("").append(QString::number(w_b)));
-        qPainter.drawText(sv[i].px - roi_width/2 - 50, sv[i].py,  QString("").append(QString::number(w_l)));
+
+                    image(roi).copyTo(copped_roi);
+
+                    Moments M = cv::moments(contours[i]);
+                    double x = M.m10/M.m00;
+                    double y = M.m01/M.m00;
+                    Point roi_center( x*resizeFactor, y*resizeFactor);
+                    centers.emplace_back(roi_center);   //Push the ROI center in center list
+                    rois.emplace_back(copped_roi);  //Push the ROI image in ROIs list
+                    QString filename = "ROI_";
+                    filename.append(QString::number(i)).append(".bmp");
+                    if (isDebug)
+                        cv::imwrite(filename.toStdString(), copped_roi);
+                }
+            }
+        }
     }
-    clustered_sfr_map.clear();
-    qPainter.end();
-    aaCoreTuningProvider->setImage(outImage);
-    emit callQmlRefeshImg(2);
+    if (rois.size() == 0) {
+        qWarning("Cannot find any mark pattern");
+        imwrite("oc_fail.bmp", dst_image);
+        return false;
+    }
+
+    //FOV Calculation
+    std::vector<MTF_Pattern_Position> vec;
+    for (int i = 0; i < centers.size(); i++) {
+        double radius = sqrt(pow(centers[i].x - image.cols/2, 2) + pow(centers[i].y - image.rows/2, 2));
+        double r1 = sqrt(image.cols/2*image.cols/2 + image.rows/2*image.rows/2);
+        double f = radius/r1;
+        MTF_Pattern_Position mtf(centers[i].x, centers[i].y, f, 0, 0, 0, 0, 0, 0);
+        vec.emplace_back(mtf);
+    }
+    vector<int> layers = sfr::classifyLayers(vec);
+    double dfov1 = sqrt(pow(vec[1].x - vec[3].x, 2) + pow(vec[1].y - vec[3].y,2));
+    double dfov2 = sqrt(pow(vec[2].x - vec[4].x, 2) + pow(vec[2].y - vec[4].y,2));
+    outputDFOV = (dfov1 + dfov2) / 2;
+    qInfo("dfov %f %f %f", dfov1, dfov2, outputDFOV);
+    //End of FOV Calculation
+
+    if (isDebug)
+        imwrite("output.bmp", resize_image);
+    return true;
 }

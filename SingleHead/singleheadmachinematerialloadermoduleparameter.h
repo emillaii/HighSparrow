@@ -437,7 +437,6 @@ public slots:
 
     void setEscapeHeight(double escapeHeight)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_escapeHeight, escapeHeight))
             return;
 
@@ -447,7 +446,6 @@ public slots:
 
     void setEscapeX(double escapeX)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_escapeX, escapeX))
             return;
 
@@ -457,7 +455,6 @@ public slots:
 
     void setEscapeY(double escapeY)
     {
-        qWarning("Floating point comparison needs context sanity check");
         if (qFuzzyCompare(m_escapeY, escapeY))
             return;
 

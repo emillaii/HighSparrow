@@ -81,6 +81,16 @@ ColumnLayout {
                                                                 MaterialLoaderModule.PICKER2_MEASURE_SENSOR_IN_SUT)
                     }
                 }
+                Button{
+                    text:qsTr("移动吸嘴")
+                    width:40
+                    height: 40
+                    onClicked: {
+                        sh_materialLoaderModule.performHandling(MaterialLoaderModule.SUT_PR_POS|
+                                                                MaterialLoaderModule.SUT_PR|
+                                                                MaterialLoaderModule.PICKER2_TO_WORKPOS)
+                    }
+                }
             }
 
 
@@ -141,6 +151,52 @@ ColumnLayout {
                     }
                 }
             }
+
+            RowLayout{
+                Label{
+                    text:qsTr("Escape X")
+                }
+                TextField{
+                    text:materialLoaderParameter.escapeX
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setEscapeX(text)
+                    }
+                }
+                Label{
+                    text:qsTr("Escape Y")
+                }
+                TextField{
+                    text:materialLoaderParameter.escapeY
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setEscapeY(text)
+                    }
+                }
+                Label{
+                    text:qsTr("Escape Height")
+                }
+                TextField{
+                    text:materialLoaderParameter.escapeHeight
+                    horizontalAlignment: TextInput.AlignHCenter
+                    validator: DoubleValidator{
+                        decimals: 6
+                        notation: DoubleValidator.StandardNotation
+                    }
+                    onEditingFinished: {
+                        materialLoaderParameter.setEscapeHeight(text)
+                    }
+                }
+            }
+
             RowLayout{
                 Button{
                     text:qsTr("picker2放Sensor")

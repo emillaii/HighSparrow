@@ -25,12 +25,18 @@ signals:
     void displaySfrImageInUI();
     void displayOCImageInUI();
     void displayGlueInspectImageInUI();
+    void displayAACoreTuningImageInUI();
+    void displayAACoreTuningImageInUI2();
 public slots:
     Q_INVOKABLE void receiveImageFromAACore(int type) {
         qInfo("Display SFR image in UI: %d", type);
         if (type == 0) emit displaySfrImageInUI();
         else if (type == 1) emit displayOCImageInUI();
-        else if (type == 3) emit displayGlueInspectImageInUI();
+        else if (type == 2) emit displayGlueInspectImageInUI();
+        else if (type == 3) {
+            emit displayAACoreTuningImageInUI();
+            emit displayAACoreTuningImageInUI2();
+        }
     };
 };
 

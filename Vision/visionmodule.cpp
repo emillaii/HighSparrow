@@ -265,7 +265,7 @@ ErrorCodeStruct VisionModule::PR_Edge_Template_Matching(QString camera_name, QSt
     static atl::String g_constData7;
     static atl::Array< atl::Conditional< avl::Location > > g_constData8;
     static atl::Array< atl::Conditional< avl::Location > > g_constData9;
-    g_constData1 = L"C:\\Users\\emil\\Desktop\\Test\\calibrationPhotot\\sut_updownlook_up.jpg";
+    g_constData1 = L"C:\\Users\\emil\\Desktop\\AAProject\\jiexi\\prFail\\19-29-40-978_raw.jpg";
 
     //g_constData2 = L"C:\\Users\\emil\\Desktop\\Test\\EdgeFinder_New\\config\\prConfig\\spa_up_edgeModel.avdata";
     g_constData2 = pr_name.toStdString().c_str();

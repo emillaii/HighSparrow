@@ -530,13 +530,18 @@ bool SingleHeadMachineMaterialLoaderModule::picker2SearchSutZ2(double z, bool is
 {
     qInfo("picker2SearchSutZ z %f is_open %d time_out %d sutPlaceSensorAngle: %f", z, is_open, time_out,
           parameters.sutPlaceSensorAngle());
+
+    double current_sut_x_pos = pick_arm->motor_sut_x->GetFeedbackPos();
+    //bool result = pick_arm->motor_sut_x->MoveToPosSync(current_sut_x_pos + parameters.escapeX());
     bool result = pick_arm->motor_y->StepMoveSync(parameters.escapeY());
+
     result &= pick_arm->motor_vcm2->MoveToPosSync(z - parameters.escapeHeight());
 
     if (result)
     {
         result = pick_arm->motor_th2->MoveToPosSync(parameters.sutPlaceSensorAngle());
         //        result = pick_arm->motor_vcmx->StepMoveSync(parameters.escapeX());
+        result &= pick_arm->motor_sut_x->MoveToPosSync(current_sut_x_pos + parameters.escapeX());
         result &= pick_arm->motor_y->StepMoveSync(-parameters.escapeY());
         result
                 &= pick_arm->ZSerchByForce(1, parameters.vcm2Svel(), parameters.vcm2PickForce(), z, parameters.vcm2Margin(),

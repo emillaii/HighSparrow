@@ -272,6 +272,8 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QLatin1String("ocImage1"), highSprrow.baseModuleManager->aaCoreNew.ocImageProvider_1);
     engine.addImageProvider(QLatin1String("sfrImage"), highSprrow.baseModuleManager->aaCoreNew.sfrImageProvider);
     engine.addImageProvider(QLatin1String("dispenseImage"), highSprrow.baseModuleManager->aaCoreNew.dispenseImageProvider);
+    engine.addImageProvider(QLatin1String("aaCoreTuningImage"), highSprrow.baseModuleManager->aaCoreNew.aaCoreTuningProvider);
+    engine.addImageProvider(QLatin1String("aaCoreTuningImage2"), highSprrow.baseModuleManager->aaCoreNew.aaCoreTuningProvider2);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

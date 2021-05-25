@@ -55,6 +55,7 @@ public:
     void performAAOffline();
     Q_INVOKABLE void performHandling(int cmd, QString params);
     Q_INVOKABLE void captureLiveImage();
+    Q_INVOKABLE void performAADebugImage();
     ErrorCodeStruct performInitSensor();
     ErrorCodeStruct performPRToBond();
     ErrorCodeStruct performAAPickLens();
@@ -92,6 +93,7 @@ public:
     ImageProvider * sfrImageProvider;
     ImageProvider * dispenseImageProvider;
     ImageProvider * aaCoreTuningProvider;
+    ImageProvider * aaCoreTuningProvider2;
     AACoreParameters parameters;
     AACoreStates states;
 
@@ -176,7 +178,7 @@ private:
 
     TowerLightBuzzer *towerLightBuzzer;
 
-
+    bool findMarkPattern(cv::Mat inputImage, std::vector<cv::Mat> &roi, std::vector<cv::Point> &centers, double &outputDFOV, bool isDebug = false);
     QVariantMap sfrFitCurve_Advance(int resize_factor, double start_pos);
     std::vector<AA_Helper::patternAttr> search_mtf_pattern(cv::Mat inImage, QImage & image, bool isFastMode,
                                                                unsigned int & ccROIIndex,
